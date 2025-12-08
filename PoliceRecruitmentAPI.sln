@@ -1,0 +1,43 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.33414.496
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PoliceRecruitmentAPI", "PoliceRecruitmentAPI\PoliceRecruitmentAPI.csproj", "{0BADDDF2-E7E6-48E7-BC93-1EC8FBE89510}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PoliceRecruitmentAPI.Core", "PoliceRecruitmentAPI.Core\PoliceRecruitmentAPI.Core.csproj", "{2ACBD4A2-0375-47EC-99E2-892B867356A3}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PoliceRecruitmentAPI.DataAccess", "PoliceRecruitmentAPI.DataAccess\PoliceRecruitmentAPI.DataAccess.csproj", "{A566362F-78A8-415A-8303-903F941E1619}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PoliceRecruitmentAPI.Services", "PoliceRecruitmentAPI.Services\PoliceRecruitmentAPI.Services.csproj", "{7CAAB91F-592F-418E-B17D-B353F0DE03B8}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0BADDDF2-E7E6-48E7-BC93-1EC8FBE89510}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0BADDDF2-E7E6-48E7-BC93-1EC8FBE89510}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0BADDDF2-E7E6-48E7-BC93-1EC8FBE89510}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0BADDDF2-E7E6-48E7-BC93-1EC8FBE89510}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2ACBD4A2-0375-47EC-99E2-892B867356A3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2ACBD4A2-0375-47EC-99E2-892B867356A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2ACBD4A2-0375-47EC-99E2-892B867356A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2ACBD4A2-0375-47EC-99E2-892B867356A3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A566362F-78A8-415A-8303-903F941E1619}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A566362F-78A8-415A-8303-903F941E1619}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A566362F-78A8-415A-8303-903F941E1619}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A566362F-78A8-415A-8303-903F941E1619}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7CAAB91F-592F-418E-B17D-B353F0DE03B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7CAAB91F-592F-418E-B17D-B353F0DE03B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7CAAB91F-592F-418E-B17D-B353F0DE03B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7CAAB91F-592F-418E-B17D-B353F0DE03B8}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {CC75F115-EC6D-4FE6-82F9-1D981572DBD9}
+	EndGlobalSection
+EndGlobal
