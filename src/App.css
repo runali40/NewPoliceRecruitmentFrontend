@@ -1,0 +1,282 @@
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+th,
+td {
+  font-family: "Cairo";
+  /* font-weight: bold; */
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+/* In App.css */
+.blur-effect {
+  /* filter: blur(0.5px);  */
+  pointer-events: none;
+  opacity: 0.45;
+}
+
+
+.loading-spinner-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+/* Hide the Google Translate icon */
+/* Hide the Google icon in the dropdown */
+body>.skiptranslate>iframe.skiptranslate {
+  display: none !important;
+}
+
+/* #google_translate_element {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+} */
+/* Default styles for larger screens */
+#google_translate_element {
+  position: absolute;
+  top: 20px;
+  right: 36px;
+  z-index: 1000;
+}
+
+/* Styles for mobile screens (max-width: 768px) */
+@media (max-width: 768px) {
+  #google_translate_element {
+    display: none;
+    /* Hide by default */
+    top: 120px;
+    /* Move it further down */
+    right: 30px;
+    left: 60px;
+    width: auto;
+    /* Let it resize to fit */
+  }
+}
+
+/* Styles for iPad in portrait (768px to 1024px) */
+@media (min-width: 768px) and (max-width: 1024px) and (orientation: portrait) {
+  #google_translate_element {
+    display: block;
+    /* Show on iPad portrait */
+    top: 19px;
+    /* Adjust top position as needed */
+    right: 64px;
+    left: auto;
+    /* Reset left for better positioning */
+    width: auto;
+    /* Let it resize to fit */
+  }
+}
+
+/* Styles for iPad in landscape (1024px) */
+@media (min-width: 1024px) and (max-width: 1366px) and (orientation: landscape) {
+  #google_translate_element {
+    display: block;
+    /* Show on iPad landscape */
+    top: 20px;
+    /* Adjust top position for landscape */
+    right: 40px;
+    left: auto;
+    /* Reset left for better positioning */
+    width: auto;
+    /* Let it resize to fit */
+  }
+}
+
+/* Styles for iPad Pro in portrait (1024px to 1366px) */
+@media (min-width: 1024px) and (max-width: 1366px) and (orientation: portrait) {
+  #google_translate_element {
+    display: block;
+    /* Show on iPad Pro portrait */
+    top: 24px;
+    /* Adjust top position for iPad Pro portrait */
+    right: 48px;
+    left: auto;
+    /* Reset left for better positioning */
+    width: auto;
+    /* Let it resize to fit */
+  }
+}
+
+/* Styles for iPad Pro in landscape (1366px and above) */
+@media (min-width: 1366px) and (orientation: landscape) {
+  #google_translate_element {
+    display: block;
+    /* Show on iPad Pro landscape */
+    top: 20px;
+    /* Adjust top position for iPad Pro landscape */
+    right: 40px;
+    left: auto;
+    /* Reset left for better positioning */
+    width: auto;
+    /* Let it resize to fit */
+  }
+}
+
+body {
+  top: 0px !important;
+  /* Prevent the body from shifting down when the translate icon is hidden */
+}
+
+/* Hide the Google icon */
+body .skiptranslate iframe {
+  display: none;
+  /* Hide the iframe that contains the Google icon */
+}
+
+/* Add this to hide the icon */
+body .skiptranslate select {
+  background: none !important;
+  /* Optional: remove background */
+  padding-left: 0 !important;
+  /* Adjust padding if necessary */
+}
+
+/* Optionally hide any specific icon class if it has a unique identifier */
+body .skiptranslate .g-icon {
+  display: none !important;
+  /* Adjust this selector as needed */
+}
+
+body .skiptranslate img[src*='google'] {
+  display: none !important;
+  /* Hides the Google image */
+}
+
+#google_translate_element select {
+  width: 250px !important;
+  /* Set the desired width */
+  height: 40px !important;
+  /* Set the desired height */
+  font-size: 16px !important;
+  /* Set the desired font size */
+}
+
+/* Optionally, increase the dropdown's padding */
+#google_translate_element select option {
+  padding: 160px !important;
+  /* Adjust the padding for options */
+}
+
+#google_translate_element select {
+  min-height: 600px !important;
+  /* Set a minimum height */
+}
+
+body>.skiptranslate>iframe.skiptranslate {
+  width: 250px !important;
+  /* Adjust width of the iframe */
+  height: 50px !important;
+  /* Adjust height of the iframe */
+}
+
+.goog-te-gadget-simple {
+  background-color: #ffffff !important;
+  border: 1px solid #ced4da !important;
+  border-radius: 0.25rem !important;
+  padding: 0.375rem 0.75rem !important;
+  font-size: 1rem !important;
+  line-height: 1.5 !important;
+  color: #495057 !important;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out !important;
+  margin-top: -10px;
+}
+
+@media (max-width: 768px) {
+  #google_translate_element {
+    /* top: 10px;
+    right: 10px; */
+    right: 30px;
+    top: 8px;
+  }
+
+  .goog-te-gadget-simple {
+    font-size: 0.875rem !important;
+    padding: 0.25rem 0.5rem !important;
+    margin-right: 30px;
+    margin-top: 4px;
+  }
+}
+
+/* .spinner-custom {
+  width: 15rem; 
+  height: 15rem; 
+} */
+.image-box {
+  width: 120%;
+  /* Responsive width */
+  /* padding-top: 150%;  */
+  position: relative;
+  background-color: #f0f0f0;
+  /* Light gray background */
+  border: 2px solid #ccc;
+  /* Border around the box */
+  border-radius: 8px;
+  /* Rounded corners */
+  overflow: hidden;
+  /* Ensures the image stays within the box */
+}
+
+.image-content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: cover;
+  /* Ensures the image covers the box area without distortion */
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}

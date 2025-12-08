@@ -1,0 +1,467 @@
+/* Main Scanner Styles */
+.omr-scanner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+  
+  .scanner-header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+  
+  .scanner-header h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #2563eb, #4f46e5);
+    margin-bottom: 0.5rem;
+  }
+  
+  .scanner-header p {
+    color: #6b7280;
+    font-size: 1.1rem;
+  }
+  
+  /* Progress Steps */
+  .progress-steps {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 3rem;
+    position: relative;
+  }
+  
+  .progress-steps::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: #e5e7eb;
+    z-index: 1;
+  }
+  
+  .step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0 2rem;
+    position: relative;
+    z-index: 2;
+  }
+  
+  .step-icon {
+    width: 48px;
+    height: 48px;
+    background: white;
+    border: 2px solid #e5e7eb;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 0.5rem;
+    transition: all 0.3s ease;
+    color: #6b7280;
+  }
+  
+  .step.active .step-icon {
+    border-color: #2563eb;
+    color: #2563eb;
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+  }
+  
+  .step.completed .step-icon {
+    background: #2563eb;
+    border-color: #2563eb;
+    color: white;
+  }
+  
+  /* Upload Area */
+  .upload-area {
+    border: 2px dashed #e5e7eb;
+    border-radius: 1rem;
+    padding: 3rem;
+    text-align: center;
+    transition: all 0.3s ease;
+    background: #f9fafb;
+  }
+  
+  .upload-area.dragging {
+    border-color: #2563eb;
+    background: #eff6ff;
+  }
+  
+  .upload-icon {
+    color: #2563eb;
+    margin-bottom: 1.5rem;
+  }
+  
+  .upload-area h3 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+  
+  .upload-area p {
+    color: #6b7280;
+    margin-bottom: 2rem;
+  }
+  
+  .file-input {
+    display: none;
+  }
+  
+  .upload-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    background: #2563eb;
+    color: white;
+    border-radius: 0.5rem;
+    border: none;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  
+  .upload-button:hover {
+    background: #1d4ed8;
+    transform: translateY(-1px);
+  }
+  
+  /* Processing Screen */
+  .processing-screen {
+    text-align: center;
+    padding: 3rem;
+  }
+  
+  .processing-icon {
+    color: #2563eb;
+    animation: spin 2s linear infinite;
+  }
+  
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+  
+  .progress-bar {
+    width: 100%;
+    max-width: 400px;
+    height: 6px;
+    background: #e5e7eb;
+    border-radius: 3px;
+    margin: 2rem auto;
+    overflow: hidden;
+  }
+  
+  .progress-fill {
+    height: 100%;
+    background: #2563eb;
+    width: 66%;
+    border-radius: 3px;
+    animation: progress 1.5s ease infinite;
+  }
+  
+  @keyframes progress {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(150%); }
+  }
+  
+  /* Results */
+  .results-container {
+    animation: fadeIn 0.3s ease;
+  }
+  
+  .results-card {
+    background: white;
+    border-radius: 1rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    overflow: hidden;
+  }
+  
+  .results-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid #e5e7eb;
+  }
+  
+  .results-header h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+  }
+  
+  .results-header p {
+    color: #6b7280;
+  }
+  
+  .responses-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 1rem;
+    padding: 1.5rem;
+  }
+  
+  .response-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem;
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+    transition: all 0.2s ease;
+  }
+  
+  .response-item:hover {
+    border-color: #2563eb;
+    transform: translateY(-1px);
+  }
+  
+  .question-number {
+    color: #6b7280;
+    font-size: 0.875rem;
+  }
+  
+  .selected-option {
+    font-weight: 600;
+    color: #2563eb;
+  }
+  
+  .action-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 2rem;
+  }
+  
+  .action-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    border: none;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  
+  .action-button:hover {
+    transform: translateY(-1px);
+  }
+  
+  .action-button.primary {
+    background: #2563eb;
+    color: white;
+  }
+  
+  .action-button.primary:hover {
+    background: #1d4ed8;
+  }
+  
+  .action-button.secondary {
+    background: #4b5563;
+    color: white;
+  }
+  
+  .action-button.secondary:hover {
+    background: #374151;
+  }
+  
+  /* Auth Modal Styles */
+  /* [Previous styles remain unchanged until Auth Modal section] */
+  
+  /* Auth Modal Styles */
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    animation: fadeIn 0.2s ease;
+  }
+  
+  .omr-modal {
+    background: white;
+    border-radius: 8px;
+    width: 100%;
+    max-width: 400px;
+    padding: 24px;
+    position: relative;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    animation: slideIn 0.3s ease;
+  }
+  
+  .close-button {
+    position: absolute;
+    right: 16px;
+    top: 16px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #666;
+  }
+  
+  .omrModalHeader {
+    text-align: center;
+    margin-bottom: 32px;
+  }
+  
+  .omrModalHeader h2 {
+    font-size: 24px;
+    font-weight: 600;
+    color: #111;
+    margin-bottom: 8px;
+  }
+  
+  .omrModalHeader p {
+    color: #666;
+    font-size: 14px;
+  }
+  
+  .auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  .input-group {
+    position: relative;
+  }
+  
+  .input-icon {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #666;
+    pointer-events: none;
+  }
+  
+  .auth-input {
+    width: 80%;
+    padding: 16px 16px 16px 48px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 14px;
+    background: #fafafa;
+  }
+  
+  .auth-input::placeholder {
+    color: #666;
+  }
+  
+  .auth-input:focus {
+    outline: none;
+    border-color: #2563eb;
+    background: white;
+    box-shadow: none;
+  }
+  
+  .password-toggle {
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #666;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .omrButton {
+    background: #2563eb;
+    color: white;
+    border: none;
+    padding: 16px;
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 8px;
+    width: 100%;
+  }
+  
+  .omrButton:hover {
+    background: #1d4ed8;
+  }
+  
+  .auth-switch {
+    margin-top: 24px;
+    text-align: center;
+    font-size: 14px;
+    color: #666;
+  }
+  
+  .switch-button {
+    background: none;
+    border: none;
+    color: #2563eb;
+    font-weight: 500;
+    cursor: pointer;
+    padding: 0;
+    font-size: 14px;
+  }
+  
+  .switch-button:hover {
+    text-decoration: underline;
+  }
+  
+  /* Update error message styles to match the design */
+  .error-message {
+    color: #dc2626;
+    font-size: 12px;
+    margin-top: 4px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  
+  /* Keep your existing animations */
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  
+  @keyframes slideIn {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  /* Keep your existing responsive styles and update modal-specific ones */
+  @media (max-width: 768px) {
+    .omr-modal {
+      margin: 16px;
+      padding: 20px;
+    }
+    
+    .omrModalHeader h2 {
+      font-size: 20px;
+    }
+    
+    .auth-input {
+      padding: 14px 14px 14px 44px;
+    }
+  }
+  

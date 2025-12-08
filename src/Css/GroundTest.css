@@ -1,0 +1,41 @@
+/* GroundTest.css */
+
+.dataTableSortIcon {
+    color: white !important;
+}
+
+.dataTableHead > div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.dataTableHead > div span::before,
+.dataTableHead > div span::after {
+    content: '';
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+.dataTableHead > div span::before {
+    font-family: "Font Awesome 5 Free"; /* Set the font family */
+    content: "\f0de"; /* Font Awesome up arrow */
+    display: inline-block;
+    color: white; /* Set the color to white */
+}
+
+.dataTableHead > div span::after {
+    font-family: "Font Awesome 5 Free"; /* Set the font family */
+    content: "\f0dd"; /* Font Awesome down arrow */
+    display: inline-block;
+    color: white; /* Set the color to white */
+    margin-left: 4px;
+}
+
+/* Remove original sort indicator */
+.react-data-table__sort-icon {
+    display: none;
+}
