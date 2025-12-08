@@ -186,7 +186,7 @@ const CutOffMaster = () => {
       const castData = response.data.data.castdata?.value?.data || [];
       const categoryList = response.data.data.categoryList?.value?.data || [];
       const data = response.data.data.data?.value?.data || [];
-
+      // const data = response.data.data || [];
       console.log(castData, "castData");
       console.log(categoryList, "categoryList");
       console.log(data, "data");
@@ -503,10 +503,10 @@ const CutOffMaster = () => {
       Object.values(row).some(value => value === "" || value === null || value === undefined)
     );
 
-    if (hasEmptyValues) {
-      toast.warning("Please fill in all cut-off values before submitting!");
-      return;
-    }
+    // if (hasEmptyValues) {
+    //   toast.warning("Please fill in all cut-off values before submitting!");
+    //   return;
+    // }
 
     return apiClient({
       method: "post",
@@ -520,7 +520,7 @@ const CutOffMaster = () => {
       },
     })
       .then((response) => {
-        console.log(response.data.data);
+        console.log(response.data.data,  "insert cut off data");
         toast.success("Cut-Off added successfully!");
         if (response.data?.outcome?.tokens) {
           Cookies.set("UserCredential", response.data.outcome.tokens, {

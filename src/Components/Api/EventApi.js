@@ -7,7 +7,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 
 
-export const getAllRunningEvents = async (menuId) => {
+export const getAllRunningEvents = async (menuId, groupId) => {
   console.log(menuId, "menuId")
   const recruitId = localStorage.getItem("recruitId");
   const UserId = localStorage.getItem("userId");
@@ -19,6 +19,7 @@ export const getAllRunningEvents = async (menuId) => {
         UserId: UserId,
         RecruitId: recruitId,
         eventId: menuId,
+        Group: groupId
       },
     });
     const token = response.data.outcome.tokens;
@@ -124,12 +125,14 @@ export const getAllChestNumbers = async (groupId) => {
   }
 };
 
-export const addRunningEvent = async (runningData) => {
+export const addRunningEvent = async (runningData,groupLeader, otherGroupLeader) => {
   const recruitId = localStorage.getItem("recruitId");
   const UserId = localStorage.getItem("userId");
   const data = {
     userId: UserId,
     RecruitId: recruitId,
+    grpLdrName: groupLeader,
+    addGrpLdrName: otherGroupLeader,
     runningData: runningData,
   };
   try {
@@ -251,6 +254,33 @@ export const getAllGroup = async (categoryId) => {
     }
 
     console.error("Error fetching all chest numbers:", error);
+    const errors = ErrorHandler(error);
+    toast.error(errors);
+    throw error;
+  }
+};
+
+export const getGroupLeader = async (id, candidateId) => {
+  const recruitId = localStorage.getItem("recruitId");
+  const UserId = localStorage.getItem("userId");
+  try {
+    const response = await apiClient({
+      method: "get",
+      url: `Running/GetAllGrpLdr`.toString(),
+      params: {
+        UserId: UserId,
+        RecruitId: recruitId,     
+      },
+    });
+    const token = response.data.outcome.tokens;
+    localStorage.setItem("UserCredential", token);
+    return response.data.data;
+  } catch (error) {
+    if (error.response && error.response.data && error.response.data.outcome) {
+      const token1 = error.response.data.outcome.tokens;
+      Cookies.set("UserCredential", token1, { expires: 7 });
+    }
+    console.error("Error fetching running event:", error);
     const errors = ErrorHandler(error);
     toast.error(errors);
     throw error;

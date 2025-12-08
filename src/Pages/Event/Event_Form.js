@@ -4,13 +4,14 @@ import SignatureCanvas from "react-signature-canvas";
 import { useNavigate, useLocation } from "react-router-dom";
 import Datetime from "react-datetime";
 import "react-datetime/css/react-datetime.css";
-import moment from 'moment'
+
 
 import {
   getAllChestNumbers,
   getAllGroup,
   addRunningEvent,
   getAllRunningEvents,
+  getGroupLeader,
 } from "../../Components/Api/EventApi";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -24,6 +25,9 @@ const Event_Form = () => {
 
   const [chestNoOptions, setChestNoOptions] = useState([]);
   const [allGroup, setAllGroup] = useState([]);
+  const [allGroupLeader, setAllGroupLeader] = useState([]);
+  const [groupLeader, setGroupLeader] = useState("")
+  const [otherLeader, setOtherLeader] = useState("")
   const [groupValue, setGroupValue] = useState(groupId || "");
   const [rows, setRows] = useState(
     Array(10)
@@ -79,6 +83,20 @@ const Event_Form = () => {
     fetchData();
   }, []);
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+
+        const data = await getGroupLeader();
+        console.log(data, "group leader")
+        setAllGroupLeader(data);
+
+      } catch (error) {
+        console.error("Error fetching groups:", error);
+      }
+    };
+    fetchData();
+  }, []);
   // const fetchAllChestNumbers = async (groupId, menuId) => {
   //   try {
   //     const chestNumbers = await getAllChestNumbers(groupId, menuId);
@@ -170,7 +188,7 @@ const Event_Form = () => {
       sigRefs.current = initialRows.map(() => React.createRef());
 
       // Step 6: Fetch running event data for this menu
-      const runningEvents = await getAllRunningEvents(menuId);
+      const runningEvents = await getAllRunningEvents(menuId, groupId);
       console.log(runningEvents, "running events");
       const event = runningEvents.map(data => ({
         Score: data.score,
@@ -204,6 +222,11 @@ const Event_Form = () => {
     setGroupValue(selectedGroup);
     setRows([]); // Clear existing rows
     setChestNoOptions([]); // Clear chest number options
+  };
+
+  const handleGroupLeader = (e) => {
+    const selectedGroup = e.target.value;
+    setGroupLeader(selectedGroup);
   };
 
   // Rest of your handlers remain the same
@@ -333,10 +356,11 @@ const Event_Form = () => {
         grpLdrSignature: groupLeaderSignature,
         inchargeSignature: inchargeSignature,
         eventid: menuId,
+
       }));
 
     try {
-      await addRunningEvent(runningData);
+      await addRunningEvent(runningData, groupLeader, otherLeader);
       // navigate(`/event/${menuId}`);
       navigate(-1);
     } catch (error) {
@@ -762,7 +786,50 @@ const Event_Form = () => {
                       </select>
                     </div>
                   </div>
+
                 }
+                <div className="row mt-3">
+                  <div className="col-lg-3">
+                    <label htmlFor="group" className="fw-bold">
+                      Group Leader
+                    </label>
+                  </div>
+                  <div className="col-lg-3 mt-lg-0 mt-3">
+                    <select
+                      className="form-select"
+                      name="group"
+                      value={groupLeader}
+                      onChange={handleGroupLeader}
+                    >
+                      <option value="" disabled>
+                        Select Group Leader
+                      </option>
+
+                      {allGroupLeader.map((data) => (
+                        <option key={data.um_id} value={data.um_staffname}>
+                          {data.um_staffname}
+                        </option>
+                      ))}
+
+                      {/* Add this */}
+                      <option value="Other">Other</option>
+                    </select>
+
+                  </div>
+                  <div className="col-lg-3 mt-lg-0">
+                    {groupLeader === "Other" && (
+                      <input
+                        type="text"
+                        className="form-control mt-2"
+                        placeholder="Enter group leader name"
+                        value={otherLeader}
+                        onChange={(e) => setOtherLeader(e.target.value)}
+                      />
+                    )}
+
+
+                  </div>
+                </div>
                 {/* <div className="table-responsive"> */}
 
                 <Table striped hover className="border text-left mt-4" >
