@@ -13,10 +13,10 @@ import {
   getAllRunningEvents,
   getGroupLeader,
 } from "../../Components/Api/EventApi";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { duration } from "moment";
-import { data } from "jquery";
+// import { duration } from "moment";
+// import { data } from "jquery";
 
 const Event_Form = () => {
   const location = useLocation();
@@ -62,6 +62,7 @@ const Event_Form = () => {
   const menuId = localStorage.getItem("menuId");
   console.log("menuId", menuId)
   const [alertMessage, setAlertMessage] = useState(null);
+  const recruitName = localStorage.getItem("recruitName");
 
   useEffect(() => {
     if (groupValue) {
@@ -72,10 +73,11 @@ const Event_Form = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        if (!groupId) {
-          const groups = await getAllGroup();
-          setAllGroup(groups);
-        }
+        // if (!groupId) {
+
+        // }
+        const groups = await getAllGroup();
+        setAllGroup(groups);
       } catch (error) {
         console.error("Error fetching groups:", error);
       }
@@ -190,10 +192,23 @@ const Event_Form = () => {
       // Step 6: Fetch running event data for this menu
       const runningEvents = await getAllRunningEvents(menuId, groupId);
       console.log(runningEvents, "running events");
-      const event = runningEvents.map(data => ({
-        Score: data.score,
-        ChestNo: data.ChestNo
-      }));
+      //   const event = runningEvents.map(data => ({
+      //     Score: data.score,
+      //     ChestNo: data.ChestNo,
+
+      //   }
+      //  setGroupLeader(data.GrpLdrName);
+      // ));
+      const event = runningEvents.map((data) => {
+        // set the group leader from each row (or just first row)
+        setGroupLeader(data.GrpLdrName);
+        setGroupValue(data.Group);
+
+        return {
+          Score: data.score,
+          ChestNo: data.ChestNo,
+        };
+      });
       console.log(event, "176")
       // Step 7: Merge existing rows with event data if any
       if (runningEvents.length > 0) {
@@ -429,9 +444,12 @@ const Event_Form = () => {
         }
       </script>
 
-      <h2>Commissioner of Police Thane City</h2>
+      <h2>Commissioner of Police ${recruitName} City</h2>
 
       <h3>Event: ${title}</h3>
+
+      <h3>Group No: ${groupValue}</h3>
+      <h4>Group Leader Name: ${groupLeader ? groupLeader : ""}</h4>
 
       <table>
         <thead>
@@ -762,7 +780,8 @@ const Event_Form = () => {
               </div>
               <div className="card-body pt-3">
                 {
-                  groupId ? "" : <div className="row">
+                  // groupId ? "" : 
+                  <div className="row">
                     <div className="col-lg-3">
                       <label htmlFor="group" className="fw-bold">
                         Group
@@ -812,7 +831,7 @@ const Event_Form = () => {
                       ))}
 
                       {/* Add this */}
-                      <option value="Other">Other</option>
+
                     </select>
 
                   </div>

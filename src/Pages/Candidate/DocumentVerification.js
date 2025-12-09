@@ -498,28 +498,60 @@ const DocumentVerification = () => {
 
                           <label>
                             {doc.DocumentName}
-                            {(doc.DocumentName === "Caste Certificate" &&
-                              castValue !== "Open" &&
-                              castValue !== "OPEN") ||
-                              (catName.includes(doc.DocumentName) &&
+
+                            {(
+                              // ---------- CASTE CERTIFICATE ----------
+                              (doc.DocumentName === "Caste Certificate" &&
+                                castValue !== "Open" &&
+                                castValue !== "OPEN")
+
+                              ||
+
+                              // ---------- NON-CREAMY ----------
+                              (doc.DocumentName === "Non-Creamy Layer Certificate" &&
+                                castValue !== "Open" &&
+                                castValue !== "OPEN" &&
+                                castValue !== "SC" &&
+                                castValue !== "NT-B" &&
+                                castValue !== "NT-C" &&
+                                castValue !== "NT-D")
+
+                              ||
+
+                              // ---------- API Mandatory Logic ----------
+                              (
+                                catName.includes(doc.DocumentName) &&
                                 !(
                                   doc.DocumentName === "Caste Certificate" &&
                                   doc.Addaccess !== "1"
                                 ) &&
                                 !(
                                   doc.DocumentName === "Non-Creamy Layer Certificate" &&
-                                  (castValue === "Open" || castValue === "OPEN" || castValue === "SC" || castValue === "NT-B" || castValue === "NT-C" || castValue === "NT-D")
+                                  (
+                                    castValue === "Open" ||
+                                    castValue === "OPEN" ||
+                                    castValue === "SC" ||
+                                    castValue === "NT-B" ||
+                                    castValue === "NT-C" ||
+                                    castValue === "NT-D"
+                                  )
                                 ) &&
                                 !(
                                   doc.DocumentName === "Non-Creamy Layer Certificate" &&
                                   doc.Addaccess === "1"
-                                )) ? (
+                                )
+                              )
+                            ) ? (
                               <span style={{ color: "red" }}> *</span>
                             ) : null}
+
                             {doc.IsSelected && doc.ExpDocumentDate !== null ? (
                               <span style={{ color: "red" }}>Date is required</span>
                             ) : null}
                           </label>
+
+
+
                         </div>
                         <div className="col-lg-3  mt-lg-0 mt-3">
                           {/* <div className="form-group">

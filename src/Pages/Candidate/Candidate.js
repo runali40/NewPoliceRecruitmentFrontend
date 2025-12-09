@@ -2796,13 +2796,13 @@ const Candidate = () => {
                       DutyName === "null") && (
                         <button
                           onClick={handleDocValidationClick}
-                          disabled={
-                            !candidateId ||
-                            documentUploaded === "True" ||
-                            (documentUploaded === "False" &&
-                              appealStatus !== "Approved") ||
-                            measurementStatus === false
-                          }
+                          // disabled={
+                          //   !candidateId ||
+                          //   documentUploaded === "True" ||
+                          //   (documentUploaded === "False" &&
+                          //     appealStatus !== "Approved") ||
+                          //   measurementStatus === false
+                          // }
                           className={`btn btn-primary btn-sm p-2 rounded-4  mx-3 position-relative ${documentUploaded === "True"
                             ? "btn-success"
                             : documentUploaded === "False"
@@ -2822,13 +2822,13 @@ const Candidate = () => {
                       DutyName === "null" ? (
                       <button
                         onClick={handleHeightChestClick}
-                        disabled={
-                          !candidateId ||
-                          documentUploaded === "False" ||
-                          (measurementStatus === false &&
-                            appealStatus !== "Approved") ||
-                          measurementStatus === true
-                        }
+                        // disabled={
+                        //   !candidateId ||
+                        //   documentUploaded === "False" ||
+                        //   (measurementStatus === false &&
+                        //     appealStatus !== "Approved") ||
+                        //   measurementStatus === true
+                        // }
                         className={`btn btn-primary btn-sm p-2 rounded-4 mt-3 mx-3 position-relative ${measurementStatus === true
                           ? "btn-success"
                           : measurementStatus === false

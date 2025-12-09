@@ -125,14 +125,14 @@ export const getAllChestNumbers = async (groupId) => {
   }
 };
 
-export const addRunningEvent = async (runningData,groupLeader, otherGroupLeader) => {
+export const addRunningEvent = async (runningData, groupLeader, otherGroupLeader) => {
   const recruitId = localStorage.getItem("recruitId");
   const UserId = localStorage.getItem("userId");
   const data = {
     userId: UserId,
     RecruitId: recruitId,
-    grpLdrName: groupLeader,
-    addGrpLdrName: otherGroupLeader,
+    grpLdrName: groupLeader === "Other" ? otherGroupLeader : groupLeader,
+    // addGrpLdrName: otherGroupLeader,
     runningData: runningData,
   };
   try {
@@ -269,7 +269,7 @@ export const getGroupLeader = async (id, candidateId) => {
       url: `Running/GetAllGrpLdr`.toString(),
       params: {
         UserId: UserId,
-        RecruitId: recruitId,     
+        RecruitId: recruitId,
       },
     });
     const token = response.data.outcome.tokens;
