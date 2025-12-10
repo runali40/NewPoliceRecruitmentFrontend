@@ -239,30 +239,100 @@ const DocumentVerification = () => {
     reader.readAsDataURL(file);
   };
 
+  // const CompleteDocumentVerification = () => {
+
+
+  //   const recruitId = localStorage.getItem("recruitId");
+  //   const UserId = localStorage.getItem("userId");
+  //   let signature = null;
+  //   if (documentSignRef.current && !documentSignRef.current.isEmpty()) {
+  //     signature = documentSignRef.current.getTrimmedCanvas().toDataURL("image/png");
+  //   }
+  //   // Ensure mandatory fields have values
+  //   if (submitLater === undefined || submitLater === null || submitLater === "") {
+  //     toast.warning("Please specify whether to submit documents later.");
+  //     return;
+  //   }
+
+  //   if (castValue !== "Open" && (allowFromOpen === undefined || allowFromOpen === null || allowFromOpen === "")) {
+  //     toast.warning("Please select allow from open field!");
+  //     return;
+  //   }
+
+  //   console.log("Current documents state:", documents); // Check full documents list
+
+  //   // Filter the checked documents
+  //   const checkedDocuments = documents.filter((doc) => doc.IsSelected);
+
+  //   console.log("Checked Documents:", checkedDocuments); // Verify selected documents
+
+  //   if (checkedDocuments.length === 0) {
+  //     toast.warning("Please select at least one document");
+  //     return;
+  //   }
+
+  //   // Check if 'allow from open' is "1" and 'Caste Certificate' is selected
+  //   const isCasteCertificateSelected = checkedDocuments.some((doc) => doc.DocumentName === "Caste Certificate");
+
+  //   if (allowFromOpen === "1" && isCasteCertificateSelected) {
+  //     toast.warning("Please select only one: Either 'Allow from Open' or 'Caste Certificate'.");
+  //     return;
+  //   }
+  //   // if (signature === null) {
+  //   //   toast.warning("Please enter a signature");
+  //   //   return;
+  //   // }
+  //   const data = {
+  //     UserId: UserId,
+  //     RecruitId: recruitId,
+  //     CandidateId: candidateId.toString(),
+  //     CategoryName: parallelReservation,
+  //     documentsubmitlater: submitLater, // Always mandatory
+  //     Signature: signature,
+  //     allowFromOpen: castValue === "Open" ? null : allowFromOpen, // Mandatory only if castValue !== "Open"
+  //     DocumentData: checkedDocuments.map((doc) => ({
+  //       DocumentName: doc.DocumentName,
+  //       Document: doc.file || "No File", // Debugging: Show if `file` is missing
+  //       FileName: doc.fileName || doc.DocumentName, // Ensure file name is included
+  //       CategoryName: parallelReservation,
+  //       Status: "1",
+  //       documentValidateDate: doc.documentValidateDate || null,
+  //     })),
+  //   };
+
+  //   console.log("Final Data Payload:", data); // Verify the final object
+
+  //   uploadDocuments(data, navigate, candidateId, setIsDocumentUpload, isDocumentUpload);
+  // };
+
   const CompleteDocumentVerification = () => {
+
     const recruitId = localStorage.getItem("recruitId");
     const UserId = localStorage.getItem("userId");
+
     let signature = null;
     if (documentSignRef.current && !documentSignRef.current.isEmpty()) {
       signature = documentSignRef.current.getTrimmedCanvas().toDataURL("image/png");
     }
+
     // Ensure mandatory fields have values
     if (submitLater === undefined || submitLater === null || submitLater === "") {
       toast.warning("Please specify whether to submit documents later.");
       return;
     }
 
-    if (castValue !== "Open" && (allowFromOpen === undefined || allowFromOpen === null || allowFromOpen === "")) {
+    if (
+      castValue !== "Open" &&
+      (allowFromOpen === undefined ||
+        allowFromOpen === null ||
+        allowFromOpen === "")
+    ) {
       toast.warning("Please select allow from open field!");
       return;
     }
 
-    console.log("Current documents state:", documents); // Check full documents list
-
     // Filter the checked documents
     const checkedDocuments = documents.filter((doc) => doc.IsSelected);
-
-    console.log("Checked Documents:", checkedDocuments); // Verify selected documents
 
     if (checkedDocuments.length === 0) {
       toast.warning("Please select at least one document");
@@ -270,38 +340,56 @@ const DocumentVerification = () => {
     }
 
     // Check if 'allow from open' is "1" and 'Caste Certificate' is selected
-    const isCasteCertificateSelected = checkedDocuments.some((doc) => doc.DocumentName === "Caste Certificate");
+    const isCasteCertificateSelected = checkedDocuments.some(
+      (doc) => doc.DocumentName === "Caste Certificate"
+    );
 
     if (allowFromOpen === "1" && isCasteCertificateSelected) {
-      toast.warning("Please select only one: Either 'Allow from Open' or 'Caste Certificate'.");
+      toast.warning(
+        "Please select only one: Either 'Allow from Open' or 'Caste Certificate'."
+      );
       return;
     }
-    // if (signature === null) {
-    //   toast.warning("Please enter a signature");
-    //   return;
-    // }
+
+    // ⭐ Check missing mandatory documents (coming from setCatName)
+
+    const missingMandatory = catName.filter(
+      mand => !checkedDocuments.some(doc => doc.DocumentName === mand)
+    );
+    if (missingMandatory.length > 0) {
+      const confirmContinue = window.confirm(
+        `${missingMandatory.join(", ")} are pending.\nDo you want to continue?`
+      );
+      if (!confirmContinue) return;
+    }
+
     const data = {
       UserId: UserId,
       RecruitId: recruitId,
       CandidateId: candidateId.toString(),
       CategoryName: parallelReservation,
-      documentsubmitlater: submitLater, // Always mandatory
+      documentsubmitlater: submitLater,
       Signature: signature,
-      allowFromOpen: castValue === "Open" ? null : allowFromOpen, // Mandatory only if castValue !== "Open"
+      allowFromOpen: castValue === "Open" ? null : allowFromOpen,
       DocumentData: checkedDocuments.map((doc) => ({
         DocumentName: doc.DocumentName,
-        Document: doc.file || "No File", // Debugging: Show if `file` is missing
-        FileName: doc.fileName || doc.DocumentName, // Ensure file name is included
+        Document: doc.file || "No File",
+        FileName: doc.fileName || doc.DocumentName,
         CategoryName: parallelReservation,
         Status: "1",
         documentValidateDate: doc.documentValidateDate || null,
       })),
     };
 
-    console.log("Final Data Payload:", data); // Verify the final object
-
-    uploadDocuments(data, navigate, candidateId, setIsDocumentUpload, isDocumentUpload);
+    uploadDocuments(
+      data,
+      navigate,
+      candidateId,
+      setIsDocumentUpload,
+      isDocumentUpload
+    );
   };
+
 
   const handleViewDocument = (base64String) => {
     if (base64String) {

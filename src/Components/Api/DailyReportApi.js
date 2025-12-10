@@ -28,7 +28,7 @@ export const fetchDailyReports = async (params, setCandidateData) => {
     }
 };
 
-export const fetchAll100Meter = async (eventId, groupId) => {
+export const fetchAll100Meter = async (eventId, groupId, parallelReservation, cast) => {
     const recruitId = localStorage.getItem("recruitId");
     const UserId = localStorage.getItem("userId");
     const params = {
@@ -37,7 +37,9 @@ export const fetchAll100Meter = async (eventId, groupId) => {
         RecruitId: recruitId,
         // Eventid: "1bce2267-2e13-46dd-8ade-2825c79012e1",
         Eventid: eventId,
-        Groupid: groupId
+        Groupid: groupId,
+        ParallelReservation: parallelReservation,
+        Cast: cast
     };
     try {
         const response = await apiClient({
@@ -47,7 +49,7 @@ export const fetchAll100Meter = async (eventId, groupId) => {
         });
         const candidateData = response.data.data;
         // setCandidateData(candidateData);
-        
+
         const token1 = response.data.outcome.tokens;
         Cookies.set("UserCredential", token1, { expires: 7 });
         return candidateData;
@@ -62,7 +64,7 @@ export const fetchAll100Meter = async (eventId, groupId) => {
     }
 };
 
-export const fetchAll800Meter = async (eventId, groupId) => {
+export const fetchAll800Meter = async (eventId, groupId, parallelReservation, cast) => {
     const recruitId = localStorage.getItem("recruitId");
     const UserId = localStorage.getItem("userId");
     const params = {
@@ -71,7 +73,9 @@ export const fetchAll800Meter = async (eventId, groupId) => {
         RecruitId: recruitId,
         // Eventid: "86b9d4ad-bd1b-4a45-bf58-d921bb358ee5"
         Eventid: eventId,
-        Groupid: groupId
+        Groupid: groupId,
+        ParallelReservation: parallelReservation,
+        Cast: cast
     };
     try {
         const response = await apiClient({
@@ -80,7 +84,7 @@ export const fetchAll800Meter = async (eventId, groupId) => {
             url: `CandidateDailyReport/Get800meterAll`,
         });
         const candidateData = response.data.data;
-        
+
         // setCandidateData(candidateData);
         const token1 = response.data.outcome.tokens;
         Cookies.set("UserCredential", token1, { expires: 7 });
@@ -96,7 +100,7 @@ export const fetchAll800Meter = async (eventId, groupId) => {
     }
 };
 
-export const fetchAll1600Meter = async (eventId, groupId) => {
+export const fetchAll1600Meter = async (eventId, groupId, parallelReservation, cast) => {
     const recruitId = localStorage.getItem("recruitId");
     const UserId = localStorage.getItem("userId");
     const params = {
@@ -105,7 +109,9 @@ export const fetchAll1600Meter = async (eventId, groupId) => {
         RecruitId: recruitId,
         // Eventid: "9f0177f5-42ff-430e-8ed5-1a48517d2197"
         Eventid: eventId,
-        Groupid: groupId
+        Groupid: groupId,
+        ParallelReservation: parallelReservation,
+        Cast: cast
     };
     try {
         const response = await apiClient({
@@ -114,7 +120,7 @@ export const fetchAll1600Meter = async (eventId, groupId) => {
             url: `CandidateDailyReport/Get1600meterAll`,
         });
         const candidateData = response.data.data;
-        
+
         // setCandidateData(candidateData);
         const token1 = response.data.outcome.tokens;
         Cookies.set("UserCredential", token1, { expires: 7 });
@@ -130,7 +136,7 @@ export const fetchAll1600Meter = async (eventId, groupId) => {
     }
 };
 
-export const fetchAllShotput = async (eventId, groupId) => {
+export const fetchAllShotput = async (eventId, groupId, parallelReservation, cast) => {
     const recruitId = localStorage.getItem("recruitId");
     const UserId = localStorage.getItem("userId");
     const params = {
@@ -139,7 +145,9 @@ export const fetchAllShotput = async (eventId, groupId) => {
         RecruitId: recruitId,
         // Eventid: "a551671a-ec99-4d5f-8231-bab05c679342"
         Eventid: eventId,
-        Groupid: groupId
+        Groupid: groupId,
+        ParallelReservation: parallelReservation,
+        Cast: cast
     };
     try {
         const response = await apiClient({
@@ -148,7 +156,7 @@ export const fetchAllShotput = async (eventId, groupId) => {
             url: `CandidateDailyReport/GetShotPutAll`,
         });
         const candidateData = response.data.data;
-        
+
         // setCandidateData(candidateData);
         const token1 = response.data.outcome.tokens;
         Cookies.set("UserCredential", token1, { expires: 7 });
@@ -164,14 +172,16 @@ export const fetchAllShotput = async (eventId, groupId) => {
     }
 };
 
-export const fetchAllReport = async (groupId) => {
+export const fetchAllReport = async (groupId, parallelReservation, cast) => {
     const recruitId = localStorage.getItem("recruitId");
     const UserId = localStorage.getItem("userId");
     const params = {
 
         UserId: UserId,
         RecruitId: recruitId,
-        Groupid: groupId
+        Groupid: groupId,
+        ParallelReservation: parallelReservation,
+        Cast: cast
         // Eventid: "a551671a-ec99-4d5f-8231-bab05c679342"
     };
     try {
@@ -181,7 +191,7 @@ export const fetchAllReport = async (groupId) => {
             url: `CandidateDailyReport/GetAllEventData`,
         });
         const candidateData = response.data.data;
-        
+
         // setCandidateData(candidateData);
         const token1 = response.data.outcome.tokens;
         Cookies.set("UserCredential", token1, { expires: 7 });
@@ -200,7 +210,7 @@ export const fetchAllReport = async (groupId) => {
 export const GetCategory = async (groupId) => {
     const recruitId = localStorage.getItem("recruitId");
     const UserId = localStorage.getItem("userId");
-   
+
     const params = {
         UserId: UserId,
         RecruitId: recruitId,
@@ -210,10 +220,10 @@ export const GetCategory = async (groupId) => {
         const response = await apiClient({
             method: "get",
             params: params,
-            url:  `CategoryDocPrivilege/GetCategoryName`,
+            url: `CategoryDocPrivilege/GetCategoryName`,
         });
         const categoryData = response.data.data;
-        
+
         // setCandidateData(candidateData);
         const token1 = response.data.outcome.tokens;
         Cookies.set("UserCredential", token1, { expires: 7 });
@@ -227,4 +237,77 @@ export const GetCategory = async (groupId) => {
         const errors = ErrorHandler(error);
         toast.error(errors);
     }
+};
+
+export const getReservationCategory = () => {
+    const recruitId = localStorage.getItem("recruitId");
+    const UserId = localStorage.getItem("userId");
+    return apiClient({
+        method: "get",
+        url: `CastCutOffService/GetSubCategory`,
+        params: {
+            UserId: UserId,
+            RecruitId: recruitId,
+            recConfId: recruitId
+        },
+    })
+        .then((response) => {
+            console.log("response all sub category name", response.data.data);
+            const temp = response.data.data;
+            const options = temp.map((data) => ({
+                value: data.Id,
+                label: data.CategoryName,
+            }));
+
+            const token1 = response.data.outcome.tokens;
+            Cookies.set("UserCredential", token1, { expires: 7 });
+            return options;
+        })
+        .catch((error) => {
+            if (error.response && error.response.data && error.response.data.outcome) {
+                const token1 = error.response.data.outcome.tokens;
+                Cookies.set("UserCredential", token1, { expires: 7 });
+            }
+            console.log(error);
+            const errors = ErrorHandler(error);
+            toast.error(errors);
+        });
+};
+
+export const getAllCast = () => {
+    const UserId = localStorage.getItem("userId");
+    return apiClient({
+        method: "get",
+        url: `ParameterValueMaster/GetAll`.toString(),
+        params: {
+            UserId: UserId,
+            pv_parameterid: '562f4f41-1127-4510-968f-08365867759f',
+            pv_isactive: "1",
+        },
+    })
+        .then((response) => {
+            console.log("response all parameter value masters", response.data.data);
+            const token1 = response.data.outcome.tokens;
+            Cookies.set("UserCredential", token1, { expires: 7 });
+            // setOptions(response.data.data.map((item) => ({
+            //     value: item.pv_id,
+            //     label: item.pv_parametervalue,
+            // })))
+            // console.log(options, "84")
+            const temp = response.data.data.map((item) => ({
+                value: item.pv_id,
+                label: item.pv_parametervalue,
+            }));
+            return temp;
+        })
+        .catch((error) => {
+            if (error.response && error.response.data && error.response.data.outcome) {
+                const token1 = error.response.data.outcome.tokens;
+                Cookies.set("UserCredential", token1, { expires: 7 });
+            }
+            console.log(error);
+            const errors = ErrorHandler(error);
+            toast.error(errors);
+            return [];
+        });
 };

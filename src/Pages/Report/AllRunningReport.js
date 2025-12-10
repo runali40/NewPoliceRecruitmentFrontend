@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { fetchAllReport, GetCategory } from '../../Components/Api/DailyReportApi'
+import { fetchAllReport, getAllCast, GetCategory, getReservationCategory } from '../../Components/Api/DailyReportApi'
 import { Table, Button } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import Select from 'react-select'
@@ -10,6 +10,7 @@ import { getAllGroup } from '../../Components/Api/EventApi';
 
 const AllRunningReport = () => {
     const navigate = useNavigate();
+    const recruitName = localStorage.getItem("recruitName");
     const [allRunningReport, setAllRunningReport] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(10); // Initial value
@@ -20,6 +21,10 @@ const AllRunningReport = () => {
     const [groupId, setGroupId] = useState("")
     const [allCategory, setAllCategory] = useState([])
     const [category, setCategory] = useState("")
+    const [allReservationCategory, setAllReservationCategory] = useState([])
+    const [reservationCategory, setReservationCategory] = useState("")
+    const [allCast, setAllCast] = useState([])
+    const [cast, setCast] = useState("")
 
     const headerCellStyle = {
         backgroundColor: "rgb(27, 90, 144)",
@@ -29,10 +34,12 @@ const AllRunningReport = () => {
     useEffect(() => {
         AllReport();
         AllCategory();
+        AllReservationCategory();
+        getAllCastData();
     }, [])
 
     const AllReport = async () => {
-        const data = await fetchAllReport(groupId);
+        const data = await fetchAllReport(groupId, reservationCategory, cast);
         console.log(data)
         setAllRunningReport(data)
     }
@@ -57,7 +64,7 @@ const AllRunningReport = () => {
         setGroup(selectedValue);
         console.log(selectedValue.value, "selected value");
         setGroupId(selectedValue.value)
-        const data = await fetchAllReport(selectedValue.value);
+        const data = await fetchAllReport(selectedValue.label, reservationCategory, cast);
         console.log(data)
         setAllRunningReport(data)
     }
@@ -83,6 +90,38 @@ const AllRunningReport = () => {
         console.log(selectedValue.value, "selected value");
         // setGroupId(selectedValue.value)
         await AllGroup(selectedValue.value)
+    }
+
+    const AllReservationCategory = async () => {
+        const data = await getReservationCategory();
+        console.log(data)
+        setAllReservationCategory(data)
+    }
+
+    const handleReservationCategory = async (selected) => {
+        const selectedValue = selected;
+        setReservationCategory(selectedValue);
+        console.log(selectedValue.value, "selected value");
+        // setGroupId(selectedValue.value)
+        const data = await fetchAllReport(groupId, selectedValue.label, cast);
+        console.log(data)
+        setAllRunningReport(data)
+    }
+
+    const getAllCastData = async () => {
+        const data = await getAllCast();
+        console.log(data)
+        setAllCast(data)
+    }
+
+    const handleCast = async (selected) => {
+        const selectedValue = selected;
+        setCast(selectedValue);
+        console.log(selectedValue.value, "selected value");
+        // setGroupId(selectedValue.value)
+        const data = await fetchAllReport(groupId, reservationCategory, selectedValue.label);
+        console.log(data)
+        setAllRunningReport(data)
     }
 
     const handleSearch = (e) => {
@@ -143,9 +182,7 @@ const AllRunningReport = () => {
         </style>
       </head>
       <body>
-  
         <button class="btn btn-success print-btn" onclick="startPrinting()">Print</button>
-  
         <script>
           function startPrinting() {
             const btn = document.querySelector('.print-btn');
@@ -157,14 +194,17 @@ const AllRunningReport = () => {
           }
         </script>
   
-        <h2>Commissioner of Police Thane City</h2>
-    <h3>Running Reports</h3>
+     <h2>Commissioner of Police ${recruitName} City</h2>
+    <h3> Running Report</h3>
+    <h3>Group No: ${groupId}</h3>
         <table>
           <thead>
             <tr>
               <th>Sr No</th>
               <th>Candidate Name</th>
               <th>Chest Number</th>
+              <th>Cast</th>
+              <th>Parellel Reservation</th>
               <th>100 Meter</th>
               <th>800 Meter</th>
               <th>1600 Meter</th>      
@@ -182,6 +222,8 @@ const AllRunningReport = () => {
           <td>${index + 1}</td>
           <td>${row.CandidateName || ""}</td>
           <td>${row.ChestNo || ""}</td>
+          <td>${row.Cast || ""}</td>    
+          <td>${row["Parallel Reservation"] || ""}</td>
          <td>${row["100 Meter Running"] || ""}</td>
           <td>${row["800 Meter Running"] || ""}</td>
          <td>${row["1600 Meter Running"] || ""}</td>   
@@ -252,6 +294,22 @@ const AllRunningReport = () => {
                                         <h6 className="mb-0">entries</h6>
                                     </div>
 
+                                    <div className="col-lg-3 col-md-3 col-12 mt-3 mt-md-0"></div>
+                                    <div className="col-lg-3 col-md-3 col-12 mt-3 mt-md-0"></div>
+
+                                    <div className="col-lg-3 col-md-3 col-12 mt-3 mt-md-0">
+                                        <input
+                                            className="form-control"
+                                            placeholder="Search here"
+                                            value={searchData}
+                                            onChange={handleSearch}
+                                            style={{ height: "35px" }} // Same height
+                                        />
+                                    </div>
+
+                                </div>
+                                <div className="row mt-4">
+
                                     <div className="col-lg-3 col-md-3 col-12 mt-3 mt-md-0">
                                         <Select
                                             value={category}
@@ -267,6 +325,8 @@ const AllRunningReport = () => {
                                             }}
                                         />
                                     </div>
+
+
 
                                     <div className="col-lg-3 col-md-3 col-12 mt-3 mt-md-0">
                                         <Select
@@ -285,12 +345,33 @@ const AllRunningReport = () => {
                                     </div>
 
                                     <div className="col-lg-3 col-md-3 col-12 mt-3 mt-md-0">
-                                        <input
-                                            className="form-control"
-                                            placeholder="Search here"
-                                            value={searchData}
-                                            onChange={handleSearch}
-                                            style={{ height: "35px" }} // Same height
+                                        <Select
+                                            value={reservationCategory}
+                                            onChange={handleReservationCategory}
+                                            options={allReservationCategory}
+                                            placeholder="Select Reservation"
+                                            styles={{
+                                                control: (provided) => ({
+                                                    ...provided,
+                                                    width: "100%",     // FULL WIDTH
+                                                    minHeight: "35px",
+                                                }),
+                                            }}
+                                        />
+                                    </div>
+                                    <div className="col-lg-3 col-md-3 col-12 mt-3 mt-md-0">
+                                        <Select
+                                            value={cast}
+                                            onChange={handleCast}
+                                            options={allCast}
+                                            placeholder="Select Cast"
+                                            styles={{
+                                                control: (provided) => ({
+                                                    ...provided,
+                                                    width: "100%",     // FULL WIDTH
+                                                    minHeight: "35px",
+                                                }),
+                                            }}
                                         />
                                     </div>
 
@@ -309,6 +390,12 @@ const AllRunningReport = () => {
                                                 Chest No
                                             </th>
                                             <th scope="col" style={headerCellStyle}>
+                                                Cast
+                                            </th>
+                                            <th scope="col" style={headerCellStyle}>
+                                                Parellel Reservation
+                                            </th>
+                                            <th scope="col" style={headerCellStyle}>
                                                 100 Meter
                                             </th>
                                             <th scope="col" style={headerCellStyle}>
@@ -320,6 +407,9 @@ const AllRunningReport = () => {
                                             <th scope="col" style={headerCellStyle}>
                                                 Shot Put
                                             </th>
+                                            <th scope="col" style={headerCellStyle}>
+                                                Score
+                                            </th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -330,10 +420,13 @@ const AllRunningReport = () => {
                                                 </td>
                                                 <td>{data.CandidateName}</td>
                                                 <td>{data.ChestNo}</td>
+                                                <td>{data.Cast}</td>
+                                                <td>{data["Parallel Reservation"]}</td>
                                                 <td>{data["100 Meter Running"]}</td>
                                                 <td>{data["800 Meter Running"]}</td>
                                                 <td>{data["1600 Meter Running"]}</td>
                                                 <td>{data["Shot Put"]}</td>
+                                                <td>{data["Total"]}</td>
                                             </tr>
                                         ))}
                                     </tbody>

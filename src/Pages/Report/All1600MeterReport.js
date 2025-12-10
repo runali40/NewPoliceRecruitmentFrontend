@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { fetchAll1600Meter, GetCategory } from '../../Components/Api/DailyReportApi'
+import { fetchAll1600Meter, getAllCast, GetCategory, getReservationCategory } from '../../Components/Api/DailyReportApi'
 import { Pagination } from '../../Components/Utils/Pagination';
 import { Table, Button } from "react-bootstrap";
 import { useNavigate } from 'react-router-dom';
@@ -18,11 +18,16 @@ const All1600MeterReport = () => {
   const [groupId, setGroupId] = useState("")
   const [allCategory, setAllCategory] = useState([])
   const [category, setCategory] = useState("")
+  const [allReservationCategory, setAllReservationCategory] = useState([])
+  const [reservationCategory, setReservationCategory] = useState("")
+  const [allCast, setAllCast] = useState([])
+  const [cast, setCast] = useState("")
 
   const eventId = localStorage.getItem("menuId")
   console.log(eventId, "event id")
   const parentId = localStorage.getItem("parentId")
   console.log(parentId, "parent id")
+  const recruitName = localStorage.getItem("recruitName");
 
   const headerCellStyle = {
     backgroundColor: "rgb(27, 90, 144)",
@@ -36,10 +41,12 @@ const All1600MeterReport = () => {
 
   useEffect(() => {
     AllCategory();
+    AllReservationCategory();
+    getAllCastData();
   }, [])
 
   const Get1600MeterData = async () => {
-    const data = await fetchAll1600Meter(eventId, groupId);
+    const data = await fetchAll1600Meter(eventId, groupId, reservationCategory, cast);
     console.log(data)
     setAll1600MeterReport(data)
   }
@@ -64,33 +71,66 @@ const All1600MeterReport = () => {
     setGroup(selectedValue);
     console.log(selectedValue.value, "selected value");
     setGroupId(selectedValue.value)
-    const data = await fetchAll1600Meter(eventId, selectedValue.value);
+    const data = await fetchAll1600Meter(eventId, selectedValue.value, reservationCategory, cast);
     console.log(data)
     setAll1600MeterReport(data)
   }
 
-    const AllCategory = async () => {
-      try {
-        const data = await GetCategory();
-        console.log("AllCategory Response:", data);
-  
-        const options = data.map((data) => ({
-          value: data.id,
-          label: `${data.CategoryName} `,
-        }));
-        setAllCategory(options);
-      } catch (error) {
-        console.log("AllCategory Error:", error);
-      }
-    };
-  
-    const handleCategory = async (selected) => {
-      const selectedValue = selected;
-      setCategory(selectedValue);
-      console.log(selectedValue.value, "selected value");
-      // setGroupId(selectedValue.value)
-      await AllGroup(selectedValue.value)
+  const AllCategory = async () => {
+    try {
+      const data = await GetCategory();
+      console.log("AllCategory Response:", data);
+
+      const options = data.map((data) => ({
+        value: data.id,
+        label: `${data.CategoryName} `,
+      }));
+      setAllCategory(options);
+    } catch (error) {
+      console.log("AllCategory Error:", error);
     }
+  };
+
+  const handleCategory = async (selected) => {
+    const selectedValue = selected;
+    setCategory(selectedValue);
+    console.log(selectedValue.value, "selected value");
+    // setGroupId(selectedValue.value)
+    await AllGroup(selectedValue.value)
+  }
+
+
+  const AllReservationCategory = async () => {
+    const data = await getReservationCategory();
+    console.log(data)
+    setAllReservationCategory(data)
+  }
+
+  const handleReservationCategory = async (selected) => {
+    const selectedValue = selected;
+    setReservationCategory(selectedValue);
+    console.log(selectedValue.value, "selected value");
+    // setGroupId(selectedValue.value)
+    const data = await fetchAll1600Meter(eventId, groupId, selectedValue.label, cast);
+    console.log(data)
+    setAll1600MeterReport(data)
+  }
+
+  const getAllCastData = async () => {
+    const data = await getAllCast();
+    console.log(data)
+    setAllCast(data)
+  }
+
+  const handleCast = async (selected) => {
+    const selectedValue = selected;
+    setCast(selectedValue);
+    console.log(selectedValue.value, "selected value");
+    // setGroupId(selectedValue.value)
+    const data = await fetchAll1600Meter(eventId, groupId, reservationCategory, selectedValue.label);
+    console.log(data)
+    setAll1600MeterReport(data)
+  }
 
   const handleSearch = (e) => {
     const searchDataValue = e.target.value.toLowerCase();
@@ -164,14 +204,18 @@ const All1600MeterReport = () => {
           }
         </script>
   
-        <h2>Commissioner of Police Thane City</h2>
+
+     <h2>Commissioner of Police ${recruitName} City</h2>
     <h3>1600 Meter Running Report</h3>
+    <h3>Group No: ${groupId}</h3>
         <table>
           <thead>
             <tr>
               <th>Sr No</th>
               <th>Candidate Name</th>
               <th>Chest Number</th>
+              <th>Cast</th>
+              <th>Parellel Reservation</th>
               <th>Start Time</th>
               <th>End Time</th>
               <th>Duration</th>      
@@ -189,6 +233,8 @@ const All1600MeterReport = () => {
           <td>${index + 1}</td>
           <td>${row.CandidateName || ""}</td>
           <td>${row.ChestNo || ""}</td>
+           <td>${row.Cast || ""}</td>    
+      <td>${row["Parallel Reservation"] || ""}</td>
          <td>${row.StartTime || ""}</td>
          <td>${row.EndTime || ""}</td>
          <td>${row.duration || ""}</td>
@@ -261,6 +307,27 @@ const All1600MeterReport = () => {
                   </div>
 
                   <div className="col-lg-3 col-md-3 col-12 mt-3 mt-md-0">
+
+                  </div>
+
+                  <div className="col-lg-3 col-md-3 col-12 mt-3 mt-md-0">
+
+                  </div>
+
+                  <div className="col-lg-3 col-md-3 col-12 mt-3 mt-md-0">
+                    <input
+                      className="form-control"
+                      placeholder="Search here"
+                      value={searchData}
+                      onChange={handleSearch}
+                      style={{ height: "35px" }} // Same height
+                    />
+                  </div>
+
+                </div>
+                <div className="row mt-4">
+
+                  <div className="col-lg-3 col-md-3 col-12 mt-3 mt-md-0">
                     <Select
                       value={category}
                       onChange={handleCategory}
@@ -275,6 +342,8 @@ const All1600MeterReport = () => {
                       }}
                     />
                   </div>
+
+
 
                   <div className="col-lg-3 col-md-3 col-12 mt-3 mt-md-0">
                     <Select
@@ -293,12 +362,33 @@ const All1600MeterReport = () => {
                   </div>
 
                   <div className="col-lg-3 col-md-3 col-12 mt-3 mt-md-0">
-                    <input
-                      className="form-control"
-                      placeholder="Search here"
-                      value={searchData}
-                      onChange={handleSearch}
-                      style={{ height: "35px" }} // Same height
+                    <Select
+                      value={reservationCategory}
+                      onChange={handleReservationCategory}
+                      options={allReservationCategory}
+                      placeholder="Select Reservation"
+                      styles={{
+                        control: (provided) => ({
+                          ...provided,
+                          width: "100%",     // FULL WIDTH
+                          minHeight: "35px",
+                        }),
+                      }}
+                    />
+                  </div>
+                  <div className="col-lg-3 col-md-3 col-12 mt-3 mt-md-0">
+                    <Select
+                      value={cast}
+                      onChange={handleCast}
+                      options={allCast}
+                      placeholder="Select Cast"
+                      styles={{
+                        control: (provided) => ({
+                          ...provided,
+                          width: "100%",     // FULL WIDTH
+                          minHeight: "35px",
+                        }),
+                      }}
                     />
                   </div>
 
@@ -315,6 +405,12 @@ const All1600MeterReport = () => {
                       </th>
                       <th scope="col" style={headerCellStyle}>
                         Chest No
+                      </th>
+                      <th scope="col" style={headerCellStyle}>
+                        Cast
+                      </th>
+                      <th scope="col" style={headerCellStyle}>
+                        Parellel Reservation
                       </th>
                       <th scope="col" style={headerCellStyle}>
                         Start Time
@@ -338,6 +434,8 @@ const All1600MeterReport = () => {
                         </td>
                         <td>{data.CandidateName}</td>
                         <td>{data.ChestNo}</td>
+                        <td>{data.Cast}</td>
+                        <td>{data["Parallel Reservation"]}</td>
                         <td>{data.StartTime}</td>
                         <td>{data.EndTime}</td>
                         <td>{data.duration}</td>
