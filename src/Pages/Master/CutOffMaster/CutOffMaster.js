@@ -29,6 +29,7 @@ const CutOffMaster = () => {
   const [categoryName, setCategoryName] = useState("")
   const RoleName = localStorage.getItem("RoleName");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isEdited, setIsEdited] = useState(false);
   // Handle changes in cast input fields
   // const handleCastChange = (rowIndex, castIndex, event) => {
   //   const updatedRows = [...categoryRows];
@@ -75,6 +76,7 @@ const CutOffMaster = () => {
   };
 
   const handleCastChange = (rowIndex, castIndex, event) => {
+    setIsEdited(true);
     const updatedRows = [...categoryRows];
 
     // Get the input value from the event
@@ -520,7 +522,7 @@ const CutOffMaster = () => {
       },
     })
       .then((response) => {
-        console.log(response.data.data,  "insert cut off data");
+        console.log(response.data.data, "insert cut off data");
         toast.success("Cut-Off added successfully!");
         if (response.data?.outcome?.tokens) {
           Cookies.set("UserCredential", response.data.outcome.tokens, {
@@ -695,9 +697,9 @@ const CutOffMaster = () => {
       Cookies.set("UserCredential", response.data.outcome.tokens, { expires: 7 });
 
       // Reset form
-      setRatio('');
-      setGroundCutOff('');
-      setWrittenCutOff('');
+      // setRatio('');
+      // setGroundCutOff('');
+      // setWrittenCutOff('');
 
     } catch (error) {
       if (error.response?.data?.outcome) {
@@ -982,6 +984,12 @@ const CutOffMaster = () => {
       console.error("Error:", error);
     }
   };
+  const isAnyInputFilled = categoryRows.some(row =>
+    row.CutOffData.some(cast =>
+      cast.inputValue && cast.inputValue.trim() !== ""
+    )
+  );
+
   return (
     <>
       <div className="container-fluid p-3">
@@ -1289,13 +1297,21 @@ const CutOffMaster = () => {
             </Table>
           </Card.Body>
           <Card.Footer className="text-end">
-            <Button
+            {/* <Button
               className="text-light me-3"
               style={{ backgroundColor: "#1B5A90" }}
               onClick={() => {
 
                 AddCutOff();
               }}
+            >
+              Save
+            </Button> */}
+            <Button
+              className="text-light me-3"
+              style={{ backgroundColor: "#1B5A90" }}
+              disabled={!isEdited}     // ⭐ Save enabled only after edit
+              onClick={AddCutOff}
             >
               Save
             </Button>
