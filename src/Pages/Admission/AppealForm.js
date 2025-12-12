@@ -5,6 +5,7 @@ import { Table } from "react-bootstrap";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { getAllAppeals, submitAppeal } from "../../Components/Api/AppealApi";
+import { ArrowBack } from "@material-ui/icons";
 
 const AppealForm = () => {
 
@@ -75,7 +76,7 @@ const AppealForm = () => {
                       style={{ backgroundColor: "rgb(27, 90, 144)" }}
                       onClick={() => navigate("/candidate")}
                     >
-                      Back
+                      <ArrowBack />
                     </button>
                   </div>
                 </div>
@@ -187,7 +188,7 @@ const AppealForm = () => {
                     style={{ backgroundColor: "rgb(27, 90, 144)" }}
                     onClick={() => navigate("/candidate")}
                   >
-                    Back
+                    <ArrowBack />
                   </button>
                 </div>
               </div>

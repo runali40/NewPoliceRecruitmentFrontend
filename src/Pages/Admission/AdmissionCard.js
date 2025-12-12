@@ -268,85 +268,557 @@ const AdmissionCard = () => {
       </style>
       <style>
         {
+          //           `
+          //          @media print {
+          //   /* Page setup - A4 with minimal margins */
+          //   @page {
+          //     margin: 10mm;
+          //     size: A4 portrait;
+          //   }
+
+          //   /* Reset browser defaults */
+          //   html, body {
+          //     margin: 0 !important;
+          //     padding: 0 !important;
+          //     width: 100% !important;
+          //     height: 100% !important;
+          //   }
+
+          //   /* Hide everything except admit card */
+          //   body * {
+          //     visibility: hidden !important;
+          //   }
+
+          //   #admitCardPrint, 
+          //   #admitCardPrint * {
+          //     visibility: visible !important;
+          //   }
+
+          //   /* Position admit card to fill page */
+          //   #admitCardPrint {
+          //     position: absolute !important;
+          //     top: 0 !important;
+          //     left: 0 !important;
+          //     width: 100% !important;
+          //     margin: 0 !important;
+          //     padding: 15px !important;
+          //     box-sizing: border-box !important;
+          //   }
+
+          //   /* Remove shadows and adjust card spacing */
+          //   .card {
+          //     margin: 0 !important;
+          //     box-shadow: none !important;
+          //     border: 1px solid #ddd !important;
+          //   }
+
+          //   /* Hide print button and back button */
+          //   .btn, button {
+          //     display: none !important;
+          //   }
+
+          //   /* Ensure proper row display */
+          //   .row {
+          //     display: flex !important;
+          //     flex-wrap: wrap !important;
+          //     margin-left: -15px !important;
+          //     margin-right: -15px !important;
+          //     width: calc(100% + 30px) !important;
+          //   }
+
+          //   /* Column widths - maintain Bootstrap grid */
+          //   .col-lg-3, .col-lg-4 {
+          //     width: 33.333% !important;
+          //     flex: 0 0 33.333% !important;
+          //   }
+
+          //   .col-lg-5 {
+          //     width: 41.666% !important;
+          //     flex: 0 0 41.666% !important;
+          //   }
+
+          //   .col-lg-7 {
+          //     width: 58.333% !important;
+          //     flex: 0 0 58.333% !important;
+          //   }
+
+          //   .col-lg-8 {
+          //     width: 66.666% !important;
+          //     flex: 0 0 66.666% !important;
+          //   }
+
+          //   /* Fix main layout - left side 70%, right side 30% */
+          //   .card-body > .row > .col-lg-9 {
+          //     width: 70% !important;
+          //     flex: 0 0 70% !important;
+          //   }
+
+          //   .card-body > .row > .col-lg-3 {
+          //     width: 30% !important;
+          //     flex: 0 0 30% !important;
+          //     position: relative !important;
+          //     top: 0 !important;
+          //   }
+
+          //   .col-lg-6 {
+          //     width: 50% !important;
+          //     flex: 0 0 50% !important;
+          //   }
+
+          //   /* Add padding to columns */
+          //   [class*="col-"] {
+          //     padding-left: 15px !important;
+          //     padding-right: 15px !important;
+          //   }
+
+          //   /* Image sizing for photos */
+          //   .image-box {
+          //     width: 100% !important;
+          //     max-width: 115px !important;
+          //     height: 100px !important;
+          //     object-fit: cover !important;
+          //     border: 2px solid #333 !important;
+          //     display: block !important;
+          //     margin: 0 auto !important;
+          //   }
+
+          //   /* Right side section - chest no and photos */
+          //   .card-body > .row > .col-lg-3 {
+          //     display: flex !important;
+          //     flex-direction: column !important;
+          //     align-items: flex-end !important;
+          //   }
+
+          //   .card-body > .row > .col-lg-3 > .row {
+          //     width: 100% !important;
+          //     margin: 5px 0 !important;
+          //   }
+
+          //   /* Photos row side by side */
+          //   .card-body > .row > .col-lg-3 > .row .col-lg-6 {
+          //     padding: 5px !important;
+          //   }
+
+          //   /* Typography - INCREASED FONT SIZES */
+          //   label {
+          //     font-size: 16px !important;
+          //     line-height: 1.6 !important;
+          //     color: #000 !important;
+          //     font-weight: normal !important;
+          //   }
+
+          //   h4 {
+          //     font-size: 22px !important;
+          //     font-weight: bold !important;
+          //     margin: 15px 0 !important;
+          //     color: #000 !important;
+          //   }
+
+          //   /* Card header styling */
+          //   .card-header {
+          //     padding: 12px 15px !important;
+          //     background-color: #f8f9fa !important;
+          //     border-bottom: 2px solid #333 !important;
+          //   }
+
+          //   .card-body {
+          //     padding: 20px !important;
+          //   }
+
+          //   /* Spacing adjustments */
+          //   .mt-3 {
+          //     margin-top: 15px !important;
+          //   }
+
+          //   .mt-4 {
+          //     margin-top: 20px !important;
+          //   }
+
+          //   /* Text alignment */
+          //   .text-center {
+          //     text-align: center !important;
+          //   }
+
+          //   .text-start {
+          //     text-align: left !important;
+          //   }
+
+          //   .text-end {
+          //     text-align: right !important;
+          //   }
+
+          //   /* Border styling */
+          //   .border {
+          //     border: 1px solid #333 !important;
+          //   }
+
+          //   /* Ensure chest number is prominent */
+          //   .col-lg-3 label b {
+          //     font-weight: bold !important;
+          //     font-size: 20px !important;
+          //   }
+
+          //   /* TOP SECTION - All 3 items in ONE LINE */
+          //   .card-body > .row:first-child {
+          //     display: flex !important;
+          //     flex-wrap: nowrap !important;
+          //     align-items: center !important;
+          //     margin-bottom: 0 !important;
+          //   }
+
+          //   .card-body > .row:first-child > .col-lg-4 {
+          //     width: 33.333% !important;
+          //     flex: 0 0 33.333% !important;
+          //     margin-top: 0 !important;
+          //   }
+
+          //   /* APPLICATION NO ROW - Second row */
+          //   .card-body > .row:nth-child(2) {
+          //     display: flex !important;
+          //     margin-top: 15px !important;
+          //     margin-bottom: 15px !important;
+          //   }
+
+          //   .card-body > .row:nth-child(2) > .col-lg-4 {
+          //     width: 33.333% !important;
+          //     flex: 0 0 33.333% !important;
+          //   }
+
+          //   /* Background colors */
+          //   .bg-white {
+          //     background-color: #fff !important;
+          //   }
+
+          //   /* Container spacing */
+          //   .container, .container-fluid {
+          //     width: 100% !important;
+          //     padding: 0 !important;
+          //     margin: 0 !important;
+          //   }
+
+          //   /* Prevent page breaks inside important sections */
+          //   .card-body,
+          //   .row {
+          //     page-break-inside: avoid !important;
+          //   }
+
+          //   /* Flex utilities */
+          //   .d-flex {
+          //     display: flex !important;
+          //   }
+
+          //   .gap-3 {
+          //     display: none !important; /* Hide button container */
+          //   }
+          // }
+          //          `
+
           `
- @media print {
+                   @media print {
+            /* Page setup - A4 with minimal margins */
+            @page {
+              margin: 10mm;
+              size: A4 portrait;
+            }
 
-  /* Remove ALL default margins */
-  @page {
-    margin: 0 !important;
-    size: A4;
-  }
+            /* Reset browser defaults */
+            html, body {
+              margin: 0 !important;
+              padding: 0 !important;
+              width: 100% !important;
+              height: 100% !important;
+            }
 
-  /* Remove browser top/left spacing */
-  html, body {
-    margin: 0 !important;
-    padding: 0 !important;
-    width: 100% !important;
-  }
+            /* Hide everything except admit card */
+            body * {
+              visibility: hidden !important;
+            }
 
-  /* Only admit card visible */
-  body * {
-    visibility: hidden !important;
-  }
-  #admitCardPrint, #admitCardPrint * {
-    visibility: visible !important;
-  }
+            #admitCardPrint, 
+            #admitCardPrint * {
+              visibility: visible !important;
+            }
 
-  /* Full page width */
-  #admitCardPrint {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100% !important;
-    padding: 0 !important;
-    margin: 0 !important;
+            /* Position admit card to fill page */
+            #admitCardPrint {
+              position: absolute !important;
+              top: 0 !important;
+              left: 0 !important;
+              width: 100% !important;
+              margin: 0 !important;
+              padding: 15px !important;
+              box-sizing: border-box !important;
+            }
 
-    /* Removed zoom because it was causing shifting */
-    transform: scale(1) !important;
-  }
+            /* Remove shadows and adjust card spacing */
+            .card {
+              margin: 0 !important;
+              box-shadow: none !important;
+              border: 1px solid #ddd !important;
+            }
 
-  /* Prevent Bootstrap collapse */
-  .row {
-    display: flex !important;
-    flex-wrap: nowrap !important;
-    width: 100% !important;
-  }
+            /* Hide print button and back button */
+            .btn, button {
+              display: none !important;
+            }
 
-  /* Columns size */
-  .col-lg-9 {
-    width: 70% !important;
-  }
-  .col-lg-3 {
-    width: 40% !important;
-  }
+            /* Ensure proper row display */
+            .row {
+              display: flex !important;
+              flex-wrap: wrap !important;
+              margin-left: -15px !important;
+              margin-right: -15px !important;
+              width: calc(100% + 30px) !important;
+            }
 
-  .col-lg-5, .col-lg-4, .col-lg-7 {
-    float: left !important;
-    display: block !important;
-  }
+            /* Column widths - maintain Bootstrap grid */
+            .col-lg-3, .col-lg-4 {
+              width: 33.333% !important;
+              flex: 0 0 33.333% !important;
+            }
 
-  /* Photos perfect print */
-  .image-box, img {
-    width: 200px !important;
-    height: 60px !important;
-    object-fit: cover !important;
-    border: 1px solid #000 !important;
-    display: block !important;
-  }
+            .col-lg-5 {
+              width: 41.666% !important;
+              flex: 0 0 41.666% !important;
+            }
 
-  /* Font stabilization */
-  * {
-    font-size: 15px !important;
-    line-height: 20px !important;
-  }
+            .col-lg-7 {
+              width: 58.333% !important;
+              flex: 0 0 58.333% !important;
+            }
 
-  /* Right side values alignment */
-  .text-end {
-    text-align: right !important;
-  }
-}
+            .col-lg-8 {
+              width: 66.666% !important;
+              flex: 0 0 66.666% !important;
+            }
 
- `
+            /* Fix main layout - left side 70%, right side 30% */
+            .card-body > .row > .col-lg-9 {
+              width: 68% !important;
+              flex: 0 0 68% !important;
+            }
+
+            .card-body > .row > .col-lg-3 {
+              width: 32% !important;
+              flex: 0 0 32% !important;
+              position: relative !important;
+              top: 0 !important;
+            }
+
+            /* Personal Information section - proper spacing */
+            .card-body > .row > .col-lg-9 > .row {
+              margin-bottom: 8px !important;
+            }
+
+            .card-body > .row > .col-lg-9 > .row > div {
+              display: inline-block !important;
+            }
+
+            .col-lg-6 {
+              width: 50% !important;
+              flex: 0 0 50% !important;
+            }
+
+            /* Add padding to columns */
+            [class*="col-"] {
+              padding-left: 15px !important;
+              padding-right: 15px !important;
+            }
+
+            /* Image sizing for photos */
+            .image-box {
+              width: 100% !important;
+              max-width: 115px !important;
+              height: 100px !important;
+              object-fit: cover !important;
+              border: 2px solid #333 !important;
+              display: block !important;
+              margin: 0 auto !important;
+            }
+
+            /* Right side section - chest no and photos */
+            .card-body > .row > .col-lg-3 {
+              display: flex !important;
+              flex-direction: column !important;
+              align-items: flex-end !important;
+            }
+
+            .card-body > .row > .col-lg-3 > .row {
+              width: 100% !important;
+              margin: 5px 0 !important;
+            }
+
+            /* Chest No row - keep in one line */
+            .card-body > .row > .col-lg-3 > .row:first-child {
+              display: flex !important;
+              flex-wrap: nowrap !important;
+              align-items: center !important;
+              justify-content: flex-end !important;
+              margin-top: 0 !important;
+            }
+
+            .card-body > .row > .col-lg-3 > .row:first-child > .col-lg-8,
+            .card-body > .row > .col-lg-3 > .row:first-child > .col-lg-4 {
+              width: auto !important;
+              flex: 0 0 auto !important;
+              white-space: nowrap !important;
+            }
+
+            /* Photos row side by side */
+            .card-body > .row > .col-lg-3 > .row .col-lg-6 {
+              padding: 5px !important;
+            }
+
+            /* Typography - INCREASED FONT SIZES */
+            label {
+              font-size: 16px !important;
+              line-height: 1.6 !important;
+              color: #000 !important;
+              font-weight: normal !important;
+            }
+
+            h4 {
+              font-size: 22px !important;
+              font-weight: bold !important;
+              margin: 15px 0 !important;
+              color: #000 !important;
+            }
+
+            /* Card header styling */
+            .card-header {
+              padding: 12px 15px !important;
+              background-color: #f8f9fa !important;
+              border-bottom: 2px solid #333 !important;
+            }
+
+            .card-body {
+              padding: 20px !important;
+            }
+
+            /* Spacing adjustments */
+            .mt-3 {
+              margin-top: 15px !important;
+            }
+
+            .mt-4 {
+              margin-top: 20px !important;
+            }
+
+            /* Text alignment */
+            .text-center {
+              text-align: center !important;
+            }
+
+            .text-start {
+              text-align: left !important;
+            }
+
+            .text-end {
+              text-align: right !important;
+            }
+
+            /* Border styling */
+            .border {
+              border: 1px solid #333 !important;
+            }
+
+            /* Ensure chest number is prominent */
+            .col-lg-3 label b {
+              font-weight: bold !important;
+              font-size: 20px !important;
+            }
+
+            /* TOP SECTION - First 2 items in LINE 1 (Recruitment Year & Port Name) */
+            .card-body > .row:first-child {
+              display: flex !important;
+              flex-wrap: nowrap !important;
+              align-items: flex-start !important;
+              margin-bottom: 10px !important;
+              margin-left: 20px;
+            }
+
+            /* Each top section item */
+            .card-body > .row:first-child > .col-lg-4 {
+              width: 33.333% !important;
+              flex: 0 0 33.333% !important;
+              margin-top: 0 !important;
+            }
+
+            /* Show first 2, hide 3rd */
+            .card-body > .row:first-child > .col-lg-4:nth-child(1),
+            .card-body > .row:first-child > .col-lg-4:nth-child(2) {
+              display: flex !important;
+            }
+
+            .card-body > .row:first-child > .col-lg-4:nth-child(3) {
+              display: none !important;
+            }
+
+            /* Inner rows normal layout */
+            .card-body > .row:first-child .row {
+              display: flex !important;
+              flex-wrap: wrap !important;
+              width: 100% !important;
+            }
+
+            .card-body > .row:first-child .row > div {
+              width: auto !important;
+              padding: 0 5px 0 0 !important;
+            }
+
+            /* APPLICATION NO ROW - LINE 2 */
+            .card-body > .row:nth-child(2) {
+              display: flex !important;
+              margin-top: 0 !important;
+              margin-bottom: 15px !important;
+              flex-wrap: wrap !important;
+            }
+
+            .card-body > .row:nth-child(2) > .col-lg-4 {
+              width: 50% !important;
+              flex: 0 0 50% !important;
+            }
+
+            .card-body > .row:nth-child(2) .row {
+              display: flex !important;
+              flex-wrap: wrap !important;
+            }
+
+            .card-body > .row:nth-child(2) .row > div {
+              width: auto !important;
+              padding: 0 5px 0 0 !important;
+            }
+
+            /* Background colors */
+            .bg-white {
+              background-color: #fff !important;
+            }
+
+            /* Container spacing */
+            .container, .container-fluid {
+              width: 100% !important;
+              padding: 0 !important;
+              margin: 0 !important;
+            }
+
+            /* Prevent page breaks inside important sections */
+            .card-body,
+            .row {
+              page-break-inside: avoid !important;
+            }
+
+            /* Flex utilities */
+            .d-flex {
+              display: flex !important;
+            }
+
+            .gap-3 {
+              display: none !important; /* Hide button container */
+            }
+          }
+                   `
+
+
         }
       </style>
       <div className="container-fluid" /* id="section-to-print" */ id="admitCardPrint">
@@ -400,7 +872,7 @@ const AdmissionCard = () => {
                   <div className="row">
                     <div className="col-lg-4 col-md-4 col-md-4">
                       <div className="row">
-                        <div className="col-lg-7 col-md-7 col-6">
+                        <div className="col-lg-7 col-md-7 col-6 recruitmentYear" >
                           <label htmlFor="recruitmentYear">
                             Recruitment Year:
                           </label>

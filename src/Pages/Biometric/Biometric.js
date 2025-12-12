@@ -205,63 +205,185 @@ const Biometric = () => {
       });
   }, []);
   //capture 1//
-  const CaptureFingerHere1 = () => {
-    const fingerData = new CaptureFinger();
-    const base64Image = fingerData.data.BitmapData;
-    // setFingerImage(base64Image);
+  // const CaptureFingerHere1 = () => {
+  //   const fingerData = new CaptureFinger();
+  //   const base64Image = fingerData.data.BitmapData;
+  //   // setFingerImage(base64Image);
+  //   try {
+  //     const key = CryptoJS.enc.Hex.parse(secretKey);
+  //     const iv = CryptoJS.lib.WordArray.random(16); // AES IV, 16 bytes (128 bits)
+
+  //     // Extract base64 from the data URL
+  //     const base64Image1 = base64Image;
+
+  //     const encryptedFinger = CryptoJS.AES.encrypt(base64Image1, key, { iv });
+  //     const encryptedFingerSrc = `${iv.toString(
+  //       CryptoJS.enc.Hex
+  //     )}:${encryptedFinger.toString()}`;
+
+  //     console.log("Encrypted photo:", encryptedFingerSrc);
+  //     if (
+  //       setFingerImage1(encryptedFingerSrc)
+  //     ) {
+  //       toast.success("Finger Capture Successfully!")
+  //     }
+
+  //     // toast.success("Finger Capture Successfully!")
+  //   } catch (error) {
+  //     console.error("Error during encryption:", error);
+  //   }
+  // };
+  const CaptureFingerHere1 = async () => {
     try {
-      const key = CryptoJS.enc.Hex.parse(secretKey);
-      const iv = CryptoJS.lib.WordArray.random(16); // AES IV, 16 bytes (128 bits)
+      // Show loading toast
+      const loadingToast = toast.loading("Capturing fingerprint...");
 
-      // Extract base64 from the data URL
-      const base64Image1 = base64Image;
+      // Step 1: Capture finger (this is async now)
+      const fingerData = await CaptureFinger(60, 10000);
 
-      const encryptedFinger = CryptoJS.AES.encrypt(base64Image1, key, { iv });
-      const encryptedFingerSrc = `${iv.toString(
-        CryptoJS.enc.Hex
-      )}:${encryptedFinger.toString()}`;
-
-      console.log("Encrypted photo:", encryptedFingerSrc);
-      if (
-        setFingerImage1(encryptedFingerSrc)
-      ) {
-        toast.success("Finger Capture Successfully!")
+      // Step 2: Check if capture was successful
+      if (!fingerData.success || !fingerData.data) {
+        toast.dismiss(loadingToast);
+        toast.error(fingerData.message || "Fingerprint capture failed!");
+        return null;
       }
 
-      // toast.success("Finger Capture Successfully!")
+      // Step 3: Get base64 image from response
+      const base64Image = fingerData.data.BitmapData;
+
+      if (!base64Image) {
+        toast.dismiss(loadingToast);
+        toast.error("No fingerprint image data received!");
+        return null;
+      }
+
+      // Step 4: Encrypt the fingerprint data
+      const key = CryptoJS.enc.Hex.parse(secretKey);
+      const iv = CryptoJS.lib.WordArray.random(16); // 16 bytes IV
+
+      // Encrypt the base64 image
+      const encryptedFinger = CryptoJS.AES.encrypt(base64Image, key, {
+        iv: iv,
+        mode: CryptoJS.mode.CBC,
+        padding: CryptoJS.pad.Pkcs7
+      });
+
+      // Combine IV and encrypted data
+      const encryptedFingerSrc = `${iv.toString(CryptoJS.enc.Hex)}:${encryptedFinger.toString()}`;
+
+      console.log("Encrypted photo:", encryptedFingerSrc);
+
+      // Step 5: Set the encrypted finger image in state
+      setFingerImage1(encryptedFingerSrc);
+
+      // Dismiss loading and show success
+      toast.dismiss(loadingToast);
+      toast.success("Finger captured successfully!");
+
+      // Return the encrypted data for further use
+      return {
+        encrypted: encryptedFingerSrc,
+        raw: base64Image,
+        template: fingerData.data.IsoTemplate || fingerData.data.AnsiTemplate
+      };
+
     } catch (error) {
-      console.error("Error during encryption:", error);
+      console.error("Error during fingerprint capture:", error);
+      toast.error("Error: " + (error.message || "Failed to capture fingerprint"));
+      return null;
     }
   };
+
   //capture 2//
-  const CaptureFingerHere2 = () => {
-    const fingerData = new CaptureFinger();
-    const base64Image = fingerData.data.BitmapData;
-    // setFingerImage(base64Image);
-    try {
-      const key = CryptoJS.enc.Hex.parse(secretKey);
-      const iv = CryptoJS.lib.WordArray.random(16); // AES IV, 16 bytes (128 bits)
+  // const CaptureFingerHere2 = () => {
+  //   const fingerData = new CaptureFinger();
+  //   const base64Image = fingerData.data.BitmapData;
+  //   // setFingerImage(base64Image);
+  //   try {
+  //     const key = CryptoJS.enc.Hex.parse(secretKey);
+  //     const iv = CryptoJS.lib.WordArray.random(16); // AES IV, 16 bytes (128 bits)
 
-      // Extract base64 from the data URL
-      const base64Image1 = base64Image;
+  //     // Extract base64 from the data URL
+  //     const base64Image1 = base64Image;
 
-      const encryptedFinger = CryptoJS.AES.encrypt(base64Image1, key, { iv });
-      const encryptedFingerSrc = `${iv.toString(
-        CryptoJS.enc.Hex
-      )}:${encryptedFinger.toString()}`;
+  //     const encryptedFinger = CryptoJS.AES.encrypt(base64Image1, key, { iv });
+  //     const encryptedFingerSrc = `${iv.toString(
+  //       CryptoJS.enc.Hex
+  //     )}:${encryptedFinger.toString()}`;
 
-      console.log("Encrypted photo:", encryptedFingerSrc);
-      if (
-        setFingerImage2(encryptedFingerSrc)
-      ) {
-        toast.success("Finger Capture Successfully!")
-      }
+  //     console.log("Encrypted photo:", encryptedFingerSrc);
+  //     if (
+  //       setFingerImage2(encryptedFingerSrc)
+  //     ) {
+  //       toast.success("Finger Capture Successfully!")
+  //     }
 
-      // toast.success("Finger Capture Successfully!")
-    } catch (error) {
-      console.error("Error during encryption:", error);
+  //     // toast.success("Finger Capture Successfully!")
+  //   } catch (error) {
+  //     console.error("Error during encryption:", error);
+  //   }
+  // };
+
+  const CaptureFingerHere2 = async () => {
+  try {
+    // Show loading toast
+    const loadingToast = toast.loading("Capturing fingerprint 2...");
+    
+    // Step 1: Capture finger (this is async now)
+    const fingerData = await CaptureFinger(60, 10000);
+    
+    // Step 2: Check if capture was successful
+    if (!fingerData.success || !fingerData.data) {
+      toast.dismiss(loadingToast);
+      toast.error(fingerData.message || "Fingerprint capture failed!");
+      return null;
     }
-  };
+    
+    // Step 3: Get base64 image from response
+    const base64Image = fingerData.data.BitmapData;
+    
+    if (!base64Image) {
+      toast.dismiss(loadingToast);
+      toast.error("No fingerprint image data received!");
+      return null;
+    }
+    
+    // Step 4: Encrypt the fingerprint data
+    const key = CryptoJS.enc.Hex.parse(secretKey);
+    const iv = CryptoJS.lib.WordArray.random(16); // 16 bytes IV
+    
+    // Encrypt the base64 image
+    const encryptedFinger = CryptoJS.AES.encrypt(base64Image, key, { 
+      iv: iv,
+      mode: CryptoJS.mode.CBC,
+      padding: CryptoJS.pad.Pkcs7
+    });
+    
+    // Combine IV and encrypted data
+    const encryptedFingerSrc = `${iv.toString(CryptoJS.enc.Hex)}:${encryptedFinger.toString()}`;
+    
+    console.log("Encrypted photo 2:", encryptedFingerSrc);
+    
+    // Step 5: Set the encrypted finger image in state
+    setFingerImage2(encryptedFingerSrc);
+    
+    // Dismiss loading and show success
+    toast.dismiss(loadingToast);
+    toast.success("Finger 2 captured successfully!");
+    
+    // Return the encrypted data for further use
+    return {
+      encrypted: encryptedFingerSrc,
+      raw: base64Image,
+      template: fingerData.data.IsoTemplate || fingerData.data.AnsiTemplate
+    };
+    
+  } catch (error) {
+    console.error("Error during fingerprint 2 capture:", error);
+    toast.error("Error: " + (error.message || "Failed to capture fingerprint 2"));
+    return null;
+  }
+};
 
   //capture 3//
   const CaptureFingerHere3 = () => {
@@ -1004,7 +1126,7 @@ const Biometric = () => {
                     </div>
                     <div className="row">
                       <div className="col-lg-4 col-md-4 my-3 mt-lg-5 mt-md-0 mt-2 ">
-                        <button className="btn btn-primary mt-1" onClick={() => handleShow()}>Add Multiple Finger</button>
+                       {/* <button className="btn btn-primary mt-1" onClick={() => handleShow()}>Add Multiple Finger</button>*/}
                       </div>
                       <div className="col-lg-4 col-md-4 my-3  mt-lg-0 mt-md-0 mt-2">
 
