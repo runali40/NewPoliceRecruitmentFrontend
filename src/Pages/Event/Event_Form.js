@@ -388,9 +388,9 @@ const Event_Form = () => {
     handleInputChange(index, fieldName, formattedTime);
   };
 
-  const navigateAppeal = (canId, eventName) => {
+  const navigateAppeal = (canId, eventName, eventId) => {
     console.log(canId, "candID")
-    navigate("/appeal", { state: { candidateid: canId, eventName: eventName } });
+    navigate("/appeal", { state: { candidateid: canId, eventName: eventName, eventId: eventId } });
   };
 
   const openPrintWindow = () => {
@@ -1097,7 +1097,7 @@ const Event_Form = () => {
                         </td>
                         <td className="py-4">{row.score}</td>
                         <td>
-                          <button className="btn btn-success btn-sm mt-2 appeal-button" onClick={() => navigateAppeal(row.CandidateID, row.EventName)}>Appeal</button>
+                          <button className="btn btn-success btn-sm mt-2 appeal-button" onClick={() => navigateAppeal(row.CandidateID, row.EventName, row.EventId)}>Appeal</button>
                         </td>
                       </tr>
                     ))}

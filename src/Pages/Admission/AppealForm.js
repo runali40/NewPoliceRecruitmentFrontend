@@ -47,7 +47,7 @@ const AppealForm = () => {
   const SubmitFun = async (data) => {
     const candId = state.candidateid;
     try {
-      const response = await submitAppeal(data, candId, approvedData, state.eventName);
+      const response = await submitAppeal(data, candId, approvedData, state.eventName, state.eventId);
       console.log(approvedData, "approved Data")
       toast.success(response.outcome.outcomeDetail);
       reset();
@@ -99,7 +99,7 @@ const AppealForm = () => {
 
                           </div>
                         </div>
-                        <div className="col-lg-2">
+                        <div className="col-lg-2  mt-lg-0 mt-md-3 mt-3">
                           <label htmlFor="ApprovedBy">Approved by</label>
                         </div>
                         <div className="col-lg-4 mt-lg-0 mt-md-0 mt-3">

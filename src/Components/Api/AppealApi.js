@@ -45,7 +45,7 @@ import 'react-toastify/dist/ReactToastify.css';
 //     }
 //   }
 // };
-export const submitAppeal = async (data, candId, approvedData, eventName) => {
+export const submitAppeal = async (data, candId, approvedData, eventName, eventId) => {
   const recruitId = localStorage.getItem("recruitId");
   const UserId = localStorage.getItem("userId");
 
@@ -63,7 +63,8 @@ export const submitAppeal = async (data, candId, approvedData, eventName) => {
     Date: moment(data.Date).format("YYYY-MM-DD"),
     Remark: data.Remark,
     status: approvedData,
-    Stage: eventName
+    Stage: eventName,
+    eventId: eventId
   };
 
   try {

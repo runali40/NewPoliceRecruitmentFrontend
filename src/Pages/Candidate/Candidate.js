@@ -32,7 +32,7 @@ const Candidate = () => {
   const [filterStatus, setFilterStatus] = useState("");
   const [recruitmentValue, setRecruitmentValue] = useState("");
   const [allRecruitment, setAllRecruitment] = useState([]);
-  const [documentUploaded, setDocumentUploaded] = useState();
+  const [documentUploaded, setDocumentUploaded] = useState("");
   const [recruitmentYear, setRecruitmentYear] = useState("");
   const [officeName, setOfficeName] = useState("");
   const [portName, setPortName] = useState("");
@@ -80,11 +80,11 @@ const Candidate = () => {
   const [projectSick, setProjectSick] = useState("");
   const [exExamination, setExExamination] = useState("");
   const [earthquakeAttacked, setEarthquakeAttacked] = useState("");
-  const [data, setData] = useState(false);
+  // const [data, setData] = useState(false);
   const [selectedValue, setSelectedValue] = useState(CandidateId || null);
-  const [selectedCompletedValue, setSelectedCompletedValue] = useState(CandidateId || null);
-  const [selectedPendingValue, setSelectedPendingValue] = useState(CandidateId || null);
-  const [isMeasurementPass, setIsMeasurementPass] = useState(null);
+  // const [selectedCompletedValue, setSelectedCompletedValue] = useState(CandidateId || null);
+  // const [selectedPendingValue, setSelectedPendingValue] = useState(CandidateId || null);
+  // const [isMeasurementPass, setIsMeasurementPass] = useState(null);
   const [measurementStatus, setMeasurementStatus] = useState();
   const [biometricStatus, setBiometricStatus] = useState();
   const [orphan, setOrphan] = useState("");

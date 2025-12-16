@@ -305,6 +305,65 @@ const DocumentVerification = () => {
   //   uploadDocuments(data, navigate, candidateId, setIsDocumentUpload, isDocumentUpload);
   // };
 
+  const isMandatoryDoc = (doc) => {
+
+    // ✅ If allow from open is selected → skip caste & non-creamy
+    if (
+      allowFromOpen === "1" &&
+      (
+        doc.DocumentName === "Caste Certificate" ||
+        doc.DocumentName === "Non-Creamy Layer Certificate"
+      )
+    ) {
+      return false;
+    }
+
+    // ---------- CASTE CERTIFICATE ----------
+    if (
+      doc.DocumentName === "Caste Certificate" &&
+      castValue !== "Open" &&
+      castValue !== "OPEN"
+    ) return true;
+
+    // ---------- NON-CREAMY ----------
+    if (
+      doc.DocumentName === "Non-Creamy Layer Certificate" &&
+      castValue !== "Open" &&
+      castValue !== "OPEN" &&
+      castValue !== "SC" &&
+      castValue !== "NT-B" &&
+      castValue !== "NT-C" &&
+      castValue !== "NT-D" &&
+      doc.Addaccess !== "1"
+    ) return true;
+
+    // ---------- API Mandatory ----------
+    if (
+      catName.includes(doc.DocumentName) &&
+      !(
+        doc.DocumentName === "Caste Certificate" &&
+        doc.Addaccess !== "1"
+      ) &&
+      !(
+        doc.DocumentName === "Non-Creamy Layer Certificate" &&
+        (
+          castValue === "Open" ||
+          castValue === "OPEN" ||
+          castValue === "SC" ||
+          castValue === "NT-B" ||
+          castValue === "NT-C" ||
+          castValue === "NT-D"
+        )
+      )
+    ) return true;
+
+    return false;
+  };
+
+  const pendingDocuments = documents
+    .filter(doc => isMandatoryDoc(doc) && !doc.IsSelected)
+    .map(doc => doc.DocumentName);
+
   const CompleteDocumentVerification = () => {
 
     const recruitId = localStorage.getItem("recruitId");
@@ -351,14 +410,23 @@ const DocumentVerification = () => {
       return;
     }
 
+    // Check if 'allow from open' is "1" and 'Non-Creamy Layer Certificate' is selected
+    const isNonCremyLayerSelected = checkedDocuments.some(
+      (doc) => doc.DocumentName === "Non-Creamy Layer Certificate"
+    );
+
+    if (allowFromOpen === "1" && isNonCremyLayerSelected) {
+      toast.warning(
+        "Please select only one: Either 'Allow from Open' or 'Non-Creamy Layer Certificate'."
+      );
+      return;
+    }
+
     // ⭐ Check missing mandatory documents (coming from setCatName)
 
-    const missingMandatory = catName.filter(
-      mand => !checkedDocuments.some(doc => doc.DocumentName === mand)
-    );
-    if (missingMandatory.length > 0) {
+    if (pendingDocuments.length > 0) {
       const confirmContinue = window.confirm(
-        `${missingMandatory.join(", ")} are pending.\nDo you want to continue?`
+        `${pendingDocuments.join(", ")} are pending.\nDo you want to continue?`
       );
       if (!confirmContinue) return;
     }
