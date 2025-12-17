@@ -95,7 +95,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
-  "proxy": "https://policerecruitmentapi.initialinfinity.com",
+  "proxy": "",
   "eslintConfig": {
     "extends": [
       "react-app",
