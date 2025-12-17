@@ -46,10 +46,12 @@ const Event_Form = () => {
         Signature: null, // Initially, no signature
         grpLdrSignature: null,
         inchargeSignature: null,
-        Name: ""
+        Name: "",
+        NoOfAttemp: ""
       }))
   );
   console.log(rows.stage, "stage")
+  console.log(rows.NoOfAttemp, "NoOfAttemp")
   const headerCellStyle = {
     backgroundColor: "rgb(27, 90, 144)",
     color: "#fff",
@@ -395,6 +397,9 @@ const Event_Form = () => {
 
   const openPrintWindow = () => {
     const isShotPut = title.toLowerCase() === "shot put";
+    const isLapEvent =
+      title.toLowerCase() === "1600 meter running" ||
+      title.toLowerCase() === "800 meter running";
 
     let tableHTML = `
     <html>
@@ -460,7 +465,8 @@ const Event_Form = () => {
             ${!isShotPut ? "<th>Start Time</th>" : ""}
             ${!isShotPut ? "<th>End Time</th>" : ""}
             ${!isShotPut ? "<th>Duration</th>" : ""}
-             ${isShotPut ? "<th>Distance 1</th>" : ""}
+            ${isLapEvent ? "<th>Lap</th>" : ""}
+            ${isShotPut ? "<th>Distance 1</th>" : ""}
             ${isShotPut ? "<th>Distance 2</th>" : ""}
             ${isShotPut ? "<th>Distance 3</th>" : ""}
          
@@ -481,6 +487,7 @@ const Event_Form = () => {
       ${!isShotPut ? `<td>${row.StartTime === "00:00:00.00" ? "" : row.StartTime || ""}</td>` : ""}
       ${!isShotPut ? `<td>${row.EndTime === "00:00:00.00" ? "" : row.EndTime || ""}</td>` : ""}
       ${!isShotPut ? `<td>${row.duration || ""}</td>` : ""}
+       ${isLapEvent ? "<td>4</td>" : ""}
       ${isShotPut ? `<td>${row.distance1 || ""}</td>` : ""}
       ${isShotPut ? `<td>${row.distance2 || ""}</td>` : ""}
       ${isShotPut ? `<td>${row.distance3 || ""}</td>` : ""}
@@ -863,6 +870,8 @@ const Event_Form = () => {
                       )}
                       {title.toLowerCase() !== "shot put" && (
                         <th style={headerCellStyle}>End Time</th>)}
+
+
                       {title === "Shot Put" || title.toLowerCase() === "shot put" ? (
                         <>
                           <th style={headerCellStyle}>
@@ -880,12 +889,16 @@ const Event_Form = () => {
                           <th style={headerCellStyle}>
                             Duration
                           </th>
+
                         </>
                       )
                       }
+                      {
+                        title === "1600 Meter Running" || title === "800 Meter Running" ? <th style={headerCellStyle}>Lap</th> : null
+                      }
 
                       <th style={headerCellStyle} className="d-none">Signature</th>
-                      <th style={headerCellStyle} className="clear-button" className="d-none">>Action</th>
+                      <th style={headerCellStyle} className="clear-button d-none">Action</th>
                       <th style={headerCellStyle} className="clear-button">Score</th>
                       <th scope="col" className="appeal-button" style={headerCellStyle}>Appeal</th>
                     </tr>
@@ -906,7 +919,7 @@ const Event_Form = () => {
                         <td className="py-4">{row.Name}</td>
                         {title.toLowerCase() !== "shot put" && (
                           <td className="py-3">
-                            <Datetime
+                            {/* <Datetime
                               dateFormat={false}
                               timeFormat="HH:mm:ss.SSS"
                               value={row.StartTime}
@@ -916,8 +929,22 @@ const Event_Form = () => {
                                 disabled: row.Status === "False" || (row.score && row.Status !== "True"),
                                 style: { overflow: "auto" }
                               }}
+                            /> */}
+                            <Datetime
+                              dateFormat={false}
+                              timeFormat="HH:mm:ss.SSS"
+                              value={row.StartTime}
+                              onChange={(momentObj) =>
+                                handleDateChange(momentObj, index, "StartTime")
+                              }
+                              inputProps={{
+                                readOnly: true,   // ✅ keyboard typing disabled
+                                disabled:
+                                  row.Status === "False" ||
+                                  (row.score && row.Status !== "True"),
+                                style: { overflow: "auto" }
+                              }}
                             />
-
                             {/* <Datetime
                               dateFormat={false}
                               timeFormat="HH:mm:ss.SSS"
@@ -941,7 +968,7 @@ const Event_Form = () => {
                         )}
                         {title.toLowerCase() !== "shot put" && (
                           <td className="py-3">
-                            <Datetime
+                            {/* <Datetime
                               dateFormat={false}
                               timeFormat="HH:mm:ss.SSS"
                               value={row.EndTime}
@@ -950,6 +977,23 @@ const Event_Form = () => {
                               style={{ overflow: "auto" }}
                               inputProps={{
                                 disabled: row.Status === "False" || (row.score && row.Status !== "True"),
+                                style: { overflow: "auto" }
+                              }}
+                            /> */}
+                            <Datetime
+                              dateFormat={false}
+                              timeFormat="HH:mm:ss.SSS"
+                              value={row.EndTime}
+                              onChange={(momentObj) =>
+                                handleDateChange(momentObj, index, "EndTime")
+                              }
+                              className="custom-datetime"
+                              inputProps={{
+                                readOnly: true,   // ✅ no keyboard typing
+                                onKeyDown: (e) => e.preventDefault(), // extra safety
+                                disabled:
+                                  row.Status === "False" ||
+                                  (row.score && row.Status !== "True"),
                                 style: { overflow: "auto" }
                               }}
                             />
@@ -1065,6 +1109,9 @@ const Event_Form = () => {
                               )}
                             </div>
                           </td> */}
+                        {
+                          title === "1600 Meter Running" || title === "800 Meter Running" ? <td className="py-4">4</td> : null
+                        }
                         <td className="d-none">
                           <div
                             className="border border-dark bg-white"
@@ -1097,7 +1144,16 @@ const Event_Form = () => {
                         </td>
                         <td className="py-4">{row.score}</td>
                         <td>
-                          <button className="btn btn-success btn-sm mt-2 appeal-button" onClick={() => navigateAppeal(row.CandidateID, row.EventName, row.EventId)}>Appeal</button>
+                          {/* <button className="btn btn-success btn-sm mt-2 appeal-button" onClick={() => navigateAppeal(row.CandidateID, row.EventName, row.EventId)}>Appeal</button> */}
+                          <button
+                            className="btn btn-success btn-sm mt-2 appeal-button"
+                            onClick={() =>
+                              navigateAppeal(row.CandidateID, row.EventName, row.EventId)
+                            }
+                            disabled={row.NoOfAttemp >= 2}
+                          >
+                            Appeal
+                          </button>
                         </td>
                       </tr>
                     ))}

@@ -7,6 +7,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Pagination } from '../../Components/Utils/Pagination';
 import { getAllGroup } from '../../Components/Api/EventApi';
+import { Refresh } from "@material-ui/icons";
 
 const All100MeterReport = () => {
   const navigate = useNavigate();
@@ -29,6 +30,7 @@ const All100MeterReport = () => {
   const [reservationCategory, setReservationCategory] = useState("")
   const [allCast, setAllCast] = useState([])
   const [cast, setCast] = useState("")
+  const [refreshKey, setRefreshKey] = useState(0);
 
   const headerCellStyle = {
     backgroundColor: "rgb(27, 90, 144)",
@@ -46,6 +48,18 @@ const All100MeterReport = () => {
     getAllCastData();
   }, [])
 
+
+  const RefreshPage = async () => {
+    setReservationCategory("");
+    setCast("");
+    setGroupId("");
+    setGroup("");
+    setCategory("")
+
+    const data = await fetchAll100Meter(eventId, "", "", "");
+    console.log(data)
+    setAll100MeterReport(data)
+  };
 
   const Get100MeterData = async () => {
     const data = await fetchAll100Meter(eventId, groupId, reservationCategory, cast);
@@ -268,7 +282,7 @@ const All100MeterReport = () => {
   const currentItems = all100MeterReport.slice(indexOfFirstItem, indexOfLastItem);
   return (
     <>
-      <div className="container-fluid">
+      <div className="container-fluid" key={refreshKey}>
         <div
           className="card m-3"
           style={{ boxShadow: "0px 1px 5px rgba(0, 0, 0, 0.1)" }}
@@ -282,6 +296,22 @@ const All100MeterReport = () => {
                     <h4 className="card-title fw-bold py-2">100 Meter Running Report</h4>
                   </div>
                   <div className="col-lg-4 col-md-4 col-5 d-flex justify-content-end print-section">
+                    <button
+                      className="btn btn-sm me-2"
+                      style={{ backgroundColor: "#1B5A90", color: "white" }}
+                    >
+                      <Refresh
+                        onClick={() => {
+                          RefreshPage()
+                        }} // Refresh the page
+                        style={{
+                          fontSize: 30, // Increase icon size
+                          cursor: "pointer",
+                          color: "white",
+                        }}
+                        titleAccess="Refresh Page"
+                      />
+                    </button>
                     <button className="btn me-2" style={headerCellStyle} /* onClick={() => window.print()} */ onClick={openPrintWindow} >Print</button>
                     <button className="btn" style={headerCellStyle} onClick={() => navigate(-1)}>Back</button>
                   </div>
@@ -289,7 +319,6 @@ const All100MeterReport = () => {
               </div>
               <div className="card-body pt-3">
                 <div className="row">
-
                   <div className="col-lg-3 col-md-3 col-12 d-flex align-items-center gap-2">
                     <h6 className="mb-0">Show</h6>
                     <select
@@ -306,11 +335,9 @@ const All100MeterReport = () => {
                   </div>
 
                   <div className="col-lg-3 col-md-3 col-12 mt-3 mt-md-0">
-
                   </div>
 
                   <div className="col-lg-3 col-md-3 col-12 mt-3 mt-md-0">
-
                   </div>
 
                   <div className="col-lg-3 col-md-3 col-12 mt-3 mt-md-0">

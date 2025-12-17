@@ -8,6 +8,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Pagination } from '../../Components/Utils/Pagination';
 import { getAllGroup } from '../../Components/Api/EventApi';
+import { Refresh } from '@material-ui/icons';
 
 const ShotputReport = () => {
     const navigate = useNavigate();
@@ -133,6 +134,18 @@ const ShotputReport = () => {
         console.log(data)
         setShotputReport(data)
     }
+
+    const RefreshPage = async () => {
+        setReservationCategory("");
+        setCast("");
+        setGroupId("");
+        setGroup("");
+        setCategory("")
+
+        const data = await fetchAllShotput(eventId, "", "", "");
+        console.log(data)
+        setShotputReport(data)
+    };
 
     const handleSearch = (e) => {
         const searchDataValue = e.target.value.toLowerCase();
@@ -283,6 +296,22 @@ const ShotputReport = () => {
                                         <h4 className="card-title fw-bold py-2">Shot put Report</h4>
                                     </div>
                                     <div className="col-lg-4 col-md-4 col-5 d-flex justify-content-end print-section">
+                                        <button
+                                            className="btn btn-sm me-2"
+                                            style={{ backgroundColor: "#1B5A90", color: "white" }}
+                                        >
+                                            <Refresh
+                                                onClick={() => {
+                                                    RefreshPage()
+                                                }} // Refresh the page
+                                                style={{
+                                                    fontSize: 30, // Increase icon size
+                                                    cursor: "pointer",
+                                                    color: "white",
+                                                }}
+                                                titleAccess="Refresh Page"
+                                            />
+                                        </button>
                                         <button className="btn me-2" style={headerCellStyle} /* onClick={() => window.print()} */ onClick={openPrintWindow} >Print</button>
                                         <button className="btn" style={headerCellStyle} onClick={() => navigate(-1)}>Back</button>
                                     </div>

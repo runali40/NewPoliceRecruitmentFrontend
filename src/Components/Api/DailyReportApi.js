@@ -37,9 +37,9 @@ export const fetchAll100Meter = async (eventId, groupId, parallelReservation, ca
         RecruitId: recruitId,
         // Eventid: "1bce2267-2e13-46dd-8ade-2825c79012e1",
         Eventid: eventId,
-        Groupid: groupId,
-        ParallelReservation: parallelReservation,
-        Cast: cast
+        Groupid: groupId || "",
+        ParallelReservation: parallelReservation || "",
+        Cast: cast || ""
     };
     try {
         const response = await apiClient({

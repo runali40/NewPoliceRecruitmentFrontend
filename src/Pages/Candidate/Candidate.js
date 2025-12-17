@@ -981,7 +981,7 @@ const Candidate = () => {
     // setCategory(data.Category);
     setCategory("");
     setAncestral("");
-    // setGroupId("");
+    setGroupId("");
     setPhoto("");
     setSecretKey("");
     setUnitName("");

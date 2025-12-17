@@ -183,7 +183,7 @@ const DailyReport = () => {
     setDoc(newDocStatus);
     setHeightChest(newHeightChestStatus);
     setAllStatus(newAllStatus);
-    setHeaderName("Candidates who have arrived today");
+    setHeaderName(`Candidates who have arrived`);
     fetchData(newDocStatus, newHeightChestStatus, newAllStatus, selectDate, fromDate, toDate);
   };
 
@@ -404,32 +404,116 @@ const DailyReport = () => {
   //   // Save the PDF
   //   doc.save("daily_report.pdf");
   // };
+  // const handleDownloadPDF = () => {
+
+  //   if (!allReport || allReport.length === 0) {
+  //     toast.warning("Data is not available"); // Show warning message
+  //     return; // Stop execution
+  //   }
+
+  //   const doc = new jsPDF();
+  //   const pageWidth = doc.internal.pageSize.getWidth();
+
+  //   // Header Text
+  //   // const headerText = headerName;
+  //   // const headerDateRange = `From : ${fromDate}  To : ${toDate}`;
+  //   // doc.setFont("helvetica", "bold");
+  //   // doc.setFontSize(14);
+  //   // const textWidth = doc.getTextWidth(headerText);
+  //   // const xPosition = (pageWidth - textWidth) / 2;
+
+  //   // // Function to add header at the top of each new page
+  //   // const addHeader = (doc) => {
+  //   //   doc.setFont("helvetica", "bold");
+  //   //   doc.setFontSize(14);
+  //   //   doc.text(headerText, xPosition, 15);
+
+  //   //   return 25; // Reserve space below header
+  //   // };
+  //   const headerText = headerName;
+  //   const headerDateRange = `From : ${fromDate}  To : ${toDate}`;
+
+  //   doc.setFont("helvetica", "bold");
+  //   doc.setFontSize(14);
+
+  //   const textWidth = doc.getTextWidth(headerText);
+  //   const xPosition = (pageWidth - textWidth) / 2;
+
+  //   // Function to add header at the top of each new page
+  //   const addHeader = (doc) => {
+  //     doc.setFont("helvetica", "bold");
+  //     doc.setFontSize(14);
+  //     doc.text(headerText, xPosition, 12);        // Title
+  //     doc.setFontSize(10);
+  //     doc.text(headerDateRange, xPosition, 18);   // From - To in one line
+  //     return 25; // Reserve space below header
+  //   };
+
+  //   // Define table columns and rows
+  //   const tableColumn = ["Sr.No", "Application No", "Candidate Name"];
+  //   const tableRows = [];
+
+  //   allReport.forEach((data, index) => {
+  //     tableRows.push([
+  //       index + 1,
+  //       data.ApplicationNo,
+  //       data.FullNameEnglish,
+  //     ]);
+  //   });
+
+  //   let startY = addHeader(doc) + 10; // Ensure table starts below the header
+
+  //   doc.autoTable({
+  //     head: [tableColumn],
+  //     body: tableRows,
+  //     startY: startY,
+  //     margin: { top: 30 }, // Ensure there's space at the top of each page
+  //     didDrawPage: (data) => {
+  //       doc.setFont("helvetica", "bold");
+  //       doc.setFontSize(14);
+  //       doc.text(headerText, xPosition, 15);
+  //       data.settings.startY = 30; // Ensure table starts below header
+  //     },
+  //     headStyles: {
+  //       fillColor: [255, 255, 255],
+  //       textColor: [0, 0, 0],
+  //       fontStyle: 'bold',
+  //       lineWidth: 0.5,
+  //       lineColor: [0, 0, 0],
+  //     },
+  //     bodyStyles: {
+  //       lineWidth: 0.2,
+  //       lineColor: [0, 0, 0],
+  //     },
+  //     styles: {
+  //       font: 'helvetica',
+  //       fontSize: 10,
+  //       cellPadding: 3,
+  //     },
+  //     tableLineColor: [0, 0, 0],
+  //     tableLineWidth: 0.2,
+  //   });
+
+  //   doc.save("daily_report.pdf");
+  //   toast.success("Pdf generate successfully!")
+  // };
+
   const handleDownloadPDF = () => {
 
     if (!allReport || allReport.length === 0) {
-      toast.warning("Data is not available"); // Show warning message
-      return; // Stop execution
+      toast.warning("Data is not available");
+      return;
     }
 
     const doc = new jsPDF();
     const pageWidth = doc.internal.pageSize.getWidth();
 
-    // Header Text
     const headerText = headerName;
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(14);
+    const headerDateRange = `From : ${fromDate}  To : ${toDate}`;
+
     const textWidth = doc.getTextWidth(headerText);
     const xPosition = (pageWidth - textWidth) / 2;
 
-    // Function to add header at the top of each new page
-    const addHeader = (doc) => {
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(14);
-      doc.text(headerText, xPosition, 15);
-      return 25; // Reserve space below header
-    };
-
-    // Define table columns and rows
     const tableColumn = ["Sr.No", "Application No", "Candidate Name"];
     const tableRows = [];
 
@@ -441,23 +525,26 @@ const DailyReport = () => {
       ]);
     });
 
-    let startY = addHeader(doc) + 10; // Ensure table starts below the header
-
     doc.autoTable({
       head: [tableColumn],
       body: tableRows,
-      startY: startY,
-      margin: { top: 30 }, // Ensure there's space at the top of each page
-      didDrawPage: (data) => {
+      startY: 30,   // table starts after header
+      margin: { top: 30 },
+
+      didDrawPage: () => {
+        // ✅ Header only here
         doc.setFont("helvetica", "bold");
         doc.setFontSize(14);
-        doc.text(headerText, xPosition, 15);
-        data.settings.startY = 30; // Ensure table starts below header
+        doc.text(headerText, xPosition, 12);
+
+        doc.setFontSize(10);
+        doc.text(headerDateRange, xPosition, 18);
       },
+
       headStyles: {
         fillColor: [255, 255, 255],
         textColor: [0, 0, 0],
-        fontStyle: 'bold',
+        fontStyle: "bold",
         lineWidth: 0.5,
         lineColor: [0, 0, 0],
       },
@@ -466,18 +553,15 @@ const DailyReport = () => {
         lineColor: [0, 0, 0],
       },
       styles: {
-        font: 'helvetica',
+        font: "helvetica",
         fontSize: 10,
         cellPadding: 3,
       },
-      tableLineColor: [0, 0, 0],
-      tableLineWidth: 0.2,
     });
 
     doc.save("daily_report.pdf");
-    toast.success("Pdf generate successfully!")
+    toast.success("Pdf generate successfully!");
   };
-
 
 
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -564,7 +648,7 @@ const DailyReport = () => {
                       style={{ backgroundColor: "rgb(27, 90, 144)", color: "#fff" }}
                       onClick={handleAllData}
                     >
-                      Candidates who have arrived today
+                      Candidates who have arrived
                     </button>
                   </div>
                   <div className="col-lg-2 col-md-3 col-sm-6 mt-lg-0 mt-md-0 mt-3 d-flex align-items-stretch">
@@ -647,14 +731,14 @@ const DailyReport = () => {
                           onClick={handleDownloadPDF}
                           style={{ backgroundColor: "#1B5A90" }}
                         >
-                          Download
+                          PDF
                         </Button>
 
                         <Button
                           onClick={() => exportToExcel(allReport, "DailyReport.xlsx")}
                           style={{ backgroundColor: "#1B5A90" }}
                         >
-                          Download to Excel
+                          Excel
                         </Button>
                       </div>
 
