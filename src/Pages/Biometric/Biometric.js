@@ -43,12 +43,18 @@ const Biometric = () => {
   const [facingMode, setFacingMode] = useState("environment");
   const [showModal, setShowModal] = useState(false)
   const biometricSignRef = useRef();
+  const [signModal, setSignModal] = useState(false);
+  const [savedSignature, setSavedSignature] = useState(null);
+  const modalSignRef = useRef(null);
+  const [canvasWidth, setCanvasWidth] = useState(730);
+
+
   const handleShow = () => {
     setShowModal(true);
   };
 
   const handleClose = () => setShowModal(false);
-
+  const handleSignClose = () => setSignModal(false);
   const handleFlipCamera = () => {
     if (devices.length === 0) return; // No camera devices available
 
@@ -109,6 +115,20 @@ const Biometric = () => {
     // localStorage.setItem("biometricKey", key)
     console.log(key, "secret key");
   }, []);
+
+  useEffect(() => {
+    const updateCanvasSize = () => {
+      // Modal body ka width minus padding
+      const modalWidth = window.innerWidth < 992 ? window.innerWidth - 80 : 730;
+      setCanvasWidth(modalWidth);
+    };
+
+    updateCanvasSize();
+    window.addEventListener('resize', updateCanvasSize);
+
+    return () => window.removeEventListener('resize', updateCanvasSize);
+  }, []);
+
 
   const handleDevices = useCallback((mediaDevices) => {
     const videoDevices = mediaDevices.filter(
@@ -1350,17 +1370,79 @@ const Biometric = () => {
     ? decryptFinger10(fingerImage10)
     : null;
 
+  // const CompleteBiometric = () => {
+  //   const storedToken = localStorage.getItem("UserCredential");
+  //   const recruitId = localStorage.getItem("recruitId");
+  //   const UserId = localStorage.getItem("userId");
+  //   let signature = null;
+  //   if (biometricSignRef.current && !biometricSignRef.current.isEmpty()) {
+  //     signature = biometricSignRef.current.getTrimmedCanvas().toDataURL("image/png");
+  //   }
+  //   console.log(url, "encrypted url");
+  //   if (url === null) {
+  //     toast.warning("Please capture the photo!");
+  //   } else {
+  //     const data = {
+  //       CandidateID: candidateId,
+  //       UserId: UserId,
+  //       RecruitId: recruitId,
+  //       ChestNo: chestNo,
+  //       Date: "2024-06-08",
+  //       CategoryName: category,
+  //       Signature: signature,
+  //       Thumbstring: fingerImage1,
+  //       Thumbstring1: fingerImage2,
+  //       Thumbstring2: fingerImage3,
+  //       Thumbstring3: fingerImage4,
+  //       Thumbstring4: fingerImage5,
+  //       Thumbstring5: fingerImage6,
+  //       Thumbstring6: fingerImage7,
+  //       Thumbstring7: fingerImage8,
+  //       Thumbstring8: fingerImage9,
+  //       Thumbstring9: fingerImage10,
+  //       Imagestring: url, // This should be encrypted
+  //       ivImage: biometricIv,
+  //       secretkeys: secretKey
+  //     };
+  //     apiClient
+  //       .post(`Scanningdoc/Insert`, data)
+  //       .then((response) => {
+  //         console.log("complete biometric", response.data.data);
+  //         const token1 = response.data.outcome.tokens;
+  //         Cookies.set("UserCredential", token1, { expires: 7 });
+  //         toast.success("Biometric added successfully!");
+  //         navigate(`/candidate/${candidateId}`, { state: { fullNameEnglish } });
+  //       })
+  //       .catch((error) => {
+  //         if (
+  //           error.response &&
+  //           error.response.data &&
+  //           error.response.data.outcome
+  //         ) {
+  //           const token1 = error.response.data.outcome.tokens;
+  //           Cookies.set("UserCredential", token1, { expires: 7 });
+  //         }
+  //         console.log(error);
+  //         const errors = ErrorHandler(error);
+  //         toast.error(errors);
+  //       });
+  //   }
+  // };
   const CompleteBiometric = () => {
     const storedToken = localStorage.getItem("UserCredential");
     const recruitId = localStorage.getItem("recruitId");
     const UserId = localStorage.getItem("userId");
-    let signature = null;
-    if (biometricSignRef.current && !biometricSignRef.current.isEmpty()) {
-      signature = biometricSignRef.current.getTrimmedCanvas().toDataURL("image/png");
-    }
+
+    // Signature ko savedSignature state se lo
+    let signature = savedSignature; // Ya directly savedSignature use karo
+
     console.log(url, "encrypted url");
+    console.log(signature, "signature data"); // Check karo signature hai ya nahi
+
     if (url === null) {
       toast.warning("Please capture the photo!");
+    } else if (!signature) {
+      toast.warning("Please add signature!");
     } else {
       const data = {
         CandidateID: candidateId,
@@ -1369,7 +1451,7 @@ const Biometric = () => {
         ChestNo: chestNo,
         Date: "2024-06-08",
         CategoryName: category,
-        Signature: signature,
+        Signature: signature, // Ab ye properly pass hoga
         Thumbstring: fingerImage1,
         Thumbstring1: fingerImage2,
         Thumbstring2: fingerImage3,
@@ -1380,10 +1462,11 @@ const Biometric = () => {
         Thumbstring7: fingerImage8,
         Thumbstring8: fingerImage9,
         Thumbstring9: fingerImage10,
-        Imagestring: url, // This should be encrypted
+        Imagestring: url,
         ivImage: biometricIv,
         secretkeys: secretKey
       };
+
       apiClient
         .post(`Scanningdoc/Insert`, data)
         .then((response) => {
@@ -1408,6 +1491,76 @@ const Biometric = () => {
         });
     }
   };
+
+  // const handleSaveSignature = () => {
+  //   if (modalSignRef.current) {
+  //     const signatureData = modalSignRef.current.toDataURL();
+  //     setSavedSignature(signatureData);
+
+  //     // Clear and draw on the small canvas
+  //     if (biometricSignRef.current) {
+  //       biometricSignRef.current.clear();
+  //       const img = new Image();
+  //       img.src = signatureData;
+  //       img.onload = () => {
+  //         const ctx = biometricSignRef.current.getCanvas().getContext('2d');
+  //         ctx.drawImage(img, 0, 0, 200, 75);
+  //       };
+  //     }
+
+  //     setSignModal(false);
+  //     handleSignClose()
+  //   }
+  // };
+
+  const handleSaveSignature = () => {
+    if (modalSignRef.current && !modalSignRef.current.isEmpty()) {
+      // High quality trimmed signature
+      const signatureData = modalSignRef.current
+        .getTrimmedCanvas()
+        .toDataURL("image/png");
+
+      setSavedSignature(signatureData);
+
+      // Clear and draw on the small canvas with proper scaling
+      if (biometricSignRef.current) {
+        const canvas = biometricSignRef.current.getCanvas();
+        const ctx = canvas.getContext('2d');
+
+        // Clear existing signature
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        const img = new Image();
+        img.src = signatureData;
+        img.onload = () => {
+          // Calculate aspect ratio to maintain signature proportions
+          const scale = Math.min(
+            canvas.width / img.width,
+            canvas.height / img.height
+          );
+          const x = (canvas.width - img.width * scale) / 2;
+          const y = (canvas.height - img.height * scale) / 2;
+
+          // Draw with smooth scaling
+          ctx.imageSmoothingEnabled = true;
+          ctx.imageSmoothingQuality = 'high';
+          ctx.drawImage(img, x, y, img.width * scale, img.height * scale);
+        };
+      }
+
+      setSignModal(false);
+      handleSignClose();
+    } else {
+      toast.warning("Please draw signature first!");
+    }
+  };
+
+  const handleClear = () => {
+    if (modalSignRef.current) {
+      modalSignRef.current.clear();
+    }
+  };
+
   // ----------------- FINGER CAPTURE AND MODAL ---------------------
 
   // Instead of using two separate finger states, we use an array.
@@ -1620,9 +1773,10 @@ const Biometric = () => {
                         <div className="col-lg-8 col-md-8 mt-3">
                           <div className="row align-items-center mb-3">
                             <div className="col-xl-3 col-lg-4 col-md-4">
-                              <label htmlFor="height" className="mb-0">
-                                Signature {/* <span className="text-danger fw-bold">*</span> */}
-                              </label>
+                              {/* <label htmlFor="height" className="mb-0">
+                                Signature 
+                              </label> */}
+                              <button className="btn btn-secondary" onClick={() => setSignModal(true)}>signature</button>
                             </div>
                             <div className="col-xl-4 col-lg-5 col-md-5 mt-lg-0 mt-md-0 mt-3">
                               <div className="form-group mb-0">
@@ -1968,6 +2122,50 @@ const Biometric = () => {
           </Button>
           <Button variant="secondary" onClick={handleClose}>
             Close
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      <Modal show={signModal} onHide={handleSignClose} size="lg" backdrop="static">
+        <Modal.Header closeButton>
+          <Modal.Title>
+            <h5 className="fw-bold">Draw Signature</h5>
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body className="p-3">
+          <div
+            className="border border-dark bg-white mx-auto"
+            style={{
+              width: "100%",
+              maxWidth: "100%",
+              height: "300px",
+              overflow: "hidden"
+            }}
+          >
+            <SignatureCanvas
+              ref={modalSignRef}
+              penColor="black"
+              canvasProps={{
+                width: canvasWidth,
+                height: 300,
+                style: {
+                  width: "100%",
+                  height: "100%",
+                  display: "block"
+                }
+              }}
+            />
+          </div>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button
+            style={{ backgroundColor: "#1B5A90", border: "none" }}
+            onClick={handleSaveSignature}
+          >
+            Save
+          </Button>
+          <Button variant="secondary" onClick={handleClear}>
+            Clear
           </Button>
         </Modal.Footer>
       </Modal>

@@ -10,6 +10,8 @@ import Cookies from "js-cookie";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import SignatureCanvas from 'react-signature-canvas';
+import { Modal } from "react-bootstrap";
+
 const DocumentVerification = () => {
   const location = useLocation();
   const { fullNameEnglish, candidateId, category, parallelReservation } =
@@ -40,6 +42,25 @@ const DocumentVerification = () => {
   );
   const [verifyDate, setVerifyDate] = useState("");
   const [dateError, setDateError] = useState("");
+  const [signModal, setSignModal] = useState(false);
+  const [savedSignature, setSavedSignature] = useState(null);
+  const modalSignRef = useRef(null);
+  const [canvasWidth, setCanvasWidth] = useState(730);
+  const handleSignClose = () => setSignModal(false);
+
+  useEffect(() => {
+    const updateCanvasSize = () => {
+      // Modal body ka width minus padding
+      const modalWidth = window.innerWidth < 992 ? window.innerWidth - 80 : 730;
+      setCanvasWidth(modalWidth);
+    };
+
+    updateCanvasSize();
+    window.addEventListener('resize', updateCanvasSize);
+
+    return () => window.removeEventListener('resize', updateCanvasSize);
+  }, []);
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -369,11 +390,11 @@ const DocumentVerification = () => {
     const recruitId = localStorage.getItem("recruitId");
     const UserId = localStorage.getItem("userId");
 
-    let signature = null;
-    if (documentSignRef.current && !documentSignRef.current.isEmpty()) {
-      signature = documentSignRef.current.getTrimmedCanvas().toDataURL("image/png");
-    }
-
+    // let signature = null;
+    // if (documentSignRef.current && !documentSignRef.current.isEmpty()) {
+    //   signature = documentSignRef.current.getTrimmedCanvas().toDataURL("image/png");
+    // }
+    let signature = savedSignature;
     // Ensure mandatory fields have values
     if (submitLater === undefined || submitLater === null || submitLater === "") {
       toast.warning("Please specify whether to submit documents later.");
@@ -486,6 +507,73 @@ const DocumentVerification = () => {
     setAllowFromOpen(event.target.value); // Update state with selected value
   };
 
+  // const handleSaveSignature = () => {
+  //   if (modalSignRef.current) {
+  //     const signatureData = modalSignRef.current.toDataURL();
+  //     setSavedSignature(signatureData);
+
+  //     // Clear and draw on the small canvas
+  //     if (documentSignRef.current) {
+  //       documentSignRef.current.clear();
+  //       const img = new Image();
+  //       img.src = signatureData;
+  //       img.onload = () => {
+  //         const ctx = documentSignRef.current.getCanvas().getContext('2d');
+  //         ctx.drawImage(img, 0, 0, 200, 75);
+  //       };
+  //     }
+
+  //     setSignModal(false);
+  //     handleSignClose()
+  //   }
+  // };
+  const handleSaveSignature = () => {
+    if (modalSignRef.current && !modalSignRef.current.isEmpty()) {
+      // High quality trimmed signature
+      const signatureData = modalSignRef.current
+        .getTrimmedCanvas()
+        .toDataURL("image/png");
+
+      setSavedSignature(signatureData);
+
+      // Clear and draw on the small canvas with proper scaling
+      if (documentSignRef.current) {
+        const canvas = documentSignRef.current.getCanvas();
+        const ctx = canvas.getContext('2d');
+
+        // Clear existing signature
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        const img = new Image();
+        img.src = signatureData;
+        img.onload = () => {
+          // Calculate aspect ratio to maintain signature proportions
+          const scale = Math.min(
+            canvas.width / img.width,
+            canvas.height / img.height
+          );
+          const x = (canvas.width - img.width * scale) / 2;
+          const y = (canvas.height - img.height * scale) / 2;
+
+          // Draw with smooth scaling
+          ctx.imageSmoothingEnabled = true;
+          ctx.imageSmoothingQuality = 'high';
+          ctx.drawImage(img, x, y, img.width * scale, img.height * scale);
+        };
+      }
+
+      setSignModal(false);
+      handleSignClose();
+    } else {
+      toast.warning("Please draw signature first!");
+    }
+  };
+
+  const handleClear = () => {
+    if (modalSignRef.current) {
+      modalSignRef.current.clear();
+    }
+  };
   return (
     <>
       <style>
@@ -773,9 +861,16 @@ const DocumentVerification = () => {
 
                     <div className="row">
                       <div className="col-lg-7">
-                        <label>Signature</label>
-                        {/* <span style={{ color: "red" }}> *</span> */}
+                        {/* <label>Signature</label> */}
+                        <button
+                          className="btn btn-primary btn-sm"
+                          
+                          onClick={() => setSignModal(true)}
+                        >
+                          Signature
+                        </button>
                       </div>
+
                       <div className="col-lg-2">
                         <div className="form-group mb-0">
                           <div
@@ -797,6 +892,8 @@ const DocumentVerification = () => {
                                   height: 150,
                                   className: "sigCanvas",
                                 }}
+
+
                               />
                             )}
                           </div>
@@ -846,6 +943,49 @@ const DocumentVerification = () => {
           </div>
         </div>
       </div>
+      <Modal show={signModal} onHide={handleSignClose} size="lg" backdrop="static">
+        <Modal.Header closeButton>
+          <Modal.Title>
+            <h5 className="fw-bold">Draw Signature</h5>
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body className="p-3">
+          <div
+            className="border border-dark bg-white mx-auto"
+            style={{
+              width: "100%",
+              maxWidth: "100%",
+              height: "300px",
+              overflow: "hidden"
+            }}
+          >
+            <SignatureCanvas
+              ref={modalSignRef}
+              penColor="black"
+              canvasProps={{
+                width: canvasWidth,
+                height: 300,
+                style: {
+                  width: "100%",
+                  height: "100%",
+                  display: "block"
+                }
+              }}
+            />
+          </div>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button
+            style={{ backgroundColor: "#1B5A90", border: "none" }}
+            onClick={handleSaveSignature}
+          >
+            Save
+          </Button>
+          <Button variant="secondary" onClick={handleClear}>
+            Clear
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </>
   );
 };

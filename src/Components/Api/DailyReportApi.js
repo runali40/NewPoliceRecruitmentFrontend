@@ -276,17 +276,18 @@ export const getReservationCategory = () => {
 
 export const getAllCast = () => {
     const UserId = localStorage.getItem("userId");
+    const recruitId = localStorage.getItem("recruitId");
     return apiClient({
         method: "get",
-        url: `ParameterValueMaster/GetAll`.toString(),
+        url: `CandidateDailyReport/GetCasts`.toString(),
         params: {
             UserId: UserId,
-            pv_parameterid: '562f4f41-1127-4510-968f-08365867759f',
-            pv_isactive: "1",
+            RecruitId: recruitId,
+
         },
     })
         .then((response) => {
-            console.log("response all parameter value masters", response.data.data);
+            console.log("response all casts", response.data.data);
             const token1 = response.data.outcome.tokens;
             Cookies.set("UserCredential", token1, { expires: 7 });
             // setOptions(response.data.data.map((item) => ({
@@ -295,10 +296,11 @@ export const getAllCast = () => {
             // })))
             // console.log(options, "84")
             const temp = response.data.data.map((item) => ({
-                value: item.pv_id,
+                value: item.pv_parametervalue,
                 label: item.pv_parametervalue,
             }));
             return temp;
+           
         })
         .catch((error) => {
             if (error.response && error.response.data && error.response.data.outcome) {

@@ -7,7 +7,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Pagination } from '../../Components/Utils/Pagination';
 import { getAllGroup } from '../../Components/Api/EventApi';
-import { Refresh } from '@material-ui/icons';
+import { ArrowBack, Refresh } from '@material-ui/icons';
 
 const AllRunningReport = () => {
     const navigate = useNavigate();
@@ -65,7 +65,7 @@ const AllRunningReport = () => {
         setGroup(selectedValue);
         console.log(selectedValue.value, "selected value");
         setGroupId(selectedValue.value)
-        const data = await fetchAllReport(selectedValue.label, reservationCategory, cast);
+        const data = await fetchAllReport(selectedValue.value, reservationCategory, cast);
         console.log(data)
         setAllRunningReport(data)
     }
@@ -301,7 +301,7 @@ const AllRunningReport = () => {
                                             />
                                         </button>
                                         <button className="btn me-2" style={headerCellStyle} /* onClick={() => window.print()} */ onClick={openPrintWindow} >Print</button>
-                                        <button className="btn" style={headerCellStyle} onClick={() => navigate(-1)}>Back</button>
+                                        <button className="btn" style={headerCellStyle} onClick={() => navigate(-1)}>  <ArrowBack /></button>
                                     </div>
                                 </div>
                             </div>

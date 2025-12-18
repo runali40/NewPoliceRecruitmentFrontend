@@ -5,7 +5,7 @@ import { Table, Button } from "react-bootstrap";
 import { useNavigate } from 'react-router-dom';
 import Select from 'react-select';
 import { getAllGroup } from '../../Components/Api/EventApi';
-import { Refresh } from '@material-ui/icons';
+import { ArrowBack, Refresh } from '@material-ui/icons';
 
 const All1600MeterReport = () => {
   const navigate = useNavigate();
@@ -314,7 +314,7 @@ const All1600MeterReport = () => {
                       />
                     </button>
                     <button className="btn me-2" style={headerCellStyle} /* onClick={() => window.print()} */ onClick={openPrintWindow}>Print</button>
-                    <button className="btn" style={headerCellStyle} onClick={() => navigate(-1)}>Back</button>
+                    <button className="btn" style={headerCellStyle} onClick={() => navigate(-1)}>  <ArrowBack /></button>
                   </div>
                 </div>
               </div>

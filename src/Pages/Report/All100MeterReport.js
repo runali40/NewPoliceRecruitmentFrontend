@@ -7,7 +7,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Pagination } from '../../Components/Utils/Pagination';
 import { getAllGroup } from '../../Components/Api/EventApi';
-import { Refresh } from "@material-ui/icons";
+import { ArrowBack, Refresh } from "@material-ui/icons";
 
 const All100MeterReport = () => {
   const navigate = useNavigate();
@@ -313,7 +313,7 @@ const All100MeterReport = () => {
                       />
                     </button>
                     <button className="btn me-2" style={headerCellStyle} /* onClick={() => window.print()} */ onClick={openPrintWindow} >Print</button>
-                    <button className="btn" style={headerCellStyle} onClick={() => navigate(-1)}>Back</button>
+                    <button className="btn" style={headerCellStyle} onClick={() => navigate(-1)}><ArrowBack /></button>
                   </div>
                 </div>
               </div>

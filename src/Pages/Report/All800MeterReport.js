@@ -5,7 +5,7 @@ import { Table, Button } from "react-bootstrap";
 import { Pagination } from '../../Components/Utils/Pagination';
 import Select from 'react-select'
 import { getAllGroup } from '../../Components/Api/EventApi';
-import { Refresh } from '@material-ui/icons';
+import { ArrowBack, Refresh } from '@material-ui/icons';
 
 const All800MeterReport = () => {
   const navigate = useNavigate();
@@ -132,17 +132,17 @@ const All800MeterReport = () => {
     setAll800MeterReport(data)
   }
 
-    const RefreshPage = async () => {
-      setReservationCategory("");
-      setCast("");
-      setGroupId("");
-      setGroup("");
-      setCategory("")
-  
-      const data = await fetchAll800Meter(eventId, "", "", "");
-      console.log(data)
-      setAll800MeterReport(data)
-    };
+  const RefreshPage = async () => {
+    setReservationCategory("");
+    setCast("");
+    setGroupId("");
+    setGroup("");
+    setCategory("")
+
+    const data = await fetchAll800Meter(eventId, "", "", "");
+    console.log(data)
+    setAll800MeterReport(data)
+  };
 
   const handleSearch = (e) => {
     const searchDataValue = e.target.value.toLowerCase();
@@ -311,7 +311,7 @@ const All800MeterReport = () => {
                       />
                     </button>
                     <button className="btn me-2" style={headerCellStyle} /* onClick={() => window.print()} */ onClick={openPrintWindow}>Print</button>
-                    <button className="btn" style={headerCellStyle} onClick={() => navigate(-1)}>Back</button>
+                    <button className="btn" style={headerCellStyle} onClick={() => navigate(-1)}>  <ArrowBack /></button>
                   </div>
                 </div>
               </div>

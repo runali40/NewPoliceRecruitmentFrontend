@@ -906,7 +906,7 @@ const AdmissionCard = () => {
                     </div>
                   </div>
                   <div className="row mt-3">
-                    <div className="col-lg-4 col-md-4 ">
+                    <div className="col-lg-4 col-md-4 col-4">
                       <div className="row">
                         <div className="col-lg-7 col-md-7 col-6 mt-3 mt-lg-0 mt-md-0">
                           <label htmlFor="applicationNo">Application no:</label>
@@ -930,7 +930,7 @@ const AdmissionCard = () => {
                   </div>
                   <div className="card-body">
                     <div className="row">
-                      <div className="col-lg-9">
+                      <div className="col-lg-9 col-md-9 col-9">
                         <div className="row">
                           <div className="col-xl-4 col-lg-5 col-md-5 col-6">
                             <label htmlFor="fullNameDevnagari">
@@ -1000,12 +1000,12 @@ const AdmissionCard = () => {
                           </div>
                         </div>
                       </div>
-                      <div className="col-lg-3">
+                      <div className="col-lg-3 col-md-3 col-3">
                         <div className="row">
                           <div className="col-lg-8 col-md-6 col-8 mt-3 mt-lg-0 mt-md-0 text-end">
                             <label htmlFor="officeName" style={{ fontSize: "20px" }}><b>Chest No:</b></label>
                           </div>
-                          <div className="col-lg-4 col-md-4 col-6 mt-3 mt-lg-0 mt-md-0 text-end">
+                          <div className="col-lg-4 col-md-4 col-4 mt-3 mt-lg-0 mt-md-0 text-end">
                             <label style={{ fontSize: "20px" }}>
                               <b>{chestNo}</b>
                             </label>
@@ -1025,10 +1025,10 @@ const AdmissionCard = () => {
                           </div>
                         </div>
                         <div className="row mt-4">
-                          <div className="col-lg-8 col-md-8 col-6 mt-3 mt-lg-0 mt-md-0 text-end">
+                          <div className="col-lg-8 col-md-8 col-sm-8  mt-3 mt-lg-0 mt-md-0 text-end">
                             <label htmlFor="officeName">Height:</label>
                           </div>
-                          <div className="col-lg-4 col-md-4 col-6 mt-3 mt-lg-0 mt-md-0 text-end">
+                          <div className="col-lg-4 col-md-4 col-sm-8 mt-3 mt-lg-0 mt-md-0 text-end">
                             <label>{height} cm</label>
                           </div>
                         </div>
@@ -1037,18 +1037,18 @@ const AdmissionCard = () => {
                             (
                               <>
                                 <div className="row mt-3">
-                                  <div className="col-lg-8 col-md-8 col-6 mt-3 mt-lg-0 mt-md-0 text-end">
+                                  <div className="col-lg-8 col-md-8 col-8 mt-3 mt-lg-0 mt-md-0 text-end">
                                     <label htmlFor="officeName">Chest Normal:</label>
                                   </div>
-                                  <div className="col-lg-4 col-md-4 col-6 mt-3 mt-lg-0 mt-md-0 text-end">
+                                  <div className="col-lg-4 col-md-4 col-4 mt-3 mt-lg-0 mt-md-0 text-end">
                                     <label>{chestNormal} cm</label>
                                   </div>
                                 </div>
                                 <div className="row mt-3">
-                                  <div className="col-lg-8 col-md-8 col-6 mt-3 mt-lg-0 mt-md-0 text-end">
+                                  <div className="col-lg-8 col-md-8 col-8 mt-3 mt-lg-0 mt-md-0 text-end">
                                     <label htmlFor="officeName">Chest Inhale:</label>
                                   </div>
-                                  <div className="col-lg-4 col-md-4 col-6 mt-3 mt-lg-0 mt-md-0 text-end">
+                                  <div className="col-lg-4 col-md-4 col-4 mt-3 mt-lg-0 mt-md-0 text-end">
                                     <label>{chestInhale} cm</label>
                                   </div>
                                 </div>

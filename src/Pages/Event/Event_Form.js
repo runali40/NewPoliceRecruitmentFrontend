@@ -15,6 +15,7 @@ import {
 } from "../../Components/Api/EventApi";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { ArrowBack } from "@material-ui/icons";
 // import { duration } from "moment";
 // import { data } from "jquery";
 
@@ -487,7 +488,7 @@ const Event_Form = () => {
       ${!isShotPut ? `<td>${row.StartTime === "00:00:00.00" ? "" : row.StartTime || ""}</td>` : ""}
       ${!isShotPut ? `<td>${row.EndTime === "00:00:00.00" ? "" : row.EndTime || ""}</td>` : ""}
       ${!isShotPut ? `<td>${row.duration || ""}</td>` : ""}
-       ${isLapEvent ? "<td>4</td>" : ""}
+       ${isLapEvent ? `<td>${row.Lapcount || ""}</td>` : ""}
       ${isShotPut ? `<td>${row.distance1 || ""}</td>` : ""}
       ${isShotPut ? `<td>${row.distance2 || ""}</td>` : ""}
       ${isShotPut ? `<td>${row.distance3 || ""}</td>` : ""}
@@ -781,7 +782,7 @@ const Event_Form = () => {
                   </div>
                   <div className="col-lg-4 col-md-4 col-5 d-flex justify-content-end print-section">
                     <button className="btn me-2" style={headerCellStyle} /* onClick={() => window.print()} */ onClick={openPrintWindow}>Print</button>
-                    <button className="btn" style={headerCellStyle} onClick={() => navigate(-1)}>Back</button>
+                    <button className="btn" style={headerCellStyle} onClick={() => navigate(-1)}>  <ArrowBack /></button>
                   </div>
                 </div>
               </div>
@@ -1110,7 +1111,7 @@ const Event_Form = () => {
                             </div>
                           </td> */}
                         {
-                          title === "1600 Meter Running" || title === "800 Meter Running" ? <td className="py-4">4</td> : null
+                          title === "1600 Meter Running" || title === "800 Meter Running" ? <td className="py-4">{row.Lapcount}</td> : null
                         }
                         <td className="d-none">
                           <div
