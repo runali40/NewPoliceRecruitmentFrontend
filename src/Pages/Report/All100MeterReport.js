@@ -123,15 +123,25 @@ const All100MeterReport = () => {
     setAllReservationCategory(data)
   }
 
-  const handleReservationCategory = async (selected) => {
-    const selectedValue = selected;
-    setReservationCategory(selectedValue);
-    console.log(selectedValue.value, "selected value");
-    // setGroupId(selectedValue.value)
-    const data = await fetchAll100Meter(eventId, groupId, selectedValue.label, cast);
-    console.log(data)
-    setAll100MeterReport(data)
-  }
+  // const handleReservationCategory = async (selected) => {
+  //   const selectedValue = selected;
+  //   setReservationCategory(selectedValue);
+  //   console.log(selectedValue.value, "selected value");
+  //   // setGroupId(selectedValue.value)
+  //   const data = await fetchAll100Meter(eventId, groupId, selectedValue.label, cast);
+  //   console.log(data)
+  //   setAll100MeterReport(data)
+  // }
+
+    const handleReservationCategory = async (selected) => {
+      const selectedValue = selected;
+      setReservationCategory(selectedValue);
+      console.log(selectedValue.value, "selected value");
+      // setGroupId(selectedValue.value)
+      const data = await fetchAll100Meter(eventId, groupId, selectedValue.label, cast);
+      console.log(data)
+      setAll100MeterReport(data)
+    }
 
   const getAllCastData = async () => {
     const data = await getAllCast();

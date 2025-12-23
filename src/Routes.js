@@ -56,6 +56,7 @@ import All800MeterReport from './Pages/Report/All800MeterReport';
 import All1600MeterReport from './Pages/Report/All1600MeterReport';
 import ShotputReport from './Pages/Report/ShotputReport';
 import AllRunningReport from './Pages/Report/AllRunningReport';
+import AppealCandidate from './Pages/Candidate/AppealCandidate';
 
 const routes = [
     { path: '/', exact: true, name: 'Login', element: Login },
@@ -117,5 +118,6 @@ const routes = [
     { path: '/1600MeterReport', name: '1600 Meter Report', element: All1600MeterReport },
     { path: '/shotputReport', name: 'Shot Put Report', element: ShotputReport },
     { path: '/allRunningReport', name: 'All Running Report', element: AllRunningReport },
+    { path: '/appealCandidate', name: 'Appeal Candidate', element: AppealCandidate },
 ]
 export default routes

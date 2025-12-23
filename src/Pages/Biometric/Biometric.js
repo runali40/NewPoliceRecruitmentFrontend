@@ -80,12 +80,32 @@ const Biometric = () => {
     }
   };
 
+  // const handleFlipCamera = () => {
+  //   if (isMobileDevice) {
+  //     // On mobile, toggle between "user" and "environment"
+  //     setFacingMode((prevMode) => (prevMode === "user" ? "environment" : "user"));
+  //   } else if (videoDevices.length > 1) {
+  //     // On laptops/desktops, switch between available video devices
+  //     setCurrentDeviceIndex((prevIndex) => (prevIndex + 1) % videoDevices.length);
+  //   } else {
+  //     console.warn("No multiple cameras found to switch.");
+  //   }
+  // };
+
+  // Video constraints
+
 
   const videoConstraints = {
     width: 540,
     facingMode: facingMode,
     deviceId: deviceId || undefined,
   };
+  // const videoConstraints = {
+  //   width: { ideal: 1280 },
+  //   height: { ideal: 720 },
+  //   deviceId: deviceId ? { exact: deviceId } : undefined,
+  //   facingMode: deviceId ? undefined : facingMode, // Only use facingMode if no deviceId
+  // };
   useEffect(() => {
     const getDevices = async () => {
       try {
@@ -1717,7 +1737,7 @@ const Biometric = () => {
                           </div>
                         ) : (
                           <>
-                            {/* <Webcam
+                            <Webcam
                               className="my-3"
                               id="clickPhoto"
                               style={{ height: "110%", width: "70%" }}
@@ -1733,8 +1753,8 @@ const Biometric = () => {
                                 console.error("onUserMediaError: ", err)
                               }
                               mirrored={false}
-                            /> */}
-                            <Webcam
+                            />
+                            {/* <Webcam
                               className="my-3"
                               id="clickPhoto"
                               style={{ height: "110%", width: "60%" }}
@@ -1743,10 +1763,10 @@ const Biometric = () => {
                               screenshotFormat="image/png"
                               videoConstraints={videoConstraints}
                               onUserMediaError={(err) => console.error("onUserMediaError: ", err)}
-                            />
+                            /> */}
                             <button
-                              className="btn btn-primary mx-3 d-xl-block d-lg-block d-md-none d-none"
-                              type="button"
+                              className="btn btn-primary mx-3 d-xl-block d-lg-block"
+
                               onClick={handleFlipCamera}
                             >
                               Flip Camera
@@ -1759,7 +1779,7 @@ const Biometric = () => {
                     </div>
                     <div className="row">
                       <div className="col-lg-4 col-md-4 my-3 mt-lg-5 mt-md-0 mt-2 ">
-                        <button className="btn btn-primary mt-1" onClick={() => handleShow()}>Add Multiple Finger</button>
+                        <button className="btn btn-primary mt-1" onClick={() => setShowModal(true)}>Add Multiple Finger</button>
                       </div>
                       <div className="col-lg-4 col-md-4 my-3  mt-lg-0 mt-md-0 mt-2">
 

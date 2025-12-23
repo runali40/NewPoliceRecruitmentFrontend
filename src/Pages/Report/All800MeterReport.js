@@ -448,6 +448,9 @@ const All800MeterReport = () => {
                         Duration
                       </th>
                       <th scope="col" style={headerCellStyle}>
+                        Lap
+                      </th>
+                      <th scope="col" style={headerCellStyle}>
                         Score
                       </th>
                     </tr>
@@ -465,6 +468,7 @@ const All800MeterReport = () => {
                         <td>{data.StartTime}</td>
                         <td>{data.EndTime}</td>
                         <td>{data.duration}</td>
+                        <td>{data.Lapcount}</td>
                         <td>{data.score}</td>
                       </tr>
                     ))}

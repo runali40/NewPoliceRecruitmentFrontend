@@ -17,6 +17,7 @@ const Rfid = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [chestNo, setChestNo] = useState("");
+  const [tagNo, setTagNo] = useState("");
   const [rfid, setRfid] = useState("");
   const [mappingId, setMappingId] = useState("")
   const [allTagger, setAllTagger] = useState([]);
@@ -102,6 +103,7 @@ const Rfid = () => {
       setChestNo(response.data.data[0].ChestNo);
       setRfid(response.data.data[0].RFID);
       setMappingId(response.data.data[0].id)
+      setTagNo(response.data.data[0].Barcode)
     } catch (error) {
       if (error.response && error.response.data && error.response.data.outcome) {
         const token1 = error.response.data.outcome.tokens;
@@ -121,10 +123,11 @@ const Rfid = () => {
   };
 
   const handleAddTagger = async () => {
-    const data = await addTagger(rfid, chestNo, mappingId);
+    const data = await addTagger(rfid, chestNo, mappingId, tagNo);
     if (data) {
       setChestNo("");
       setRfid("");
+      setTagNo("");
       fetchAllTagger();
     }
   };
@@ -440,6 +443,29 @@ const Rfid = () => {
                         </div>
                       </div>
                     </div>
+                    <div className="row">
+                      <div className="col-xl-1 col-lg-2 col-md-2">
+                        <label htmlFor="chestNo" className="fw-bold">
+                          Tag No :
+                        </label>
+                        {/* <span className="text-danger fw-bold">*</span> */}
+                      </div>
+                      <div className="col-xl-3 col-lg-4 col-md-4 mt-lg-0 mt-3">
+                        <div className="form-group">
+                          <input
+                            type="text"
+                            className="form-control"
+                            name="tagNo"
+                            id="tagNo"
+                            aria-describedby="tagNo"
+                            placeholder="Enter Tag No"
+                            value={tagNo}
+                            onChange={(e) => setTagNo(e.target.value)}
+                          />
+                        </div>
+                      </div>
+
+                    </div>
                   </div>
                 </div>
               </div>
@@ -504,10 +530,13 @@ const Rfid = () => {
                         Candidate Name
                       </th> */}
                       <th scope="col" style={headerCellStyle}>
-                        Chest No.
+                        Chest No
                       </th>
                       <th scope="col" style={headerCellStyle}>
                         RFID
+                      </th>
+                      <th scope="col" style={headerCellStyle}>
+                        Tag No
                       </th>
                       <th scope="col" style={headerCellStyle}>
                         Action
@@ -521,6 +550,7 @@ const Rfid = () => {
                         {/* <td>{data.FirstName_English + " " + data.FatherName_English + " " + data.Surname_English}</td> */}
                         <td>{data.ChestNo}</td>
                         <td>{data.RFID}</td>
+                        <td>{data.Barcode}</td>
                         <td>
                           <div className="d-flex justify-content-center align-items-center gap-">
                             <Edit

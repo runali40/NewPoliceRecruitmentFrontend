@@ -36,7 +36,7 @@ export const getAllTagger = async () => {
 };
 
 // Add a new tagger
-export const addTagger = async (rfid, chestNo, mappingId) => {
+export const addTagger = async (rfid, chestNo, mappingId, tagNo) => {
   const UserId = localStorage.getItem("userId");
   const recruitId = localStorage.getItem("recruitId");
   if (rfid === "" || chestNo === "") {
@@ -47,6 +47,7 @@ export const addTagger = async (rfid, chestNo, mappingId) => {
       userId: UserId,
       chestNo: chestNo,
       RecruitId: recruitId,
+      barcode: tagNo
     };
     if (mappingId !== null && mappingId !== "") {
       data.id = mappingId;
