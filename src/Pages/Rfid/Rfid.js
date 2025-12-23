@@ -141,9 +141,17 @@ const Rfid = () => {
     }
   }
 
+  const sortedTagger = [...allTagger].sort(
+    (a, b) => Number(a.Barcode) - Number(b.Barcode)
+  );
+
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = allTagger.slice(indexOfFirstItem, indexOfLastItem);
+
+  const currentItems = sortedTagger.slice(
+    indexOfFirstItem,
+    indexOfLastItem
+  );
 
   const checkIfMobile = () => /Mobi|Android/i.test(navigator.userAgent);
 
@@ -443,10 +451,10 @@ const Rfid = () => {
                         </div>
                       </div>
                     </div>
-                    <div className="row">
+                    <div className="row mt-3">
                       <div className="col-xl-1 col-lg-2 col-md-2">
                         <label htmlFor="chestNo" className="fw-bold">
-                          Tag No :
+                          Barcode No :
                         </label>
                         {/* <span className="text-danger fw-bold">*</span> */}
                       </div>
@@ -458,7 +466,7 @@ const Rfid = () => {
                             name="tagNo"
                             id="tagNo"
                             aria-describedby="tagNo"
-                            placeholder="Enter Tag No"
+                            placeholder="Enter Barcode No"
                             value={tagNo}
                             onChange={(e) => setTagNo(e.target.value)}
                           />
@@ -536,7 +544,7 @@ const Rfid = () => {
                         RFID
                       </th>
                       <th scope="col" style={headerCellStyle}>
-                        Tag No
+                        Barcode No
                       </th>
                       <th scope="col" style={headerCellStyle}>
                         Action
@@ -544,58 +552,39 @@ const Rfid = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {currentItems.map((data, index) => (
-                      <tr key={data.id}>
-                        <td>{(currentPage - 1) * itemsPerPage + index + 1}</td>
-                        {/* <td>{data.FirstName_English + " " + data.FatherName_English + " " + data.Surname_English}</td> */}
-                        <td>{data.ChestNo}</td>
-                        <td>{data.RFID}</td>
-                        <td>{data.Barcode}</td>
-                        <td>
-                          <div className="d-flex justify-content-center align-items-center gap-">
-                            <Edit
-                              className="text-success mr-2"
-                              type="button"
-                              // onClick={() => getParameter(data.p_id)}
-                              style={{
-                                // marginLeft: "0.5rem",
-                                ...(data.p_isactive === "Inactive" && {
-                                  opacity: 0.5,  // Makes the icon appear faded
-                                  cursor: "not-allowed", // Changes cursor to indicate disabled state
-                                }),
-                              }}
-                              // onClick={data.p_isactive === "Inactive" ? null : () => getParameter(data.p_id)}
-                              onClick={() => { getRfidMapping(data.CandidateID, data.ChestNo) }}
-                            />
-
-                            {/* <Delete
-                                                            className="text-danger"
-                                                            type="button"
-                                                            disabled={true}  
-                                                            style={{ marginLeft: "0.5rem" }}
-                                                            onClick={() => DeleteParameterMaster(data.p_id)}
-                                                            
-                                                          /> */}
-                            <Delete
-                              className="text-danger"
-                              type="button"
-                              style={{ marginLeft: "0.5rem" }}
-                              onClick={() => DeleteTagger(data.id)}
-                            />
-                          </div>
-                          {/* <div className="d-flex justify-content-between">
-                            <Delete
-                              className="text-danger"
-                              type="button"
-                              style={{ marginLeft: "0.5rem" }}
-                              onClick={() => DeleteTagger(data.id)}
-                            />
-                          </div> */}
-                        </td>
-
-                      </tr>
-                    ))}
+                    {[...currentItems]
+                      .sort((a, b) => Number(a.ChestNo) - Number(b.ChestNo))
+                      .map((data, index) => (
+                        <tr key={data.id}>
+                          <td>{(currentPage - 1) * itemsPerPage + index + 1}</td>
+                          <td>{data.ChestNo}</td>
+                          <td>{data.RFID}</td>
+                          <td>{data.Barcode}</td>
+                          <td>
+                            <div className="d-flex justify-content-center align-items-center">
+                              <Edit
+                                className="text-success mr-2"
+                                type="button"
+                                style={{
+                                  ...(data.p_isactive === "Inactive" && {
+                                    opacity: 0.5,
+                                    cursor: "not-allowed",
+                                  }),
+                                }}
+                                onClick={() => getRfidMapping(data.CandidateID, data.ChestNo)}
+                              />
+                              <Delete
+                                className="text-danger"
+                                type="button"
+                                style={{ marginLeft: "0.5rem" }}
+                                onClick={() => DeleteTagger(data.id)}
+                              />
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
                   </tbody>
+
                 </Table>
                 <div className="row mt-4 mt-xl-3">
                   <div className="col-lg-4 col-12 ">

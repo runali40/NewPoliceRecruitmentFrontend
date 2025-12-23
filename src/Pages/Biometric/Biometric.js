@@ -1461,9 +1461,11 @@ const Biometric = () => {
 
     if (url === null) {
       toast.warning("Please capture the photo!");
-    } else if (!signature) {
-      toast.warning("Please add signature!");
-    } else {
+    } 
+    // else if (!signature) {
+    //   toast.warning("Please add signature!");
+    // } 
+    else {
       const data = {
         CandidateID: candidateId,
         UserId: UserId,

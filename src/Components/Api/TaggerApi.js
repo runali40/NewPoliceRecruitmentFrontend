@@ -39,7 +39,7 @@ export const getAllTagger = async () => {
 export const addTagger = async (rfid, chestNo, mappingId, tagNo) => {
   const UserId = localStorage.getItem("userId");
   const recruitId = localStorage.getItem("recruitId");
-  if (rfid === "" || chestNo === "") {
+  if (rfid === "" /* || chestNo === "" */) {
     toast.warning("Please enter the details!");
   } else {
     const data = {
@@ -49,7 +49,7 @@ export const addTagger = async (rfid, chestNo, mappingId, tagNo) => {
       RecruitId: recruitId,
       barcode: tagNo
     };
-    if (mappingId !== null && mappingId !== "") {
+    if (mappingId !== null && mappingId !== "" && tagNo!== "") {
       data.id = mappingId;
     }
     try {
