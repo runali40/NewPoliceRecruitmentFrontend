@@ -485,8 +485,20 @@ const Event_Form = () => {
       <td>${index + 1}</td>
       <td>${row.ChestNo || ""}</td>
       <td>${row.Name || ""}</td>
-      ${!isShotPut ? `<td>${row.StartTime === "00:00:00.00" ? "" : row.StartTime || ""}</td>` : ""}
-      ${!isShotPut ? `<td>${row.EndTime === "00:00:00.00" ? "" : row.EndTime || ""}</td>` : ""}
+      
+      ${!isShotPut ? `
+  <td>${row.StartTime === "00:00:00.00" || row.StartTime === "00:00:00.000"
+            ? ""
+            : row.StartTime || ""
+          }</td>
+` : ""}
+
+${!isShotPut ? `
+  <td>${row.EndTime === "00:00:00.00" || row.EndTime === "00:00:00.000"
+            ? ""
+            : row.EndTime || ""
+          }</td>
+` : ""}
       ${!isShotPut ? `<td>${row.duration || ""}</td>` : ""}
        ${isLapEvent ? `<td>${row.Lapcount || ""}</td>` : ""}
       ${isShotPut ? `<td>${row.distance1 || ""}</td>` : ""}
@@ -934,7 +946,8 @@ const Event_Form = () => {
                             <Datetime
                               dateFormat={false}
                               timeFormat="HH:mm:ss.SSS"
-                              value={row.StartTime}
+                              // value={row.StartTime}
+                              value={row.StartTime === "00:00:00.000" ? null : row.StartTime}
                               onChange={(momentObj) =>
                                 handleDateChange(momentObj, index, "StartTime")
                               }
@@ -984,7 +997,8 @@ const Event_Form = () => {
                             <Datetime
                               dateFormat={false}
                               timeFormat="HH:mm:ss.SSS"
-                              value={row.EndTime}
+                              // value={row.EndTime}
+                              value={row.EndTime === "00:00:00.000" ? null : row.EndTime}
                               onChange={(momentObj) =>
                                 handleDateChange(momentObj, index, "EndTime")
                               }
