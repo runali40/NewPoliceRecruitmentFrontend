@@ -175,7 +175,7 @@ const Event_Form = () => {
       // Step 4: Prepare initial rows for each chest number
       const initialRows = sortedChestNumbers.map((data) => ({
         ChestNo: data.ChestNo,
-        Name: data.FirstName_English,
+        Name: data.FirstName_English + " " + data.Surname_English,
         StartTime: null,
         EndTime: null,
         group: groupId.toString(),
@@ -339,13 +339,13 @@ const Event_Form = () => {
         //   toast.warning("Please fill in all required fields before submission!");
         //   return;
         // }
-        if (
-          !row.ChestNo ||
-          (!row.StartTime && !row.EndTime)
-        ) {
-          toast.warning("Please fill in all required fields before submission!");
-          return;
-        }
+        // if (
+        //   !row.ChestNo ||
+        //   (!row.StartTime && !row.EndTime)
+        // ) {
+        //   toast.warning("Please fill in all required fields before submission!");
+        //   return;
+        // }
       }
     }
 
