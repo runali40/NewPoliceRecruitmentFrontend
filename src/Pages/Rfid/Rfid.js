@@ -80,14 +80,15 @@ const Rfid = () => {
     }
   };
 
-  const getRfidMapping = async (CandidateId, chestNo) => {
+  const getRfidMapping = async (CandidateId, chestNo, tagNo) => {
     const UserId = localStorage.getItem("userId");
     const recruitId = localStorage.getItem("recruitId");
     const params = {
       userId: UserId,
       RecruitId: recruitId,
       CandidateID: CandidateId,
-      ChestNo: chestNo
+      ChestNo: chestNo,
+      Barcode: tagNo
     };
 
     try {
@@ -341,11 +342,20 @@ const Rfid = () => {
     if (searchDataValue.trim() === "") {
       fetchAllTagger();
     } else {
-      const filteredData = allTagger.filter(
-        (tagger) =>
-          tagger.ChestNo.toLowerCase().includes(searchDataValue) ||
-          tagger.FullNameEnglish.toLowerCase().includes(searchDataValue)
+      // const filteredData = allTagger.filter(
+      //   (tagger) =>
+      //     tagger.ChestNo.toLowerCase().includes(searchDataValue) ||
+      //     tagger.FullNameEnglish.toLowerCase().includes(searchDataValue) ||
+      //     tagger.Barcode.toLowerCase().includes(searchDataValue)
+      // );
+      // setAllTagger(filteredData);
+      // setCurrentPage(1);
+      const filteredData = allTagger.filter((tagger) =>
+        (tagger.ChestNo ?? "").toString().toLowerCase().includes(searchDataValue) ||
+        (tagger.FullNameEnglish ?? "").toLowerCase().includes(searchDataValue) ||
+        (tagger.Barcode ?? "").toLowerCase().includes(searchDataValue)
       );
+
       setAllTagger(filteredData);
       setCurrentPage(1);
     }
@@ -571,7 +581,7 @@ const Rfid = () => {
                                     cursor: "not-allowed",
                                   }),
                                 }}
-                                onClick={() => getRfidMapping(data.CandidateID, data.ChestNo)}
+                                onClick={() => getRfidMapping(data.CandidateID, data.ChestNo, data.Barcode)}
                               />
                               <Delete
                                 className="text-danger"

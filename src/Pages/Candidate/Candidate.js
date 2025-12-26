@@ -2861,8 +2861,9 @@ const Candidate = () => {
                     {/* </div> */}
 
                     <button
-                      className={`btn btn-primary btn-sm p-2 rounded-4 mt-3 mx-3 position-relative ${measurementStatus === true &&
-                        documentUploaded === "True"
+                      className={`btn btn-primary btn-sm p-2 rounded-4 mt-3 mx-3 position-relative ${measurementStatus === true
+                        // &&
+                        // documentUploaded === "True"
                         ? "btn-success d-block"
                         : measurementStatus === false &&
                           documentUploaded === "False"
