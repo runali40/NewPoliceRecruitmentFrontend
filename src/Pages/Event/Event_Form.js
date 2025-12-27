@@ -951,13 +951,13 @@ ${!isShotPut ? `
                               onChange={(momentObj) =>
                                 handleDateChange(momentObj, index, "StartTime")
                               }
-                              inputProps={{
-                                readOnly: true,   // ✅ keyboard typing disabled
-                                disabled:
-                                  row.Status === "False" ||
-                                  (row.score && row.Status !== "True"),
-                                style: { overflow: "auto" }
-                              }}
+                              // inputProps={{
+                              //   readOnly: true,   // ✅ keyboard typing disabled
+                              //   disabled:
+                              //     row.Status === "False" ||
+                              //     (row.score && row.Status !== "True" ),
+                              //   style: { overflow: "auto" }
+                              // }}
                             />
                             {/* <Datetime
                               dateFormat={false}
@@ -1003,14 +1003,14 @@ ${!isShotPut ? `
                                 handleDateChange(momentObj, index, "EndTime")
                               }
                               className="custom-datetime"
-                              inputProps={{
-                                readOnly: true,   // ✅ no keyboard typing
-                                onKeyDown: (e) => e.preventDefault(), // extra safety
-                                disabled:
-                                  row.Status === "False" ||
-                                  (row.score && row.Status !== "True"),
-                                style: { overflow: "auto" }
-                              }}
+                              // inputProps={{
+                              //   readOnly: true,   // ✅ no keyboard typing
+                              //   onKeyDown: (e) => e.preventDefault(), // extra safety
+                              //   disabled:
+                              //     row.Status === "False" ||
+                              //     (row.score && row.Status !== "True"),
+                              //   style: { overflow: "auto" }
+                              // }}
                             />
                           </td>
                         )}

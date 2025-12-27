@@ -436,7 +436,7 @@ const Rfid = () => {
                             aria-describedby="chestNo"
                             placeholder="Enter Chest No."
                             value={chestNo}
-                            onChange={(e) => setChestNo(e.target.value)}
+                            onChange={(e) => setChestNo(e.target.value.replace(/\s/g, ""))}
                           />
                         </div>
                       </div>
@@ -448,7 +448,7 @@ const Rfid = () => {
                       </div>
                       <div className="col-xl-3 col-lg-4 col-md-4 mt-lg-0 mt-3">
                         <div className="form-group">
-                          <input
+                          {/*<input
                             type="text"
                             className="form-control"
                             name="rfid"
@@ -457,6 +457,16 @@ const Rfid = () => {
                             placeholder="Enter RFID"
                             value={rfid}
                             onChange={(e) => setRfid(e.target.value)}
+                          />*/}
+                          <input
+                            type="text"
+                            className="form-control"
+                            name="rfid"
+                            id="rfid"
+                            aria-describedby="rfid"
+                            placeholder="Enter RFID"
+                            value={rfid}
+                            onChange={(e) => setRfid(e.target.value.replace(/\s/g, ""))}
                           />
                         </div>
                       </div>
@@ -478,7 +488,7 @@ const Rfid = () => {
                             aria-describedby="tagNo"
                             placeholder="Enter Barcode No"
                             value={tagNo}
-                            onChange={(e) => setTagNo(e.target.value)}
+                            onChange={(e) => setTagNo(e.target.value.replace(/\s/g, ""))}
                           />
                         </div>
                       </div>
