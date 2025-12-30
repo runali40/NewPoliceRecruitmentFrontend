@@ -8,6 +8,8 @@ import "react-toastify/dist/ReactToastify.css";
 import { Pagination } from '../../Components/Utils/Pagination';
 import { getAllGroup } from '../../Components/Api/EventApi';
 import { ArrowBack, Refresh } from '@material-ui/icons';
+import jsPDF from "jspdf";
+import "jspdf-autotable";
 
 const AllRunningReport = () => {
     const navigate = useNavigate();
@@ -260,9 +262,84 @@ const AllRunningReport = () => {
         printWindow.document.close();
     };
 
+    const downloadAllRunningPDF = () => {
+        const doc = new jsPDF("l", "mm", "a4");
+
+        const pageWidth = doc.internal.pageSize.getWidth();
+
+        // Main Title
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(16);
+
+        doc.text(
+            `Commissioner of Police ${recruitName} City`,
+            pageWidth / 2,
+            15,
+            { align: "center" }
+        );
+        // Sub Title
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(12);
+        doc.text("All Report", pageWidth / 2, 23, { align: "center" });
+        const tableColumn = [
+            "Sr No",
+            "Candidate Name",
+            "Chest No",
+            "Cast",
+            "Parallel Reservation",
+            "100 Meter",
+            "800 Meter",
+            "1600 Meter",
+            "Shot Put",
+            "Total"
+        ];
+
+        // 🔹 SORT DATA BY CHEST NO (ASC)
+        const sortedData = [...allRunningReport].sort(
+            (a, b) => Number(a.ChestNo) - Number(b.ChestNo)
+        );
+
+        const tableRows = [];
+
+        sortedData.forEach((data, index) => {
+            tableRows.push([
+                index + 1,
+                data.CandidateName,
+                data.ChestNo,
+                data.Cast,
+                data["Parallel Reservation"],
+                data["100 Meter Running"],
+                data["800 Meter Running"],
+                data["1600 Meter Running"],
+                data["Shot Put"],
+                data["Total"]
+            ]);
+        });
+
+        doc.autoTable({
+            head: [tableColumn],
+            body: tableRows,
+            startY: 30, // ⬅️ increase this value
+            styles: { fontSize: 8 },
+            headStyles: {
+                fillColor: [27, 90, 144],
+                textColor: 255,
+                fontStyle: "bold",
+            },
+        });
+
+        doc.save("All_Report.pdf");
+    };
+
+    const sortedData = [...allRunningReport].sort(
+        (a, b) => Number(a.ChestNo) - Number(b.ChestNo)
+    );
+
+
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    const currentItems = allRunningReport.slice(indexOfFirstItem, indexOfLastItem);
+    const currentItems = sortedData.slice(indexOfFirstItem, indexOfLastItem);
+
     return (
         <>
             <div className="container-fluid">
@@ -299,6 +376,13 @@ const AllRunningReport = () => {
                                                 }}
                                                 titleAccess="Refresh Page"
                                             />
+                                        </button>
+                                        <button
+                                            className="btn btn-sm me-2"
+                                            style={headerCellStyle}
+                                            onClick={downloadAllRunningPDF}
+                                        >
+                                            Download PDF
                                         </button>
                                         <button className="btn me-2" style={headerCellStyle} /* onClick={() => window.print()} */ onClick={openPrintWindow} >Print</button>
                                         <button className="btn" style={headerCellStyle} onClick={() => navigate(-1)}>  <ArrowBack /></button>

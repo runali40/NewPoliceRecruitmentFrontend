@@ -8,6 +8,8 @@ import "react-toastify/dist/ReactToastify.css";
 import { Pagination } from '../../Components/Utils/Pagination';
 import { getAllGroup } from '../../Components/Api/EventApi';
 import { ArrowBack, Refresh } from "@material-ui/icons";
+import jsPDF from "jspdf";
+import "jspdf-autotable";
 
 const All100MeterReport = () => {
   const navigate = useNavigate();
@@ -133,15 +135,15 @@ const All100MeterReport = () => {
   //   setAll100MeterReport(data)
   // }
 
-    const handleReservationCategory = async (selected) => {
-      const selectedValue = selected;
-      setReservationCategory(selectedValue);
-      console.log(selectedValue.value, "selected value");
-      // setGroupId(selectedValue.value)
-      const data = await fetchAll100Meter(eventId, groupId, selectedValue.label, cast);
-      console.log(data)
-      setAll100MeterReport(data)
-    }
+  const handleReservationCategory = async (selected) => {
+    const selectedValue = selected;
+    setReservationCategory(selectedValue);
+    console.log(selectedValue.value, "selected value");
+    // setGroupId(selectedValue.value)
+    const data = await fetchAll100Meter(eventId, groupId, selectedValue.label, cast);
+    console.log(data)
+    setAll100MeterReport(data)
+  }
 
   const getAllCastData = async () => {
     const data = await getAllCast();
@@ -287,9 +289,76 @@ const All100MeterReport = () => {
     printWindow.document.close();
   };
 
+  const download100MeterPDF = () => {
+    const doc = new jsPDF("l", "mm", "a4");
+    const pageWidth = doc.internal.pageSize.getWidth();
+
+    // Header
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(16);
+    doc.text(
+      `Commissioner of Police ${recruitName} City`,
+      pageWidth / 2,
+      15,
+      { align: "center" }
+    );
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(12);
+    doc.text("100 Meter Report", pageWidth / 2, 23, { align: "center" });
+
+    const tableColumn = [
+      "Sr No",
+      "Candidate Name",
+      "Chest No",
+      "Cast",
+      "Parallel Reservation",
+      "Start Time",
+      "End Time",
+      "Duration",
+      "Score"
+    ];
+
+    // 🔹 SORT DATA BY CHEST NO (ASC)
+    const sortedData = [...all100MeterReport].sort(
+      (a, b) => Number(a.ChestNo) - Number(b.ChestNo)
+    );
+
+    const tableRows = sortedData.map((data, index) => ([
+      index + 1,
+      data.CandidateName,
+      data.ChestNo,
+      data.Cast,
+      data["Parallel Reservation"],
+      data.StartTime,
+      data.EndTime,
+      data.duration,
+      data.score
+    ]));
+
+    doc.autoTable({
+      head: [tableColumn],
+      body: tableRows,
+      startY: 30,
+      styles: { fontSize: 8 },
+      headStyles: {
+        fillColor: [27, 90, 144],
+        textColor: 255,
+        fontStyle: "bold",
+      },
+    });
+
+    doc.save("100_Meter_Report.pdf");
+  };
+
+
+  const sortedData = [...all100MeterReport].sort(
+    (a, b) => Number(a.ChestNo) - Number(b.ChestNo)
+  );
+
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = all100MeterReport.slice(indexOfFirstItem, indexOfLastItem);
+  const currentItems = sortedData.slice(indexOfFirstItem, indexOfLastItem);
   return (
     <>
       <div className="container-fluid" key={refreshKey}>
@@ -306,6 +375,7 @@ const All100MeterReport = () => {
                     <h4 className="card-title fw-bold py-2">100 Meter Running Report</h4>
                   </div>
                   <div className="col-lg-4 col-md-4 col-5 d-flex justify-content-end print-section">
+
                     <button
                       className="btn btn-sm me-2"
                       style={{ backgroundColor: "#1B5A90", color: "white" }}
@@ -321,6 +391,13 @@ const All100MeterReport = () => {
                         }}
                         titleAccess="Refresh Page"
                       />
+                    </button>
+                    <button
+                      className="btn btn-sm me-2"
+                      style={headerCellStyle}
+                      onClick={download100MeterPDF}
+                    >
+                      Download PDF
                     </button>
                     <button className="btn me-2" style={headerCellStyle} /* onClick={() => window.print()} */ onClick={openPrintWindow} >Print</button>
                     <button className="btn" style={headerCellStyle} onClick={() => navigate(-1)}><ArrowBack /></button>
@@ -478,6 +555,7 @@ const All100MeterReport = () => {
                         <td>{data.score}</td>
                       </tr>
                     ))}
+
                   </tbody>
                 </Table>
                 <div className="row mt-4 mt-xl-3">

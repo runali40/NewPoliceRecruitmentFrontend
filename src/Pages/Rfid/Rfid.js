@@ -10,7 +10,9 @@ import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import ErrorHandler from "../../Components/ErrorHandler";
 import Cookies from "js-cookie";
+import * as XLSX from "xlsx";
 import { apiClient } from "../../apiClient";
+import { Button } from "react-bootstrap";
 
 const Rfid = () => {
   const navigate = useNavigate();
@@ -36,6 +38,8 @@ const Rfid = () => {
   const [videoDevices, setVideoDevices] = useState([]); // Store available video devices
   const [isMobileDevice, setIsMobileDevice] = useState(false);
   const [currentDeviceIndex, setCurrentDeviceIndex] = useState(0); // Track the index of the current device
+  const fileInputRef = useRef(null);
+  const [file, setFile] = useState(null);
 
 
   const headerCellStyle = {
@@ -360,6 +364,130 @@ const Rfid = () => {
       setCurrentPage(1);
     }
   };
+
+  const handleFileChange = async (e) => {
+    e.preventDefault();
+    const recruitId = localStorage.getItem("recruitId");
+    const selectedFile = e.target.files[0];
+
+    if (!selectedFile) {
+      toast.warning("Please select a file to upload.");
+      return;
+    }
+
+    setFile(selectedFile);
+
+    const uploadFile = async (fileToUpload) => {
+      const UserId = localStorage.getItem("userId");
+
+      const formData = new FormData();
+      formData.append("file", fileToUpload);
+      formData.append("userId", UserId);
+      formData.append("RecruitId", recruitId);
+
+      try {
+        const response = await apiClient.post(`RFIDChestNoMapping/RFIDupload`, formData, {});
+
+        if (response.status === 200) {
+          console.log("Full API Response:", JSON.stringify(response.data, null, 2));
+
+          const result = response.data;
+
+          if (result.outcome?.tokens) {
+            Cookies.set("UserCredential", result.outcome.tokens, { expires: 7 });
+          }
+
+          const fileReader = new FileReader();
+
+          fileReader.onload = async (event) => {
+            const fileContent = event.target.result;
+            const processedRecords = fileContent.split('\n').length - 1;
+
+            toast.success(
+              `Success: User import completed.`
+            );
+
+            // Refresh the user list
+            const updatedData = await getAllTagger();
+            setAllTagger(updatedData);
+
+            // Reset the file input after successful upload
+            if (fileInputRef.current) {
+              fileInputRef.current.value = '';
+            }
+          };
+
+          fileReader.onerror = () => {
+            toast.error("Error reading file content");
+            if (fileInputRef.current) {
+              fileInputRef.current.value = '';
+            }
+          };
+
+          // Read the file as text
+          fileReader.readAsText(fileToUpload);
+
+        } else {
+          console.error("Error:", response.statusText);
+          toast.error("Upload failed. Please try again.");
+          if (fileInputRef.current) {
+            fileInputRef.current.value = '';
+          }
+        }
+      } catch (error) {
+        if (error.response?.data?.outcome?.tokens) {
+          Cookies.set("UserCredential", error.response.data.outcome.tokens, {
+            expires: 7,
+          });
+        }
+        console.error("Error:", error.response?.status);
+
+        if (error.response?.status === 500) {
+          toast.error("Excel import failed: Please check and re-upload a valid excel file.");
+        }
+        else if (error.response?.status === 400) {
+          toast.error("Please upload a file of type: .xls, .xlsx, .xlsm, .csv");
+        }
+        else if (error.response?.status === 422) {
+          toast.error("No data in the excel!");
+        }
+        else if (error.response?.status === 409) {
+          // toast.error("Record already exists!");
+          console.log(error.response?.data)
+          // setErrorMessage(error.response?.data);
+          // setShowErrorModal(true);
+        }
+        else {
+          const errors = ErrorHandler(error);
+          toast.error(errors);
+        }
+
+        // Reset file input on error
+        if (fileInputRef.current) {
+          fileInputRef.current.value = '';
+        }
+      }
+    };
+
+    await uploadFile(selectedFile);
+  };
+
+  const handleUploadClick = () => {
+    const recruitId = localStorage.getItem("recruitId");
+
+    // if (!recruitId || recruitId === "null" || RoleName === "Superadmin") {
+    //   if (!recruitmentValue) {
+    //     toast.warning("Please select recruitment!");
+    //     return;
+    //   }
+    // }
+
+    if (fileInputRef.current) {
+      fileInputRef.current.value = null; // Reset file input
+      fileInputRef.current.click(); // Trigger file input dialog
+    }
+  };
+
   const handleChange = (e) => {
     setSelectedItemsPerPage(parseInt(e.target.value));
     setItemsPerPage(parseInt(e.target.value));
@@ -377,6 +505,21 @@ const Rfid = () => {
                     <h4 className="fw-bold">Tagger</h4>
                   </div>
                   <div className="col-lg-4 col-md-4 col-8 d-flex justify-content-end">
+                    <div className="btn btn-add me-1" title="Import">
+                      <input
+                        className="form-control"
+                        type="file"
+                        onChange={handleFileChange}
+                        ref={fileInputRef}
+                        style={{ display: "none" }}
+                      />
+                      <Button
+                        onClick={handleUploadClick}
+                        style={{ backgroundColor: "#1B5A90" }}
+                      >
+                        Import
+                      </Button>
+                    </div>
                     <button
                       className="btn text-white btn-sm float-end"
                       style={{
@@ -764,5 +907,4 @@ const Rfid = () => {
     </>
   );
 };
-
 export default Rfid;

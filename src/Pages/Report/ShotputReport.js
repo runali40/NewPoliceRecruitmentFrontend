@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react'
 import { fetchAll100Meter, fetchAllShotput, getAllCast, GetCategory, getReservationCategory } from '../../Components/Api/DailyReportApi'
 import { Table, Button } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
+import jsPDF from "jspdf";
+import "jspdf-autotable";
 
 import Select from 'react-select'
 import { ToastContainer, toast } from "react-toastify";
@@ -272,9 +274,79 @@ const ShotputReport = () => {
         printWindow.document.close();
     };
 
+    const download100MeterPDF = () => {
+        const doc = new jsPDF("l", "mm", "a4");
+
+        const pageWidth = doc.internal.pageSize.getWidth();
+
+        // Main Title
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(16);
+
+        doc.text(
+            `Commissioner of Police ${recruitName} City`,
+            pageWidth / 2,
+            15,
+            { align: "center" }
+        );
+        // Sub Title
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(12);
+        doc.text("Shot Put Report", pageWidth / 2, 23, { align: "center" });
+        const tableColumn = [
+            "Sr No",
+            "Candidate Name",
+            "Chest No",
+            "Cast",
+            "Parallel Reservation",
+            "Distance 1",
+            "Distance 2",
+            "Distance 3",
+            "Score"
+        ];
+
+        const sortedData = [...shotputReport].sort(
+            (a, b) => Number(a.ChestNo) - Number(b.ChestNo)
+        );
+        const tableRows = [];
+
+        shotputReport.forEach((data, index) => {
+            tableRows.push([
+                index + 1,
+                data.CandidateName,
+                data.ChestNo,
+                data.Cast,
+                data["Parallel Reservation"],
+                data.distance1,
+                data.distance2,
+                data.distance3,
+                data.score
+            ]);
+        });
+
+        doc.autoTable({
+            head: [tableColumn],
+            body: tableRows,
+            startY: 30, // ⬅️ increase this value
+            styles: { fontSize: 8 },
+            headStyles: {
+                fillColor: [27, 90, 144],
+                textColor: 255,
+                fontStyle: "bold",
+            },
+        });
+
+        doc.save("Shotput_Report.pdf");
+    };
+
+    const sortedData = [...shotputReport].sort(
+        (a, b) => Number(a.ChestNo) - Number(b.ChestNo)
+    );
+
+
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    const currentItems = shotputReport.slice(indexOfFirstItem, indexOfLastItem);
+    const currentItems = sortedData.slice(indexOfFirstItem, indexOfLastItem);
     return (
         <>
             <div className="container-fluid">
@@ -311,6 +383,13 @@ const ShotputReport = () => {
                                                 }}
                                                 titleAccess="Refresh Page"
                                             />
+                                        </button>
+                                        <button
+                                            className="btn btn-sm me-2"
+                                            style={headerCellStyle}
+                                            onClick={download100MeterPDF}
+                                        >
+                                            Download PDF
                                         </button>
                                         <button className="btn me-2" style={headerCellStyle} /* onClick={() => window.print()} */ onClick={openPrintWindow} >Print</button>
                                         <button className="btn" style={headerCellStyle} onClick={() => navigate(-1)}>  <ArrowBack /></button>

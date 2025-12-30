@@ -6,6 +6,8 @@ import { useNavigate } from 'react-router-dom';
 import Select from 'react-select';
 import { getAllGroup } from '../../Components/Api/EventApi';
 import { ArrowBack, Refresh } from '@material-ui/icons';
+import jsPDF from "jspdf";
+import "jspdf-autotable";
 
 const All1600MeterReport = () => {
   const navigate = useNavigate();
@@ -133,17 +135,17 @@ const All1600MeterReport = () => {
     setAll1600MeterReport(data)
   }
 
-    const RefreshPage = async () => {
-      setReservationCategory("");
-      setCast("");
-      setGroupId("");
-      setGroup("");
-      setCategory("")
-  
-      const data = await fetchAll1600Meter(eventId, "", "", "");
-      console.log(data)
-      setAll1600MeterReport(data)
-    };
+  const RefreshPage = async () => {
+    setReservationCategory("");
+    setCast("");
+    setGroupId("");
+    setGroup("");
+    setCategory("")
+
+    const data = await fetchAll1600Meter(eventId, "", "", "");
+    console.log(data)
+    setAll1600MeterReport(data)
+  };
 
   const handleSearch = (e) => {
     const searchDataValue = e.target.value.toLowerCase();
@@ -271,10 +273,83 @@ const All1600MeterReport = () => {
     printWindow.document.close();
   };
 
+  const download1600MeterPDF = () => {
+    const doc = new jsPDF("l", "mm", "a4");
+
+    const pageWidth = doc.internal.pageSize.getWidth();
+
+    // Main Title
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(16);
+
+    doc.text(
+      `Commissioner of Police ${recruitName} City`,
+      pageWidth / 2,
+      15,
+      { align: "center" }
+    );
+    // Sub Title
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(12);
+    doc.text("1600 Meter Report", pageWidth / 2, 23, { align: "center" });
+    const tableColumn = [
+      "Sr No",
+      "Candidate Name",
+      "Chest No",
+      "Cast",
+      "Parallel Reservation",
+      "Start Time",
+      "End Time",
+      "Duration",
+      "Lap",
+      "Score"
+    ];
+
+
+    // 🔹 SORT DATA BY CHEST NO (ASC)
+    const sortedData = [...all1600MeterReport].sort(
+      (a, b) => Number(a.ChestNo) - Number(b.ChestNo)
+    );
+    const tableRows = [];
+
+    sortedData.forEach((data, index) => {
+      tableRows.push([
+        index + 1,
+        data.CandidateName,
+        data.ChestNo,
+        data.Cast,
+        data["Parallel Reservation"],
+        data.StartTime,
+        data.EndTime,
+        data.duration,
+        data.Lapcount,
+        data.score
+      ]);
+    });
+
+    doc.autoTable({
+      head: [tableColumn],
+      body: tableRows,
+      startY: 30, // ⬅️ increase this value
+      styles: { fontSize: 8 },
+      headStyles: {
+        fillColor: [27, 90, 144],
+        textColor: 255,
+        fontStyle: "bold",
+      },
+    });
+
+    doc.save("1600_Meter_Report.pdf");
+  };
+
+  const sortedData = [...all1600MeterReport].sort(
+    (a, b) => Number(a.ChestNo) - Number(b.ChestNo)
+  );
+
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = all1600MeterReport.slice(indexOfFirstItem, indexOfLastItem);
+  const currentItems = sortedData.slice(indexOfFirstItem, indexOfLastItem);
 
   return (
     <>
@@ -312,6 +387,13 @@ const All1600MeterReport = () => {
                         }}
                         titleAccess="Refresh Page"
                       />
+                    </button>
+                    <button
+                      className="btn btn-sm me-2"
+                      style={headerCellStyle}
+                      onClick={download1600MeterPDF}
+                    >
+                      Download PDF
                     </button>
                     <button className="btn me-2" style={headerCellStyle} /* onClick={() => window.print()} */ onClick={openPrintWindow}>Print</button>
                     <button className="btn" style={headerCellStyle} onClick={() => navigate(-1)}>  <ArrowBack /></button>

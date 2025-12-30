@@ -6,6 +6,8 @@ import { Pagination } from '../../Components/Utils/Pagination';
 import Select from 'react-select'
 import { getAllGroup } from '../../Components/Api/EventApi';
 import { ArrowBack, Refresh } from '@material-ui/icons';
+import jsPDF from "jspdf";
+import "jspdf-autotable";
 
 const All800MeterReport = () => {
   const navigate = useNavigate();
@@ -167,6 +169,75 @@ const All800MeterReport = () => {
     setCurrentPage(1);
   };
 
+  const download800MeterPDF = () => {
+    const doc = new jsPDF("l", "mm", "a4");
+
+    const pageWidth = doc.internal.pageSize.getWidth();
+
+    // Main Title
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(16);
+
+    doc.text(
+      `Commissioner of Police ${recruitName} City`,
+      pageWidth / 2,
+      15,
+      { align: "center" }
+    );
+    // Sub Title
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(12);
+    doc.text("800 Meter Report", pageWidth / 2, 23, { align: "center" });
+    const tableColumn = [
+      "Sr No",
+      "Candidate Name",
+      "Chest No",
+      "Cast",
+      "Parallel Reservation",
+      "Start Time",
+      "End Time",
+      "Duration",
+      "Lap",
+      "Score"
+    ];
+
+        // 🔹 SORT DATA BY CHEST NO (ASC)
+    const sortedData = [...all800MeterReport].sort(
+      (a, b) => Number(a.ChestNo) - Number(b.ChestNo)
+    );
+
+    const tableRows = [];
+
+    sortedData.forEach((data, index) => {
+      tableRows.push([
+        index + 1,
+        data.CandidateName,
+        data.ChestNo,
+        data.Cast,
+        data["Parallel Reservation"],
+        data.StartTime,
+        data.EndTime,
+        data.duration,
+        data.Lapcount,
+        data.score
+      ]);
+    });
+
+    doc.autoTable({
+      head: [tableColumn],
+      body: tableRows,
+      startY: 30, // ⬅️ increase this value
+      styles: { fontSize: 8 },
+      headStyles: {
+        fillColor: [27, 90, 144],
+        textColor: 255,
+        fontStyle: "bold",
+      },
+    });
+
+    doc.save("800_Meter_Report.pdf");
+  };
+
   const openPrintWindow = () => {
     let tableHTML = `
       <html>
@@ -269,9 +340,13 @@ const All800MeterReport = () => {
     printWindow.document.close();
   };
 
+  const sortedData = [...all800MeterReport].sort(
+    (a, b) => Number(a.ChestNo) - Number(b.ChestNo)
+  );
+
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = all800MeterReport.slice(indexOfFirstItem, indexOfLastItem);
+  const currentItems = sortedData.slice(indexOfFirstItem, indexOfLastItem);
 
   return (
     <>
@@ -309,6 +384,13 @@ const All800MeterReport = () => {
                         }}
                         titleAccess="Refresh Page"
                       />
+                    </button>
+                    <button
+                      className="btn btn-sm me-2"
+                      style={headerCellStyle}
+                      onClick={download800MeterPDF}
+                    >
+                      Download PDF
                     </button>
                     <button className="btn me-2" style={headerCellStyle} /* onClick={() => window.print()} */ onClick={openPrintWindow}>Print</button>
                     <button className="btn" style={headerCellStyle} onClick={() => navigate(-1)}>  <ArrowBack /></button>
