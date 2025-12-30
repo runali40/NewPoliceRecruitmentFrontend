@@ -864,7 +864,7 @@ const DocumentVerification = () => {
                         {/* <label>Signature</label> */}
                         <button
                           className="btn btn-primary btn-sm"
-                          
+
                           onClick={() => setSignModal(true)}
                         >
                           Signature
@@ -943,7 +943,7 @@ const DocumentVerification = () => {
           </div>
         </div>
       </div>
-      <Modal show={signModal} onHide={handleSignClose} size="lg" backdrop="static">
+      <Modal show={signModal} onHide={handleSignClose} fullscreen backdrop="static">
         <Modal.Header closeButton>
           <Modal.Title>
             <h5 className="fw-bold">Draw Signature</h5>
@@ -955,7 +955,7 @@ const DocumentVerification = () => {
             style={{
               width: "100%",
               maxWidth: "100%",
-              height: "300px",
+              height: "73vh",
               overflow: "hidden"
             }}
           >
@@ -968,7 +968,8 @@ const DocumentVerification = () => {
                 style: {
                   width: "100%",
                   height: "100%",
-                  display: "block"
+                  display: "block",
+                  cursor: "crosshair"
                 }
               }}
             />

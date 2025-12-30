@@ -1461,7 +1461,7 @@ const Biometric = () => {
 
     if (url === null) {
       toast.warning("Please capture the photo!");
-    } 
+    }
     // else if (!signature) {
     //   toast.warning("Please add signature!");
     // } 
@@ -2148,7 +2148,7 @@ const Biometric = () => {
         </Modal.Footer>
       </Modal>
 
-      <Modal show={signModal} onHide={handleSignClose} size="lg" backdrop="static">
+      <Modal show={signModal} onHide={handleSignClose} fullscreen backdrop="static">
         <Modal.Header closeButton>
           <Modal.Title>
             <h5 className="fw-bold">Draw Signature</h5>
@@ -2160,7 +2160,7 @@ const Biometric = () => {
             style={{
               width: "100%",
               maxWidth: "100%",
-              height: "300px",
+              height: "73vh",
               overflow: "hidden"
             }}
           >
@@ -2173,7 +2173,8 @@ const Biometric = () => {
                 style: {
                   width: "100%",
                   height: "100%",
-                  display: "block"
+                  display: "block",
+                  cursor: "crosshair"
                 }
               }}
             />

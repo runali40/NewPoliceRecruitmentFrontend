@@ -147,7 +147,7 @@ const Rfid = () => {
   }
 
   const sortedTagger = [...allTagger].sort(
-    (a, b) => Number(a.Barcode) - Number(b.Barcode)
+    (a, b) => Number(a.ChestNo) - Number(b.ChestNo)
   );
 
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -404,7 +404,7 @@ const Rfid = () => {
             const processedRecords = fileContent.split('\n').length - 1;
 
             toast.success(
-              `Success: User import completed.`
+              `Success: Tags import completed.`
             );
 
             // Refresh the user list
@@ -499,7 +499,7 @@ const Rfid = () => {
         <div className="row">
           <div className="col-lg-12">
             <div className="card">
-              <div className="card-header py-3">
+              {/* <div className="card-header py-3">
                 <div className="row align-items-center">
                   <div className="col-lg-8 col-md-8 col-4">
                     <h4 className="fw-bold">Tagger</h4>
@@ -520,19 +520,22 @@ const Rfid = () => {
                         Import
                       </Button>
                     </div>
-                    <button
-                      className="btn text-white btn-sm float-end"
-                      style={{
-                        backgroundColor: "rgb(27, 90, 144)",
-                        marginLeft: "10px",
-                      }}
-                      onClick={
-                        getRfidTag
-                      }
-                    >
-                      Get RFID Tag
-                    </button>
-                    <button
+                    <div className="btn btn-add me-1" >
+                      <Button
+                        className="btn text-white btn-sm float-end"
+                        style={{
+                          backgroundColor: "rgb(27, 90, 144)",
+                          marginLeft: "10px",
+                        }}
+                        onClick={
+                          getRfidTag
+                        }
+                      >
+                        Get RFID Tag
+                      </Button>
+                    </div>
+
+                    <Button
                       className="btn text-white btn-sm float-end"
                       style={{
                         backgroundColor: "rgb(27, 90, 144)",
@@ -543,8 +546,8 @@ const Rfid = () => {
                       }}
                     >
                       Scan Chest No
-                    </button>
-                    <button
+                    </Button>
+                    <Button
                       className="btn btn-sm text-white float-end"
                       style={{
                         backgroundColor: "rgb(27, 90, 144)",
@@ -555,7 +558,79 @@ const Rfid = () => {
                       }}
                     >
                       <ArrowBack />
-                    </button>
+                    </Button>
+                  </div>
+                </div>
+              </div> */}
+              <div className="card-header">
+                <div className="row align-items-center">
+                  <div className="col-lg-3 col-md-3">
+                    <h4 className="card-title fw-bold">Tagger</h4>
+                  </div>
+                  <div className="col-lg-9 col-md-9 d-flex justify-content-end align-items-end">
+
+
+                    <div className="btn btn-add me-1" title="Import">
+                      <input
+                        className="form-control"
+                        type="file"
+                        onChange={handleFileChange}
+                        ref={fileInputRef}
+                        style={{ display: "none" }}
+                      />
+                      <Button
+                        className="btn-sm"
+                        onClick={handleUploadClick}
+                        style={{ backgroundColor: "#1B5A90" }}
+                      >
+                        Import
+                      </Button>
+                    </div>
+
+
+
+                    <div className="btn btn-add " title="Import">
+                      <Button
+                        className="btn text-white btn-sm float-end"
+                        style={{
+                          backgroundColor: "rgb(27, 90, 144)",
+                          marginLeft: "4px",
+                        }}
+                        onClick={
+                          getRfidTag
+                        }
+                      >
+                        Get RFID Tag
+                      </Button>
+                    </div>
+                    <div className="btn btn-add" title="Export">
+                      <Button
+                        className="btn text-white btn-sm float-end"
+                        style={{
+                          backgroundColor: "rgb(27, 90, 144)",
+                          marginLeft: "4px",
+                        }}
+                        onClick={() => {
+                          setChestScan(true);
+                        }}
+                      >
+                        Scan Chest No
+                      </Button>
+                    </div>
+                    <div className="btn btn-add" title="Shuffle">
+                      <Button
+                        className="btn btn-sm text-white float-end"
+                        style={{
+                          backgroundColor: "rgb(27, 90, 144)",
+                          marginLeft: "4px",
+                        }} // Added margin-left for spacing
+                        onClick={() => {
+                          navigate(-1);
+                        }}
+                      >
+                        <ArrowBack />
+                      </Button>
+                    </div>
                   </div>
                 </div>
               </div>

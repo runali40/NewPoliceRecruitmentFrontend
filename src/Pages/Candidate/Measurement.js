@@ -28,6 +28,7 @@ const Measurement = () => {
   const [savedSignature, setSavedSignature] = useState(null);
   const modalSignRef = useRef(null);
   const [canvasWidth, setCanvasWidth] = useState(730);
+  const [isSigning, setIsSigning] = useState(false);
   const handleSignClose = () => setSignModal(false);
 
   useEffect(() => {
@@ -119,7 +120,7 @@ const Measurement = () => {
   //     handleSignClose()
   //   }
   // };
- const handleSaveSignature = () => {
+  const handleSaveSignature = () => {
     if (modalSignRef.current && !modalSignRef.current.isEmpty()) {
       // High quality trimmed signature
       const signatureData = modalSignRef.current
@@ -160,7 +161,7 @@ const Measurement = () => {
       toast.warning("Please draw signature first!");
     }
   };
-  
+
   const handleClear = () => {
     if (modalSignRef.current) {
       modalSignRef.current.clear();
@@ -267,6 +268,14 @@ const Measurement = () => {
     printWindow.document.open();
     printWindow.document.write(tableHTML);
     printWindow.document.close();
+  };
+
+  const handleStart = () => {
+    document.body.style.pointerEvents = "none";
+  };
+
+  const handleEnd = () => {
+    document.body.style.pointerEvents = "auto";
   };
 
   return (
@@ -526,19 +535,19 @@ const Measurement = () => {
           </div>
         </div>
       </div>
-      <Modal show={signModal} onHide={handleSignClose} size="lg" backdrop="static">
+      <Modal show={signModal} onHide={handleSignClose} fullscreen backdrop="static">
         <Modal.Header closeButton>
           <Modal.Title>
             <h5 className="fw-bold">Draw Signature</h5>
           </Modal.Title>
         </Modal.Header>
         <Modal.Body className="p-3">
-          <div
+          {/* <div
             className="border border-dark bg-white mx-auto"
             style={{
               width: "100%",
               maxWidth: "100%",
-              height: "300px",
+              height: "480px",
               overflow: "hidden"
             }}
           >
@@ -555,7 +564,37 @@ const Measurement = () => {
                 }
               }}
             />
+          </div> */}
+          <div
+            className="border border-dark bg-white mx-auto position-relative"
+            style={{
+              width: "100%",
+              height: "480px",
+              overflow: "hidden",
+              touchAction: "none",
+              zIndex: 1050
+            }}
+          >
+            <SignatureCanvas
+              ref={modalSignRef}
+              penColor="black"
+              onBegin={() => setIsSigning(true)}   // ⭐ start signing
+              onEnd={() => setIsSigning(false)}    // ⭐ stop signing
+              canvasProps={{
+                width: canvasWidth,
+                height: 300,
+                style: {
+                  width: "100%",
+                  height: "100%",
+                  display: "block",
+                  touchAction: "none",
+                  cursor: "crosshair"
+                }
+              }}
+            />
           </div>
+
+
         </Modal.Body>
         <Modal.Footer>
           <Button
