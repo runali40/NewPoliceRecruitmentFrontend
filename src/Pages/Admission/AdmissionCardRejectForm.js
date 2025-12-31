@@ -342,26 +342,33 @@ const AdmissionCardRejectForm = () => {
                         </div>
                       </div>
                     </div>
-                    <div className="col-lg-10 col-md-10 mt-3">
-                      <div className="row">
-                        <div className="col-lg-5 col-md-5">
-                          <label>Chest Normal:</label>
+                    {
+                      candidateData.Gender === "Male"
+                      &&
+                      <>
+                        <div className="col-lg-10 col-md-10 mt-3">
+                          <div className="row">
+                            <div className="col-lg-5 col-md-5">
+                              <label>Chest Normal:</label>
+                            </div>
+                            <div className="col-lg-7 col-md-7 mt-3 mt-lg-0 mt-md-0">
+                              <label>{candidateData.Chest_normal} cm</label>
+                            </div>
+                          </div>
                         </div>
-                        <div className="col-lg-7 col-md-7 mt-3 mt-lg-0 mt-md-0">
-                          <label>{candidateData.Chest_normal} cm</label>
+                        <div className="col-lg-10 col-md-10 mt-3">
+                          <div className="row">
+                            <div className="col-lg-5 col-md-5">
+                              <label>Chest Inhale:</label>
+                            </div>
+                            <div className="col-lg-7 col-md-7 mt-3 mt-lg-0 mt-md-0">
+                              <label>{candidateData.Chest_Inhale} cm</label>
+                            </div>
+                          </div>
                         </div>
-                      </div>
-                    </div>
-                    <div className="col-lg-10 col-md-10 mt-3">
-                      <div className="row">
-                        <div className="col-lg-5 col-md-5">
-                          <label>Chest Inhale:</label>
-                        </div>
-                        <div className="col-lg-7 col-md-7 mt-3 mt-lg-0 mt-md-0">
-                          <label>{candidateData.Chest_Inhale} cm</label>
-                        </div>
-                      </div>
-                    </div>
+                      </>
+                    }
+
                     <div className="col-lg-10 col-md-10 mt-3">
                       <div className="row">
                         <div className="col-lg-5 col-md-5">

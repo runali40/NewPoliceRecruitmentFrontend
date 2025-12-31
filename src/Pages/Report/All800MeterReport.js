@@ -24,6 +24,7 @@ const All800MeterReport = () => {
   const [allGroup, setAllGroup] = useState([])
   const [group, setGroup] = useState("")
   const [groupId, setGroupId] = useState("")
+  const [groupLeaderName, setGroupLeaderName] = useState("")
   const [allCategory, setAllCategory] = useState([])
   const [category, setCategory] = useState("")
   const [allReservationCategory, setAllReservationCategory] = useState([])
@@ -75,6 +76,8 @@ const All800MeterReport = () => {
     setGroupId(selectedValue.value)
     const data = await fetchAll800Meter(eventId, selectedValue.value, reservationCategory, cast);
     console.log(data)
+     setGroupLeaderName(data[0].GrpLdrName)
+    console.log(data[0].GrpLdrName, "leader name")
     setAll800MeterReport(data)
   }
 
@@ -201,7 +204,7 @@ const All800MeterReport = () => {
       "Score"
     ];
 
-        // 🔹 SORT DATA BY CHEST NO (ASC)
+    // 🔹 SORT DATA BY CHEST NO (ASC)
     const sortedData = [...all800MeterReport].sort(
       (a, b) => Number(a.ChestNo) - Number(b.ChestNo)
     );
@@ -215,8 +218,16 @@ const All800MeterReport = () => {
         data.ChestNo,
         data.Cast,
         data["Parallel Reservation"],
-        data.StartTime,
-        data.EndTime,
+        // data.StartTime,
+        data.StartTime === "00:00:00.00" || data.StartTime === "00:00:00.000"
+          ? ""
+          : data.StartTime || "",
+        // data.EndTime,
+
+        data.EndTime === "00:00:00.00" || data.EndTime === "00:00:00.000"
+          ? ""
+          : data.EndTime || "",
+
         data.duration,
         data.Lapcount,
         data.score
@@ -289,7 +300,10 @@ const All800MeterReport = () => {
   
      <h2>Commissioner of Police ${recruitName} City</h2>
     <h3>800 Meter Running Report</h3>
-    <h3>Group No: ${groupId}</h3>
+    ${groupId ? `
+  <h3>Group No: ${groupId}</h3>
+  <h3>Group Leader Name: ${groupLeaderName || ""}</h3>
+` : ""}
         <table>
           <thead>
             <tr>
@@ -309,7 +323,14 @@ const All800MeterReport = () => {
           <tbody>
     `;
 
-    all800MeterReport.forEach((row, index) => {
+    // ChestNo ascending sort
+    const sortedData = [...all800MeterReport].sort((a, b) => {
+      const chestA = Number(a.ChestNo) || 0;
+      const chestB = Number(b.ChestNo) || 0;
+      return chestA - chestB;
+    });
+
+    sortedData.forEach((row, index) => {
       tableHTML += `
         <tr>
           <td>${index + 1}</td>
@@ -317,8 +338,15 @@ const All800MeterReport = () => {
           <td>${row.ChestNo || ""}</td>
            <td>${row.Cast || ""}</td>    
       <td>${row["Parallel Reservation"] || ""}</td>
-         <td>${row.StartTime || ""}</td>
-         <td>${row.EndTime || ""}</td>
+        <td>${row.StartTime === "00:00:00.00" || row.StartTime === "00:00:00.000"
+          ? ""
+          : row.StartTime || ""
+        }</td>
+
+      <td>${row.EndTime === "00:00:00.00" || row.EndTime === "00:00:00.000"
+          ? ""
+          : row.EndTime || ""
+        }</td>
          <td>${row.duration || ""}</td>
           <td>${row.score || ""}</td>
           <td class="signature-box"></td>
@@ -547,8 +575,17 @@ const All800MeterReport = () => {
                         <td>{data.ChestNo}</td>
                         <td>{data.Cast}</td>
                         <td>{data["Parallel Reservation"]}</td>
-                        <td>{data.StartTime}</td>
-                        <td>{data.EndTime}</td>
+                        {/* <td>{data.StartTime}</td>
+                        <td>{data.EndTime}</td> */}
+                        <td>{data.StartTime === "00:00:00.00" || data.StartTime === "00:00:00.000"
+                          ? ""
+                          : data.StartTime || ""
+                        }</td>
+
+                        <td>{data.EndTime === "00:00:00.00" || data.EndTime === "00:00:00.000"
+                          ? ""
+                          : data.EndTime || ""
+                        }</td>
                         <td>{data.duration}</td>
                         <td>{data.Lapcount}</td>
                         <td>{data.score}</td>

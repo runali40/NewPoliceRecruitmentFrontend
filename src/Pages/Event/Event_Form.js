@@ -484,10 +484,9 @@ const Event_Form = () => {
     <tr>
       <td>${index + 1}</td>
       <td>${row.ChestNo || ""}</td>
-      <td>${row.Name || ""}</td>
-      
+      <td>${row.Name || ""}</td>     
       ${!isShotPut ? `
-  <td>${row.StartTime === "00:00:00.00" || row.StartTime === "00:00:00.000"
+      <td>${row.StartTime === "00:00:00.00" || row.StartTime === "00:00:00.000"
             ? ""
             : row.StartTime || ""
           }</td>
@@ -506,7 +505,6 @@ ${!isShotPut ? `
       ${isShotPut ? `<td>${row.distance3 || ""}</td>` : ""}
       <td>${row.score || ""}</td>
       <td class="signature-box"></td>
-
       ${index === 0 ? `<td class="signature-box" rowspan="${rows.length}"></td>` : ""}
     </tr>
   `;
@@ -951,11 +949,23 @@ ${!isShotPut ? `
                               onChange={(momentObj) =>
                                 handleDateChange(momentObj, index, "StartTime")
                               }
+                              inputProps={{
+                                readOnly: true,   // ✅ keyboard typing disabled
+                                disabled:
+                                  row.Status === "False" ||
+                                  (row.score && row.Status !== "True"),
+                                style: { overflow: "auto" }
+                              }}
                               // inputProps={{
-                              //   readOnly: true,   // ✅ keyboard typing disabled
-                              //   disabled:
-                              //     row.Status === "False" ||
-                              //     (row.score && row.Status !== "True" ),
+                              //   readOnly: true, // keyboard typing disabled
+                              //   disabled: !(
+                              //     (!row.StartTime || row.StartTime === "00:00:00.00" || row.StartTime === "00:00:00.000") &&
+                              //     (!row.EndTime || row.EndTime === "00:00:00.00" || row.EndTime === "00:00:00.000") &&
+                              //     (!row.Duration)
+                              //   ) && (
+                              //       row.Status === "False" ||
+                              //       (row.score && row.Status !== "True")
+                              //     ),
                               //   style: { overflow: "auto" }
                               // }}
                             />
@@ -1003,14 +1013,15 @@ ${!isShotPut ? `
                                 handleDateChange(momentObj, index, "EndTime")
                               }
                               className="custom-datetime"
-                              // inputProps={{
-                              //   readOnly: true,   // ✅ no keyboard typing
-                              //   onKeyDown: (e) => e.preventDefault(), // extra safety
-                              //   disabled:
-                              //     row.Status === "False" ||
-                              //     (row.score && row.Status !== "True"),
-                              //   style: { overflow: "auto" }
-                              // }}
+                            inputProps={{
+                              readOnly: true,   // ✅ no keyboard typing
+                              onKeyDown: (e) => e.preventDefault(), // extra safety
+                              disabled:
+                                row.Status === "False" ||
+                                (row.score && row.Status !== "True"),
+                              style: { overflow: "auto" }
+                            }}
+
                             />
                           </td>
                         )}

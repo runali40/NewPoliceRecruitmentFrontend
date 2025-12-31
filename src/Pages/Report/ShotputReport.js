@@ -28,6 +28,7 @@ const ShotputReport = () => {
     const [allGroup, setAllGroup] = useState([])
     const [group, setGroup] = useState("")
     const [groupId, setGroupId] = useState("")
+    const [groupLeaderName, setGroupLeaderName] = useState("")
     const [allCategory, setAllCategory] = useState([])
     const [category, setCategory] = useState("")
     const [allReservationCategory, setAllReservationCategory] = useState([])
@@ -78,6 +79,8 @@ const ShotputReport = () => {
         setGroupId(selectedValue.value)
         const data = await fetchAllShotput(eventId, selectedValue.value, reservationCategory, cast);
         console.log(data)
+        setGroupLeaderName(data[0].GrpLdrName)
+        console.log(data[0].GrpLdrName, "leader name")
         setShotputReport(data)
     }
 
@@ -223,7 +226,10 @@ const ShotputReport = () => {
 
      <h2>Commissioner of Police ${recruitName} City</h2>
     <h3>Shot Put Report</h3>
-    <h3>Group No: ${groupId}</h3>
+   ${groupId ? `
+  <h3>Group No: ${groupId}</h3>
+  <h3>Group Leader Name: ${groupLeaderName || ""}</h3>
+` : ""}
         <table>
           <thead>
             <tr>
@@ -243,14 +249,21 @@ const ShotputReport = () => {
           <tbody>
     `;
 
-        shotputReport.forEach((row, index) => {
+        // ChestNo ascending sort
+        const sortedData = [...shotputReport].sort((a, b) => {
+            const chestA = Number(a.ChestNo) || 0;
+            const chestB = Number(b.ChestNo) || 0;
+            return chestA - chestB;
+        });
+
+        sortedData.forEach((row, index) => {
             tableHTML += `
         <tr>
           <td>${index + 1}</td>
           <td>${row.CandidateName || ""}</td>
           <td>${row.ChestNo || ""}</td>
-           <td>${row.Cast || ""}</td>    
-      <td>${row["Parallel Reservation"] || ""}</td>
+         <td>${row.Cast || ""}</td>    
+         <td>${row["Parallel Reservation"] || ""}</td>
          <td>${row.distance1 || ""}</td>
          <td>${row.distance2 || ""}</td>
          <td>${row.distance3 || ""}</td>

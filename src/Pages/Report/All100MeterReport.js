@@ -26,6 +26,7 @@ const All100MeterReport = () => {
   const [allGroup, setAllGroup] = useState([])
   const [group, setGroup] = useState("")
   const [groupId, setGroupId] = useState("")
+  const [groupLeaderName, setGroupLeaderName] = useState("")
   const [allCategory, setAllCategory] = useState([])
   const [category, setCategory] = useState("")
   const [allReservationCategory, setAllReservationCategory] = useState([])
@@ -107,6 +108,8 @@ const All100MeterReport = () => {
     setGroupId(selectedValue.value)
     const data = await fetchAll100Meter(eventId, selectedValue.value, reservationCategory, cast);
     console.log(data)
+    setGroupLeaderName(data[0].GrpLdrName)
+    console.log(data[0].GrpLdrName, "leader name")
     setAll100MeterReport(data)
   }
 
@@ -235,7 +238,10 @@ const All100MeterReport = () => {
   
     <h2>Commissioner of Police ${recruitName} City</h2>
     <h3>100 Meter Running Report</h3>
-    <h3>Group No: ${groupId}</h3>
+${groupId ? `
+  <h3>Group No: ${groupId}</h3>
+  <h3>Group Leader Name: ${groupLeaderName || ""}</h3>
+` : ""}
         <table>
           <thead>
             <tr>
@@ -255,7 +261,14 @@ const All100MeterReport = () => {
           <tbody>
     `;
 
-    all100MeterReport.forEach((row, index) => {
+    // ChestNo ascending sort
+    const sortedData = [...all100MeterReport].sort((a, b) => {
+      const chestA = Number(a.ChestNo) || 0;
+      const chestB = Number(b.ChestNo) || 0;
+      return chestA - chestB;
+    });
+
+    sortedData.forEach((row, index) => {
       tableHTML += `
     <tr>
       <td>${index + 1}</td>
@@ -263,14 +276,26 @@ const All100MeterReport = () => {
       <td>${row.ChestNo || ""}</td>
       <td>${row.Cast || ""}</td>    
       <td>${row["Parallel Reservation"] || ""}</td>
-      <td>${row.StartTime || ""}</td>
-      <td>${row.EndTime || ""}</td>
+
+      <td>${row.StartTime === "00:00:00.00" || row.StartTime === "00:00:00.000"
+          ? ""
+          : row.StartTime || ""
+        }</td>
+
+      <td>${row.EndTime === "00:00:00.00" || row.EndTime === "00:00:00.000"
+          ? ""
+          : row.EndTime || ""
+        }</td>
+
       <td>${row.duration || ""}</td>
       <td>${row.score || ""}</td>
 
       <td class="signature-box"></td>
 
-      ${index === 0 ? `<td class="signature-box" rowspan="${all100MeterReport.length}"></td>` : ""}
+      ${index === 0
+          ? `<td class="signature-box" rowspan="${sortedData.length}"></td>`
+          : ""
+        }
     </tr>
   `;
     });
@@ -330,8 +355,14 @@ const All100MeterReport = () => {
       data.ChestNo,
       data.Cast,
       data["Parallel Reservation"],
-      data.StartTime,
-      data.EndTime,
+      // data.StartTime,
+      // data.EndTime,
+      data.StartTime === "00:00:00.00" || data.StartTime === "00:00:00.000"
+        ? ""
+        : data.StartTime || "",
+      data.EndTime === "00:00:00.00" || data.EndTime === "00:00:00.000"
+        ? ""
+        : data.EndTime || "",
       data.duration,
       data.score
     ]));
@@ -549,8 +580,16 @@ const All100MeterReport = () => {
                         <td>{data.ChestNo}</td>
                         <td>{data.Cast}</td>
                         <td>{data["Parallel Reservation"]}</td>
-                        <td>{data.StartTime}</td>
-                        <td>{data.EndTime}</td>
+                        {/* <td>{data.StartTime}</td> */}
+                        <td>{data.StartTime === "00:00:00.00" || data.StartTime === "00:00:00.000"
+                          ? ""
+                          : data.StartTime || ""
+                        }</td>
+                        {/* <td>{data.EndTime}</td> */}
+                        <td>{data.EndTime === "00:00:00.00" || data.EndTime === "00:00:00.000"
+                          ? ""
+                          : data.EndTime || ""
+                        }</td>
                         <td>{data.duration}</td>
                         <td>{data.score}</td>
                       </tr>

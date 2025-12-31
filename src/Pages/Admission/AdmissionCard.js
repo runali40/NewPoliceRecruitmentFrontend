@@ -49,6 +49,7 @@ const AdmissionCard = () => {
   const [height, setHeight] = useState("")
   const [chestNormal, setChestNormal] = useState("")
   const [chestInhale, setChestInhale] = useState("")
+  const [groupNo, setGroupNo] = useState("")
   const GenratePdfRef = useRef();
 
   useEffect(() => {
@@ -95,6 +96,7 @@ const AdmissionCard = () => {
           setHeight(cardData?.Height)
           setChestNormal(cardData?.Chest_normal)
           setChestInhale(cardData?.Chest_Inhale)
+          setGroupNo(cardData?.groupid)
         }
       }
     };
@@ -915,6 +917,18 @@ const AdmissionCard = () => {
                           <label>{applicationNo}</label>
                         </div>
                       </div>
+
+                    </div>
+                    <div className="col-lg-4 col-md-4 col-4">
+                      <div className="row">
+                        <div className="col-lg-7 col-md-7 col-6 mt-3 mt-lg-0 mt-md-0">
+                          <label htmlFor="applicationNo">Group no:</label>
+                        </div>
+                        <div className="col-lg-4 col-md-4 col-6 mt-3 mt-lg-0 mt-md-0">
+                          <label>{groupNo}</label>
+                        </div>
+                      </div>
+
                     </div>
                   </div>
                   <div
