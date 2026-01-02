@@ -142,7 +142,7 @@ const Event = () => {
 
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    const currentItems = sortedGroups.slice(indexOfFirstItem, indexOfLastItem);
+    const currentItems = allGroup.slice(indexOfFirstItem, indexOfLastItem);
 
     return (
         <>
