@@ -520,7 +520,7 @@ const GroundTest2 = () => {
 
         // Format the items as needed for setSavedData
         const formattedItems = reorderedItems.map((item) => ({
-            ResulType: item.ResulType || "",
+            ResultType: item.ResultType || "",
             ApplicationNo: item.ApplicationNo || "",
             CandidateID: item.CandidateID || 0,
             FullNameDevnagari: item.FullNameDevnagari || "",
@@ -623,7 +623,7 @@ const GroundTest2 = () => {
         updatedData[categoryIndex].items = reorderedItems;
         setAllData(updatedData); // Update state
         const formattedItems = reorderedItems.map((item, index) => ({
-            ResulType: item.ResulType || "",
+            ResultType: item.ResultType || "",
             ApplicationNo: item.ApplicationNo || "",
             CandidateID: item.CandidateID || 0,
             FullNameDevnagari: item.FullNameDevnagari || "",
@@ -987,7 +987,7 @@ const GroundTest2 = () => {
                     console.log(meritList.length, "982")
                     // setSavedData(filteredData)
                     const formattedItems = categoryData.meritList.map((item, index) => ({
-                        ResulType: item.ResulType || "",
+                        ResultType: item.ResultType || "",
                         ApplicationNo: item.ApplicationNo || "",
                         CandidateID: item.CandidateID || 0,
                         FullNameDevnagari: item.FullNameDevnagari || "",
@@ -1277,7 +1277,7 @@ const GroundTest2 = () => {
                 category.items.filter((item) => item.ResulType === "MeritList")
             )
             .map((item) => ({
-                ResulType: item.ResulType,
+                ResultType: item.ResultType,
                 ApplicationNo: item.ApplicationNo,
                 CandidateID: item.CandidateID,
                 FullNameDevnagari: item.FullNameDevnagari,
@@ -1302,7 +1302,7 @@ const GroundTest2 = () => {
                 category.items.filter((item) => item.ResulType === "CastWisedata")
             )
             .map((item) => ({
-                ResulType: item.ResulType,
+                ResultType: item.ResultType,
                 ApplicationNo: item.ApplicationNo,
                 CandidateID: item.CandidateID,
                 FullNameDevnagari: item.FullNameDevnagari,
@@ -1336,7 +1336,7 @@ const GroundTest2 = () => {
 
         const meritSheetData = [
             [
-                "ResulType",
+                "ResultType",
                 "ApplicationNo",
                 "CandidateID",
                 "FullNameDevnagari",
@@ -1355,7 +1355,7 @@ const GroundTest2 = () => {
 
             ],
             ...meritList.map((item) => [
-                item.ResulType,
+                item.ResultType,
                 item.ApplicationNo,
                 item.CandidateID,
                 item.FullNameDevnagari,
@@ -1377,7 +1377,7 @@ const GroundTest2 = () => {
 
         const castWiseSheetData = [
             [
-                "ResulType",
+                "ResultType",
                 "ApplicationNo",
                 "CandidateID",
                 "FullNameDevnagari",
@@ -1396,7 +1396,7 @@ const GroundTest2 = () => {
 
             ],
             ...castWiseList.map((item) => [
-                item.ResulType,
+                item.ResultType,
                 item.ApplicationNo,
                 item.CandidateID,
                 item.FullNameDevnagari,
@@ -1832,7 +1832,7 @@ const GroundTest2 = () => {
                                 <h4 className="card-title fw-bold">Ground Test</h4>
                             </div>
                             <div className="col-lg-9 col-md-9 d-flex justify-content-end align-items-end">
-                                <div className="btn btn-add" title="Shuffle">
+                                <div className="btn btn-add" >
                                     <button
                                         type="button"
                                         className="btn btn-sm btn-primary"
@@ -1841,6 +1841,8 @@ const GroundTest2 = () => {
                                     >
                                         Download PDF
                                     </button>
+                                </div>
+                                <div className="btn btn-add" >
                                     <button
                                         type="button"
                                         className="btn btn-sm btn-primary ms-2"

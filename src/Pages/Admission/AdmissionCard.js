@@ -270,7 +270,7 @@ const AdmissionCard = () => {
       </style>
       <style>
         {
-        
+
 
           `
                    @media print {
@@ -628,30 +628,30 @@ const AdmissionCard = () => {
                   </div>
                 </div>
                 <div className="card-body">
-                  <div className="row">
+                  <div className="row ">
                     <div className="col-lg-4 col-md-4 col-md-4">
-                      <div className="row">
-                        <div className="col-lg-7 col-md-7 col-6 recruitmentYear" >
+                      <div className="row mx-2">
+                        <div className="col-lg-8 col-md-8 col-6 recruitmentYear" >
                           <label htmlFor="recruitmentYear">
                             Recruitment Year:
                           </label>
                         </div>
-                        <div className="col-lg-5 col-md-5 col-6 mt-lg-0 mt-md-0 text-start">
+                        <div className="col-lg-3 col-md-3 col-6 mt-lg-0 mt-md-0 text-start">
                           <label>{recruitmentYear}</label>
                         </div>
                       </div>
                     </div>
-                    <div className="col-lg-4 col-md-4">
+                    <div className="col-lg-4 col-md-4 col-4">
                       <div className="row">
-                        <div className="col-lg-4 col-md-4 col-6">
+                        <div className="col-lg-7 col-md-7 col-6">
                           <label htmlFor="portName">Port Name:</label>
                         </div>
-                        <div className="col-lg-8 col-md-8 col-6 mt-lg-0 mt-md-0">
+                        <div className="col-lg-4 col-md-4 col-6 mt-lg-0 mt-md-0">
                           <label>{portName}</label>
                         </div>
                       </div>
                     </div>
-                    <div className="col-lg-4 col-md-4">
+                    <div className="col-lg-4 col-md-4 col-4">
                       <div className="row">
                         <div className="col-lg-7 col-md-7 col-6 mt-3 mt-lg-0 mt-md-0">
                           <label htmlFor="examinationPort">
@@ -664,7 +664,7 @@ const AdmissionCard = () => {
                       </div>
                     </div>
                   </div>
-                  <div className="row mt-3">
+                  <div className="row mt-3 mx-2">
                     <div className="col-lg-4 col-md-4 col-4">
                       <div className="row">
                         <div className="col-lg-7 col-md-7 col-6 mt-3 mt-lg-0 mt-md-0">
@@ -676,14 +676,12 @@ const AdmissionCard = () => {
                       </div>
 
                     </div>
-                    <div className="col-lg-4 col-md-4 col-4">
+                    {/* <div className="col-lg-4 col-md-4 col-4">
                       <div className="row">
                         <div className="col-lg-4 col-md-4 col-6 mt-3 mt-lg-0 mt-md-0">
                           <label htmlFor="applicationNo">Group no:</label>
                         </div>
-                        {/* <div className="col-lg-4 col-md-4 col-6 mt-3 mt-lg-0 mt-md-0 text-start">
-                          <label className="text-start">{groupNo}</label>
-                        </div> */}
+
                         <div className="col-lg-4 col-md-4 col-6 mt-3 mt-lg-0 mt-md-0">
                           <label className="d-block text-start">
                             {groupNo}
@@ -691,7 +689,7 @@ const AdmissionCard = () => {
                         </div>
                       </div>
 
-                    </div>
+                    </div> */}
                   </div>
                   <div
                     className="card-header bg-white mt-3 border"
@@ -777,6 +775,7 @@ const AdmissionCard = () => {
                         </div>
                       </div>
                       <div className="col-lg-3 col-md-3 col-3">
+
                         <div className="row">
                           <div className="col-lg-8 col-md-6 col-8 mt-3 mt-lg-0 mt-md-0 text-end">
                             <label htmlFor="officeName" style={{ fontSize: "20px" }}><b>Chest No:</b></label>
@@ -788,11 +787,22 @@ const AdmissionCard = () => {
                           </div>
 
                         </div>
+                        <div className="row">
+                          <div className="col-lg-8 col-md-6 col-8 mt-3 mt-lg-0 mt-md-0 text-end">
+                            <label htmlFor="officeName" style={{ fontSize: "20px" }}><b>Group No:</b></label>
+                          </div>
+                          <div className="col-lg-4 col-md-4 col-4 mt-3 mt-lg-0 mt-md-0 text-end">
+                            <label style={{ fontSize: "20px" }}>
+                              <b>{groupNo}</b>
+                            </label>
+                          </div>
+
+                        </div>
                         <div className="row mt-3">
                           <div className="col-lg-6 col-md-6 col-6 mt-3 mt-lg-0 mt-md-0">
-                            {
+                            {/* {
                               decryptedImageUrl1 ? <img src={decryptedImageUrl1} className="img-fluid image-box" /> : null
-                            }
+                            } */}
                           </div>
                           <div className="col-lg-6 col-md-6 col-6 mt-3 mt-lg-0 mt-md-0">
                             {

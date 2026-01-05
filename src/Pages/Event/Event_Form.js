@@ -329,24 +329,24 @@ const Event_Form = () => {
       //   toast.warning("Please fill in all required fields before submission.");
       //   return;
       // }
-      if (title === "Shot Put" || title.toLowerCase() === "shot put") {
-        if (!row.ChestNo || !row.distance1 || !row.distance2 || !row.distance3) {
-          toast.warning("Please fill in all required fields before submission!");
-          return;
-        }
-      } else {
-        // if (!row.ChestNo /* || !row.StartTime || !row.EndTime */) {
-        //   toast.warning("Please fill in all required fields before submission!");
-        //   return;
-        // }
-        // if (
-        //   !row.ChestNo ||
-        //   (!row.StartTime && !row.EndTime)
-        // ) {
-        //   toast.warning("Please fill in all required fields before submission!");
-        //   return;
-        // }
-      }
+      // if (title === "Shot Put" || title.toLowerCase() === "shot put") {
+      //   if (!row.ChestNo || !row.distance1 || !row.distance2 || !row.distance3) {
+      //     toast.warning("Please fill in all required fields before submission!");
+      //     return;
+      //   }
+      // } else {
+      //   if (!row.ChestNo /* || !row.StartTime || !row.EndTime */) {
+      //     toast.warning("Please fill in all required fields before submission!");
+      //     return;
+      //   }
+      //   if (
+      //     !row.ChestNo ||
+      //     (!row.StartTime && !row.EndTime)
+      //   ) {
+      //     toast.warning("Please fill in all required fields before submission!");
+      //     return;
+      //   }
+      // }
     }
 
     const groupLeaderSignature = grpLdrSigRef.current
@@ -956,18 +956,18 @@ ${!isShotPut ? `
                                   (row.score && row.Status !== "True"),
                                 style: { overflow: "auto" }
                               }}
-                              // inputProps={{
-                              //   readOnly: true, // keyboard typing disabled
-                              //   disabled: !(
-                              //     (!row.StartTime || row.StartTime === "00:00:00.00" || row.StartTime === "00:00:00.000") &&
-                              //     (!row.EndTime || row.EndTime === "00:00:00.00" || row.EndTime === "00:00:00.000") &&
-                              //     (!row.Duration)
-                              //   ) && (
-                              //       row.Status === "False" ||
-                              //       (row.score && row.Status !== "True")
-                              //     ),
-                              //   style: { overflow: "auto" }
-                              // }}
+                            // inputProps={{
+                            //   readOnly: true, // keyboard typing disabled
+                            //   disabled: !(
+                            //     (!row.StartTime || row.StartTime === "00:00:00.00" || row.StartTime === "00:00:00.000") &&
+                            //     (!row.EndTime || row.EndTime === "00:00:00.00" || row.EndTime === "00:00:00.000") &&
+                            //     (!row.Duration)
+                            //   ) && (
+                            //       row.Status === "False" ||
+                            //       (row.score && row.Status !== "True")
+                            //     ),
+                            //   style: { overflow: "auto" }
+                            // }}
                             />
                             {/* <Datetime
                               dateFormat={false}
@@ -1013,14 +1013,14 @@ ${!isShotPut ? `
                                 handleDateChange(momentObj, index, "EndTime")
                               }
                               className="custom-datetime"
-                            inputProps={{
-                              readOnly: true,   // ✅ no keyboard typing
-                              onKeyDown: (e) => e.preventDefault(), // extra safety
-                              disabled:
-                                row.Status === "False" ||
-                                (row.score && row.Status !== "True"),
-                              style: { overflow: "auto" }
-                            }}
+                              inputProps={{
+                                readOnly: true,   // ✅ no keyboard typing
+                                onKeyDown: (e) => e.preventDefault(), // extra safety
+                                disabled:
+                                  row.Status === "False" ||
+                                  (row.score && row.Status !== "True"),
+                                style: { overflow: "auto" }
+                              }}
 
                             />
                           </td>
