@@ -16,6 +16,9 @@ import {
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { ArrowBack } from "@material-ui/icons";
+import jsPDF from "jspdf";
+import "jspdf-autotable";
+
 // import { duration } from "moment";
 // import { data } from "jquery";
 
@@ -359,6 +362,7 @@ const Event_Form = () => {
     const runningData = filteredRows.map((
       row, index) => ({
         ChestNo: row.ChestNo,
+        barcode: row.Barcode,
         Name: row.FirstName_English,
         StartTime: row.StartTime,
         EndTime: row.EndTime,
@@ -461,7 +465,8 @@ const Event_Form = () => {
         <thead>
           <tr>
             <th>Sr No</th>
-            <th>Chest Number</th>
+            <th>Chest No</th>
+             <th>Barcode No</th>
             <th>Name</th>
             ${!isShotPut ? "<th>Start Time</th>" : ""}
             ${!isShotPut ? "<th>End Time</th>" : ""}
@@ -484,6 +489,7 @@ const Event_Form = () => {
     <tr>
       <td>${index + 1}</td>
       <td>${row.ChestNo || ""}</td>
+       <td>${row.Barcode || ""}</td>
       <td>${row.Name || ""}</td>     
       ${!isShotPut ? `
       <td>${row.StartTime === "00:00:00.00" || row.StartTime === "00:00:00.000"
@@ -503,7 +509,7 @@ ${!isShotPut ? `
       ${isShotPut ? `<td>${row.distance1 || ""}</td>` : ""}
       ${isShotPut ? `<td>${row.distance2 || ""}</td>` : ""}
       ${isShotPut ? `<td>${row.distance3 || ""}</td>` : ""}
-      <td>${row.score || ""}</td>
+      <td>${row.score ?? ""}</td>
       <td class="signature-box"></td>
       ${index === 0 ? `<td class="signature-box" rowspan="${rows.length}"></td>` : ""}
     </tr>
@@ -540,6 +546,118 @@ ${!isShotPut ? `
     if (ms) formatted = `${formatted}.${ms}`;
 
     return formatted;
+  };
+
+  const downloadPdf = () => {
+    const doc = new jsPDF("l", "mm", "a4");
+    const pageWidth = doc.internal.pageSize.getWidth();
+
+    // Header
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(16);
+    doc.text(
+      `Commissioner of Police ${recruitName} City`,
+      pageWidth / 2,
+      15,
+      { align: "center" }
+    );
+
+    // Report Title
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "bold");
+    doc.text(title, pageWidth / 2, 23, { align: "center" });
+
+    let startY = 30;
+
+    // 🔹 Group details (center aligned)
+    if (groupId) {
+      doc.setFont("helvetica", "bold");
+
+      doc.text(
+        `Group No: ${groupId}`,
+        pageWidth / 2,
+        startY,
+        { align: "center" }
+      );
+
+      startY += 7;
+
+      doc.text(
+        `Group Leader Name: ${groupLeader || ""}`,
+        pageWidth / 2,
+        startY,
+        { align: "center" }
+      );
+
+      startY += 5; // space before table
+    }
+
+    const isShotPut = title.toLowerCase() === "shot put";
+    const isLapEvent =
+      title.toLowerCase() === "1600 meter running" ||
+      title.toLowerCase() === "800 meter running";
+
+    const tableColumn = [
+      "Sr No",
+      "Candidate Name",
+      "Chest No",
+      "Tag No",
+      !isShotPut ? "Start Time" : "",
+      !isShotPut ? "End Time" : "",
+      !isShotPut ? "Duration" : "",
+      isLapEvent ? "Lap" : "",
+      isShotPut ? "Distance 1" : "",
+      isShotPut ? "Distance 2" : "",
+      isShotPut ? "Distance 3" : "",
+      "Score"
+    ];
+
+    // 🔹 SORT DATA BY CHEST NO (ASC)
+    const sortedData = [...rows].sort(
+      (a, b) => Number(a.ChestNo) - Number(b.ChestNo)
+    );
+
+    const tableRows = sortedData.map((data, index) => ([
+      index + 1,
+      data.Name,
+      data.ChestNo,
+      data.Barcode,
+
+
+      !isShotPut ? `
+      ${data.StartTime === "00:00:00.00" || data.StartTime === "00:00:00.000"
+          ? ""
+          : data.StartTime || ""
+        }
+` : "",
+
+      !isShotPut ? `
+  ${data.EndTime === "00:00:00.00" || data.EndTime === "00:00:00.000"
+          ? ""
+          : data.EndTime || ""
+        }
+` : "",
+      !isShotPut ? `${data.duration || ""}` : "",
+      isLapEvent ? `${data.Lapcount || ""}` : "",
+      isShotPut ? `${data.distance1 || ""}` : "",
+      isShotPut ? `${data.distance2 || ""}` : "",
+      isShotPut ? `${data.distance3 || ""}` : "",
+      data.score
+    ]));
+
+    doc.autoTable({
+      head: [tableColumn],
+      body: tableRows,
+      startY: startY + 5,
+      styles: { fontSize: 8 },
+      headStyles: {
+        fillColor: [27, 90, 144],
+        textColor: 255,
+        fontStyle: "bold",
+      },
+    });
+
+    doc.save(`${title}.pdf`);
   };
   // const openPrintWindow = () => {
   //   const isShotPut = title.toLowerCase() === "shot put";
@@ -791,6 +909,7 @@ ${!isShotPut ? `
                     <h4 className="card-title fw-bold py-2">{title}</h4>
                   </div>
                   <div className="col-lg-4 col-md-4 col-5 d-flex justify-content-end print-section">
+                    <button className="btn me-2" style={headerCellStyle} /* onClick={() => window.print()} */ onClick={downloadPdf}>Pdf</button>
                     <button className="btn me-2" style={headerCellStyle} /* onClick={() => window.print()} */ onClick={openPrintWindow}>Print</button>
                     <button className="btn" style={headerCellStyle} onClick={() => navigate(-1)}>  <ArrowBack /></button>
                   </div>
@@ -872,7 +991,9 @@ ${!isShotPut ? `
                 <Table striped hover className="border text-left mt-4" >
                   <thead>
                     <tr>
-                      <th style={headerCellStyle}>Chest Number</th>
+                      <th style={headerCellStyle}>Chest No</th>
+                      <th style={headerCellStyle}>Tag No</th>
+
                       <th style={headerCellStyle}>Name</th>
                       {/* {title !== "Shot Put" || title.toLowerCase() !== "shot put" && (
                       <th style={headerCellStyle}>Start Time</th>)} */}
@@ -927,6 +1048,7 @@ ${!isShotPut ? `
                             disabled
                           />
                         </td>
+                        <td className="py-4">{row.Barcode}</td>
                         <td className="py-4">{row.Name}</td>
                         {title.toLowerCase() !== "shot put" && (
                           <td className="py-3">
