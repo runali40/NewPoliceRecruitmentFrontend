@@ -117,7 +117,7 @@ const All1600MeterReport = () => {
     setReservationCategory(selectedValue);
     console.log(selectedValue.value, "selected value");
     // setGroupId(selectedValue.value)
-    const data = await fetchAll1600Meter(eventId, groupId, selectedValue.label, cast);
+    const data = await fetchAll1600Meter(eventId, groupId, selectedValue.label, null);
     console.log(data)
     setAll1600MeterReport(data)
   }
@@ -133,7 +133,7 @@ const All1600MeterReport = () => {
     setCast(selectedValue);
     console.log(selectedValue.value, "selected value");
     // setGroupId(selectedValue.value)
-    const data = await fetchAll1600Meter(eventId, groupId, reservationCategory, selectedValue.label);
+    const data = await fetchAll1600Meter(eventId, groupId, null, selectedValue.label);
     console.log(data)
     setAll1600MeterReport(data)
   }
@@ -234,7 +234,8 @@ const All1600MeterReport = () => {
             <tr>
               <th>Sr No</th>
               <th>Candidate Name</th>
-              <th>Chest Number</th>
+              <th>Chest No</th>
+              <th>Tag No</th>
               <th>Cast</th>
               <th>Parellel Reservation</th>
               <th>Start Time</th>
@@ -261,6 +262,7 @@ const All1600MeterReport = () => {
           <td>${index + 1}</td>
           <td>${row.CandidateName || ""}</td>
           <td>${row.ChestNo || ""}</td>
+          <td>${row.Barcode || ""}</td>
            <td>${row.Cast || ""}</td>    
       <td>${row["Parallel Reservation"] || ""}</td>
         <td>${row.StartTime === "00:00:00.00" || row.StartTime === "00:00:00.000"
@@ -273,7 +275,7 @@ const All1600MeterReport = () => {
           : row.EndTime || ""
         }</td>
          <td>${row.duration || ""}</td>
-          <td>${row.score || ""}</td>
+          <td>${row.score ?? ""}</td>
           <td class="signature-box"></td>
              ${index === 0 ? `<td class="signature-box" rowspan="${all1600MeterReport.length}"></td>` : ""}
         </tr>
@@ -293,80 +295,105 @@ const All1600MeterReport = () => {
     printWindow.document.close();
   };
 
-  const download1600MeterPDF = () => {
-    const doc = new jsPDF("l", "mm", "a4");
+const download1600MeterPDF = () => {
+  const doc = new jsPDF("l", "mm", "a4");
+  const pageWidth = doc.internal.pageSize.getWidth();
 
-    const pageWidth = doc.internal.pageSize.getWidth();
+  // 🔹 Main Title
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(16);
+  doc.text(
+    `Commissioner of Police ${recruitName} City`,
+    pageWidth / 2,
+    15,
+    { align: "center" }
+  );
 
-    // Main Title
+  // 🔹 Sub Title
+  doc.setFontSize(12);
+  doc.text("1600 Meter Report", pageWidth / 2, 23, { align: "center" });
+
+  let startY = 30; // 👈 dynamic Y position
+
+  // 🔹 Group Details
+  if (groupId) {
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(16);
+
+    doc.text(`Group No: ${groupId}`, pageWidth / 2, startY, {
+      align: "center",
+    });
+
+    startY += 7;
 
     doc.text(
-      `Commissioner of Police ${recruitName} City`,
+      `Group Leader Name: ${groupLeaderName || ""}`,
       pageWidth / 2,
-      15,
+      startY,
       { align: "center" }
     );
-    // Sub Title
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(12);
-    doc.text("1600 Meter Report", pageWidth / 2, 23, { align: "center" });
-    const tableColumn = [
-      "Sr No",
-      "Candidate Name",
-      "Chest No",
-      "Cast",
-      "Parallel Reservation",
-      "Start Time",
-      "End Time",
-      "Duration",
-      "Lap",
-      "Score"
-    ];
 
+    startY += 10; // ✅ EXTRA SPACE BEFORE TABLE
+  } else {
+    startY += 5; // spacing even if no group
+  }
 
-    // 🔹 SORT DATA BY CHEST NO (ASC)
-    const sortedData = [...all1600MeterReport].sort(
-      (a, b) => Number(a.ChestNo) - Number(b.ChestNo)
-    );
-    const tableRows = [];
+  // 🔹 Table Columns
+  const tableColumn = [
+    "Sr No",
+    "Candidate Name",
+    "Chest No",
+    "Tag No",
+    "Cast",
+    "Parallel Reservation",
+    "Start Time",
+    "End Time",
+    "Duration",
+    "Lap",
+    "Score",
+  ];
 
-    sortedData.forEach((data, index) => {
-      tableRows.push([
-        index + 1,
-        data.CandidateName,
-        data.ChestNo,
-        data.Cast,
-        data["Parallel Reservation"],
-        // data.StartTime,
-        // data.EndTime,
-        data.StartTime === "00:00:00.00" || data.StartTime === "00:00:00.000"
-          ? ""
-          : data.StartTime || "",
-        data.EndTime === "00:00:00.00" || data.EndTime === "00:00:00.000"
-          ? ""
-          : data.EndTime || "",
-        data.duration,
-        data.Lapcount,
-        data.score
-      ]);
-    });
+  // 🔹 SORT BY CHEST NO
+  const sortedData = [...all1600MeterReport].sort(
+    (a, b) => Number(a.ChestNo) - Number(b.ChestNo)
+  );
 
-    doc.autoTable({
-      head: [tableColumn],
-      body: tableRows,
-      startY: 30, // ⬅️ increase this value
-      styles: { fontSize: 8 },
-      headStyles: {
-        fillColor: [27, 90, 144],
-        textColor: 255,
-        fontStyle: "bold",
-      },
-    });
+  const tableRows = [];
+  sortedData.forEach((data, index) => {
+    tableRows.push([
+      index + 1,
+      data.CandidateName || "",
+      data.ChestNo || "",
+      data.Barcode || "",
+      data.Cast || "",
+      data["Parallel Reservation"] || "",
+      data.StartTime === "00:00:00.00" || data.StartTime === "00:00:00.000"
+        ? ""
+        : data.StartTime || "",
+      data.EndTime === "00:00:00.00" || data.EndTime === "00:00:00.000"
+        ? ""
+        : data.EndTime || "",
+      data.duration || "",
+      data.Lapcount || "",
+      data.score || "",
+    ]);
+  });
 
-    doc.save("1600_Meter_Report.pdf");
-  };
+  // 🔹 AutoTable with proper spacing
+  doc.autoTable({
+    head: [tableColumn],
+    body: tableRows,
+    startY: startY, // ✅ FIXED HERE
+    styles: { fontSize: 8 },
+    headStyles: {
+      fillColor: [27, 90, 144],
+      textColor: 255,
+      fontStyle: "bold",
+    },
+  });
+
+  doc.save("1600_Meter_Report.pdf");
+};
+
 
   const sortedData = [...all1600MeterReport].sort(
     (a, b) => Number(a.ChestNo) - Number(b.ChestNo)
@@ -544,6 +571,9 @@ const All1600MeterReport = () => {
                         Chest No
                       </th>
                       <th scope="col" style={headerCellStyle}>
+                        Tag No
+                      </th>
+                      <th scope="col" style={headerCellStyle}>
                         Cast
                       </th>
                       <th scope="col" style={headerCellStyle}>
@@ -574,6 +604,7 @@ const All1600MeterReport = () => {
                         </td>
                         <td>{data.CandidateName}</td>
                         <td>{data.ChestNo}</td>
+                        <td>{data.Barcode}</td>
                         <td>{data.Cast}</td>
                         <td>{data["Parallel Reservation"]}</td>
                         {/* <td>{data.StartTime}</td>

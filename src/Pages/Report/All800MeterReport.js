@@ -76,7 +76,7 @@ const All800MeterReport = () => {
     setGroupId(selectedValue.value)
     const data = await fetchAll800Meter(eventId, selectedValue.value, reservationCategory, cast);
     console.log(data)
-     setGroupLeaderName(data[0].GrpLdrName)
+    setGroupLeaderName(data[0].GrpLdrName)
     console.log(data[0].GrpLdrName, "leader name")
     setAll800MeterReport(data)
   }
@@ -116,7 +116,7 @@ const All800MeterReport = () => {
     setReservationCategory(selectedValue);
     console.log(selectedValue.value, "selected value");
     // setGroupId(selectedValue.value)
-    const data = await fetchAll800Meter(eventId, groupId, selectedValue.label, cast);
+    const data = await fetchAll800Meter(eventId, groupId, selectedValue.label, null);
     console.log(data)
     setAll800MeterReport(data)
   }
@@ -132,7 +132,7 @@ const All800MeterReport = () => {
     setCast(selectedValue);
     console.log(selectedValue.value, "selected value");
     // setGroupId(selectedValue.value)
-    const data = await fetchAll800Meter(eventId, groupId, reservationCategory, selectedValue.label);
+    const data = await fetchAll800Meter(eventId, groupId, null, selectedValue.label);
     console.log(data)
     setAll800MeterReport(data)
   }
@@ -188,13 +188,38 @@ const All800MeterReport = () => {
       { align: "center" }
     );
     // Sub Title
-    doc.setFont("helvetica", "normal");
+    doc.setFont("helvetica", "bold");
     doc.setFontSize(12);
     doc.text("800 Meter Report", pageWidth / 2, 23, { align: "center" });
+    let startY = 30;
+
+    // 🔹 Group Details
+    if (groupId) {
+      doc.setFont("helvetica", "bold");
+
+      doc.text(`Group No: ${groupId}`, pageWidth / 2, startY, {
+        align: "center",
+      });
+
+      startY += 7;
+
+      doc.text(
+        `Group Leader Name: ${groupLeaderName || ""}`,
+        pageWidth / 2,
+        startY,
+        { align: "center" }
+      );
+
+      startY += 10; // ✅ EXTRA SPACE BEFORE TABLE
+    } else {
+      startY += 5; // spacing even if no group
+    }
+
     const tableColumn = [
       "Sr No",
       "Candidate Name",
       "Chest No",
+      "Tag No",
       "Cast",
       "Parallel Reservation",
       "Start Time",
@@ -216,6 +241,7 @@ const All800MeterReport = () => {
         index + 1,
         data.CandidateName,
         data.ChestNo,
+        data.TagNo,
         data.Cast,
         data["Parallel Reservation"],
         // data.StartTime,
@@ -237,7 +263,7 @@ const All800MeterReport = () => {
     doc.autoTable({
       head: [tableColumn],
       body: tableRows,
-      startY: 30, // ⬅️ increase this value
+      startY: startY, // ⬅️ increase this value
       styles: { fontSize: 8 },
       headStyles: {
         fillColor: [27, 90, 144],
@@ -309,7 +335,8 @@ const All800MeterReport = () => {
             <tr>
               <th>Sr No</th>
               <th>Candidate Name</th>
-              <th>Chest Number</th>
+              <th>Chest No</th>
+              <th>Tag No</th>
               <th>Cast</th>
               <th>Parellel Reservation</th>
               <th>Start Time</th>
@@ -336,6 +363,7 @@ const All800MeterReport = () => {
           <td>${index + 1}</td>
           <td>${row.CandidateName || ""}</td>
           <td>${row.ChestNo || ""}</td>
+          <td>${row.Barcode || ""}</td>
            <td>${row.Cast || ""}</td>    
       <td>${row["Parallel Reservation"] || ""}</td>
         <td>${row.StartTime === "00:00:00.00" || row.StartTime === "00:00:00.000"
@@ -348,7 +376,7 @@ const All800MeterReport = () => {
           : row.EndTime || ""
         }</td>
          <td>${row.duration || ""}</td>
-          <td>${row.score || ""}</td>
+          <td>${row.score ?? ""}</td>
           <td class="signature-box"></td>
            ${index === 0 ? `<td class="signature-box" rowspan="${all800MeterReport.length}"></td>` : ""}
         </tr>
@@ -543,6 +571,9 @@ const All800MeterReport = () => {
                         Chest No
                       </th>
                       <th scope="col" style={headerCellStyle}>
+                        Tag No
+                      </th>
+                      <th scope="col" style={headerCellStyle}>
                         Cast
                       </th>
                       <th scope="col" style={headerCellStyle}>
@@ -573,6 +604,7 @@ const All800MeterReport = () => {
                         </td>
                         <td>{data.CandidateName}</td>
                         <td>{data.ChestNo}</td>
+                        <td>{data.Barcode}</td>
                         <td>{data.Cast}</td>
                         <td>{data["Parallel Reservation"]}</td>
                         {/* <td>{data.StartTime}</td>

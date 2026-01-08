@@ -107,9 +107,10 @@ const AllRunningReport = () => {
     const handleReservationCategory = async (selected) => {
         const selectedValue = selected;
         setReservationCategory(selectedValue);
+       
         console.log(selectedValue.value, "selected value");
         // setGroupId(selectedValue.value)
-        const data = await fetchAllReport(groupId, selectedValue.label, cast);
+        const data = await fetchAllReport(groupId, selectedValue.label, null);
         console.log(data)
         setAllRunningReport(data)
     }
@@ -123,9 +124,12 @@ const AllRunningReport = () => {
     const handleCast = async (selected) => {
         const selectedValue = selected;
         setCast(selectedValue);
+      
         console.log(selectedValue.value, "selected value");
         // setGroupId(selectedValue.value)
-        const data = await fetchAllReport(groupId, reservationCategory, selectedValue.label);
+
+        console.log(reservationCategory, "reservation category")
+        const data = await fetchAllReport(groupId, null, selectedValue.label);
         console.log(data)
         setAllRunningReport(data)
     }
@@ -223,15 +227,17 @@ const AllRunningReport = () => {
             <tr>
               <th>Sr No</th>
               <th>Candidate Name</th>
-              <th>Chest Number</th>
+              <th>Chest No</th>
+              <th>Tag No</th>
               <th>Cast</th>
               <th>Parellel Reservation</th>
               <th>100 Meter</th>
               <th>800 Meter</th>
               <th>1600 Meter</th>      
               <th>Shot Put</th>
+              <th>Total</th>
               <th>Signature</th>
-                <th>Group Leader Sign</th>
+              <th>Group Leader Sign</th>
             </tr>
           </thead>
           <tbody>
@@ -250,12 +256,14 @@ const AllRunningReport = () => {
           <td>${index + 1}</td>
           <td>${row.CandidateName || ""}</td>
           <td>${row.ChestNo || ""}</td>
+          <td>${row.Barcode || ""}</td>
           <td>${row.Cast || ""}</td>    
           <td>${row["Parallel Reservation"] || ""}</td>
-         <td>${row["100 Meter Running"] || ""}</td>
-          <td>${row["800 Meter Running"] || ""}</td>
-         <td>${row["1600 Meter Running"] || ""}</td>   
-          <td>${row["Shot Put"] || ""}</td>
+         <td>${row["100 Meter Running"] ?? ""}</td>
+          <td>${row["800 Meter Running"] ?? ""}</td>
+         <td>${row["1600 Meter Running"] ?? ""}</td>   
+          <td>${row["Shot Put"] ?? ""}</td>
+          <td>${row.Total ?? ""}</td>
           <td class="signature-box"></td>
             ${index === 0 ? `<td class="signature-box" rowspan="${allRunningReport.length}"></td>` : ""}
         </tr>
@@ -291,13 +299,41 @@ const AllRunningReport = () => {
             { align: "center" }
         );
         // Sub Title
-        doc.setFont("helvetica", "normal");
+        doc.setFont("helvetica", "bold");
         doc.setFontSize(12);
         doc.text("All Report", pageWidth / 2, 23, { align: "center" });
+        let startY = 30;
+
+        // 🔹 Group details (center aligned)
+        if (groupId) {
+            doc.setFont("helvetica", "bold");
+
+            doc.text(
+                `Group No: ${groupId}`,
+                pageWidth / 2,
+                startY,
+                { align: "center" }
+            );
+
+            startY += 7;
+
+            doc.text(
+                `Group Leader Name: ${groupLeaderName || ""}`,
+                pageWidth / 2,
+                startY,
+                { align: "center" }
+            );
+
+            startY += 10; // ✅ EXTRA SPACE BEFORE TABLE
+        } else {
+            startY += 5; // spacing even if no group
+        }
+
         const tableColumn = [
             "Sr No",
             "Candidate Name",
             "Chest No",
+            "Tag No",
             "Cast",
             "Parallel Reservation",
             "100 Meter",
@@ -319,6 +355,7 @@ const AllRunningReport = () => {
                 index + 1,
                 data.CandidateName,
                 data.ChestNo,
+                data.Barcode,
                 data.Cast,
                 data["Parallel Reservation"],
                 data["100 Meter Running"],
@@ -332,7 +369,7 @@ const AllRunningReport = () => {
         doc.autoTable({
             head: [tableColumn],
             body: tableRows,
-            startY: 30, // ⬅️ increase this value
+            startY: startY, // ⬅️ increase this value
             styles: { fontSize: 8 },
             headStyles: {
                 fillColor: [27, 90, 144],
@@ -516,6 +553,9 @@ const AllRunningReport = () => {
                                                 Chest No
                                             </th>
                                             <th scope="col" style={headerCellStyle}>
+                                                Tag No
+                                            </th>
+                                            <th scope="col" style={headerCellStyle}>
                                                 Cast
                                             </th>
                                             <th scope="col" style={headerCellStyle}>
@@ -546,6 +586,7 @@ const AllRunningReport = () => {
                                                 </td>
                                                 <td>{data.CandidateName}</td>
                                                 <td>{data.ChestNo}</td>
+                                                <td>{data.Barcode}</td>
                                                 <td>{data.Cast}</td>
                                                 <td>{data["Parallel Reservation"]}</td>
                                                 <td>{data["100 Meter Running"]}</td>

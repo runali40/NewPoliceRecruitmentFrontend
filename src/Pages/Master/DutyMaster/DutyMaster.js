@@ -122,7 +122,7 @@ const DutyMaster = () => {
                     <h4 className="card-title fw-bold">Duty Master</h4>
                   </div>
                   <div className="col-auto d-flex flex-wrap">
-                    <div className="form-check form-switch mt-2 pt-1">
+                    {/* <div className="form-check form-switch mt-2 pt-1">
                       <input
                         className="form-check-input"
                         type="checkbox"
@@ -130,7 +130,7 @@ const DutyMaster = () => {
                         checked={active}
                         onChange={() => setActive(!active)}
                       />
-                    </div>
+                    </div> */}
                     <div className="btn btn-add" title="Add New">
                       <button
                         className="btn btn-md text-light"

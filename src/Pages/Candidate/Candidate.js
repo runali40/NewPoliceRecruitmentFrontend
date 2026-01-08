@@ -2816,6 +2816,24 @@ const Candidate = () => {
                         </button>
                       )}
 
+                    {DutyName === "Biometric" ||
+                      DutyName === "All" ||
+                      DutyName === "null" ? (
+                      <>
+                        <button
+                          onClick={handleBiometricClick}
+                          disabled={!candidateId}
+                          className={`btn btn-primary btn-sm p-2 rounded-4 mt-3 mx-3 position-relative ${biometricStatus === true
+                            ? "btn-success"
+                            : biometricStatus === false
+                              ? "btn-danger"
+                              : ""
+                            }`} /* disabled={!measurementStatus} */
+                        >
+                          Biometric
+                        </button>
+                      </>
+                    ) : null}
                     {/* </div> */}
                     {DutyName === "Height and Chest Measurement" ||
                       DutyName === "All" ||
@@ -2840,24 +2858,7 @@ const Candidate = () => {
                       </button>
                     ) : null}
 
-                    {DutyName === "Biometric" ||
-                      DutyName === "All" ||
-                      DutyName === "null" ? (
-                      <>
-                        <button
-                          onClick={handleBiometricClick}
-                          disabled={!candidateId}
-                          className={`btn btn-primary btn-sm p-2 rounded-4 mt-3 mx-3 position-relative ${biometricStatus === true
-                            ? "btn-success"
-                            : biometricStatus === false
-                              ? "btn-danger"
-                              : ""
-                            }`} /* disabled={!measurementStatus} */
-                        >
-                          Biometric
-                        </button>
-                      </>
-                    ) : null}
+
                     {/* </div> */}
 
                     <button

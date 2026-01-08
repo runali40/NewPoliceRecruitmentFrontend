@@ -3,7 +3,7 @@ import { Modal, Table } from "react-bootstrap";
 import { ArrowBack, Delete, Edit } from "@material-ui/icons";
 import { useNavigate } from "react-router-dom";
 import { Pagination } from "../../Components/Utils/Pagination";
-import { addTagger, deleteTagger, getAllTagger } from "../../Components/Api/TaggerApi";
+import { addTagger, DeleteAllTags, deleteTagger, getAllTagger } from "../../Components/Api/TaggerApi";
 import ScanChestNo from "./ScanChestNo";
 import Tesseract from "tesseract.js";
 import { ToastContainer, toast } from "react-toastify";
@@ -255,6 +255,15 @@ const Rfid = () => {
     };
   }, [isScanning]);
 
+  const DeleteAllData = async () => {
+    const data = await DeleteAllTags();
+    if (data) {
+      setChestNo("");
+      setRfid("");
+      fetchAllTagger();
+    }
+  }
+
   const captureImage = () => {
     const canvas = canvasRef.current;
     const video = videoRef.current;
@@ -332,6 +341,7 @@ const Rfid = () => {
   const handleClose = () => {
     setChestScan(false);
   };
+
   useEffect(() => {
     if (chestNo) {
       // Close modal if chestNo is detected
@@ -404,7 +414,7 @@ const Rfid = () => {
             const processedRecords = fileContent.split('\n').length - 1;
 
             toast.success(
-              `Success: Tags import completed.`
+              ` Tags imported Successfully.`
             );
 
             // Refresh the user list
@@ -617,7 +627,7 @@ const Rfid = () => {
                         Scan Chest No
                       </Button>
                     </div>
-                    <div className="btn btn-add" title="Shuffle">
+                    <div className="btn btn-add" >
                       <Button
                         className="btn btn-sm text-white float-end"
                         style={{
@@ -666,16 +676,6 @@ const Rfid = () => {
                       </div>
                       <div className="col-xl-3 col-lg-4 col-md-4 mt-lg-0 mt-3">
                         <div className="form-group">
-                          {/*<input
-                            type="text"
-                            className="form-control"
-                            name="rfid"
-                            id="rfid"
-                            aria-describedby="rfid"
-                            placeholder="Enter RFID"
-                            value={rfid}
-                            onChange={(e) => setRfid(e.target.value)}
-                          />*/}
                           <input
                             type="text"
                             className="form-control"
@@ -731,6 +731,21 @@ const Rfid = () => {
                   <div className="col">
                     <h4 className="card-title fw-bold p-2">Tagger History</h4>
                   </div>
+                  <div className="col-lg-9 col-md-9 d-flex justify-content-end align-items-end">
+
+                    <div className="btn btn-add" title="Delete">
+                      <Button
+                        className="btn btn-sm text-white float-end"
+                        style={{
+                          backgroundColor: "rgb(27, 90, 144)",
+                          marginLeft: "4px",
+                        }} // Added margin-left for spacing
+                        onClick={DeleteAllData}
+                      >
+                        Delete All
+                      </Button>
+                    </div>
+                  </div>
                 </div>
               </div>
               <div className="card-body pt-1">
@@ -779,10 +794,10 @@ const Rfid = () => {
                         Chest No
                       </th>
                       <th scope="col" style={headerCellStyle}>
-                        RFID
+                        Barcode No
                       </th>
                       <th scope="col" style={headerCellStyle}>
-                        Barcode No
+                        RFID
                       </th>
                       <th scope="col" style={headerCellStyle}>
                         Action
@@ -796,8 +811,8 @@ const Rfid = () => {
                         <tr key={data.id}>
                           <td>{(currentPage - 1) * itemsPerPage + index + 1}</td>
                           <td>{data.ChestNo}</td>
-                          <td>{data.RFID}</td>
                           <td>{data.Barcode}</td>
+                          <td>{data.RFID}</td>
                           <td>
                             <div className="d-flex justify-content-center align-items-center">
                               <Edit

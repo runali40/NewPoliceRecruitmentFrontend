@@ -15,8 +15,8 @@ export const fetchCandidateDetails = async (params, setCandidateData) => {
             url: `Candidate/GetCandidate`,
         });
         const candidateData = response.data.data;
-         setCandidateData(candidateData);
-    //    return response.data.data;
+        setCandidateData(candidateData);
+        //    return response.data.data;
         const token1 = response.data.outcome.tokens;
         Cookies.set("UserCredential", token1, { expires: 7 });
     } catch (error) {
@@ -55,31 +55,31 @@ export const fetchAllSchedule = async (params, setCandidates) => {
     }
 };
 
-export const fetchAllCandidates = async (params, setCandidates) => {
-    try {
-        const response = await apiClient({
-            method: "get",
-            params,
-            url: `Candidate/GetAll`,
-        });
-        const candidates = response.data.data.map(candidate => ({
-            value: candidate.CandidateID,
-            label: `${candidate.ApplicationNo} - ${candidate.FirstName_English + " " + candidate.Surname_English  }`,
-            // label: `${candidate.ApplicationNo} - ${candidate.FirstName_English + " " + candidate.Surname_English + " " + candidate.Category + " " + candidate['Parallel Reservation']}`,
-        }));
-        setCandidates(candidates);
-        const token1 = response.data.outcome.tokens;
-        Cookies.set("UserCredential", token1, { expires: 7 });
-    } catch (error) {
-        if (error.response && error.response.data && error.response.data.outcome) {
-            const token1 = error.response.data.outcome.tokens;
-            Cookies.set("UserCredential", token1, { expires: 7 });
-        }
-        console.error(error);
-        const errors = ErrorHandler(error);
-        toast.error(errors);
-    }
-};
+// export const fetchAllCandidates = async (params, setCandidates) => {
+//     try {
+//         const response = await apiClient({
+//             method: "get",
+//             params,
+//             url: `Candidate/GetAll`,
+//         });
+//         const candidates = response.data.data.map(candidate => ({
+//             value: candidate.CandidateID,
+//             label: `${candidate.ApplicationNo} - ${candidate.FirstName_English + " " + candidate.Surname_English  }`,
+//             // label: `${candidate.ApplicationNo} - ${candidate.FirstName_English + " " + candidate.Surname_English + " " + candidate.Category + " " + candidate['Parallel Reservation']}`,
+//         }));
+//         setCandidates(candidates);
+//         const token1 = response.data.outcome.tokens;
+//         Cookies.set("UserCredential", token1, { expires: 7 });
+//     } catch (error) {
+//         if (error.response && error.response.data && error.response.data.outcome) {
+//             const token1 = error.response.data.outcome.tokens;
+//             Cookies.set("UserCredential", token1, { expires: 7 });
+//         }
+//         console.error(error);
+//         const errors = ErrorHandler(error);
+//         toast.error(errors);
+//     }
+// };
 
 // export const fetchAllCandidatesFilter = async (params, setCandidates) => {
 //     try {
@@ -105,6 +105,55 @@ export const fetchAllCandidates = async (params, setCandidates) => {
 //         toast.error(errors);
 //     }
 // };
+
+export const fetchAllCandidates = async (params, setCandidates) => {
+    try {
+        const response = await apiClient({
+            method: "get",
+            params,
+            url: `Candidate/GetAll`,
+        });
+
+        // ✅ Step 1: Sort by numeric ApplicationNo (APP1, APP2, APP10)
+        const sortedCandidates = response.data.data.sort((a, b) => {
+            const numA = parseInt(a.ApplicationNo.replace(/\D/g, ""), 10);
+            const numB = parseInt(b.ApplicationNo.replace(/\D/g, ""), 10);
+            return numA - numB;
+        });
+
+        // ✅ Step 2: Format label as APP1, APP2 (remove leading zeros)
+        const candidates = sortedCandidates.map((candidate) => {
+            const appNoNumber = parseInt(
+                candidate.ApplicationNo.replace(/\D/g, ""),
+                10
+            );
+
+            return {
+                value: candidate.CandidateID,
+                label: `APP${appNoNumber} - ${candidate.FirstName_English + " " + candidate.Surname_English
+                    }`,
+            };
+        });
+
+        setCandidates(candidates);
+
+        // ✅ Token handling
+        const token1 = response.data.outcome.tokens;
+        Cookies.set("UserCredential", token1, { expires: 7 });
+
+    } catch (error) {
+        if (error.response?.data?.outcome) {
+            const token1 = error.response.data.outcome.tokens;
+            Cookies.set("UserCredential", token1, { expires: 7 });
+        }
+
+        console.error(error);
+        const errors = ErrorHandler(error);
+        toast.error(errors);
+    }
+};
+
+
 
 export const fetchAllRecruitments = async (params, setRecruitments) => {
     try {
@@ -150,7 +199,7 @@ export const uploadFile = async (file, UserId, recruitId, /* setCandidates, */ s
             const token1 = result.outcome.tokens;
             Cookies.set("UserCredential", token1, { expires: 7 });
             toast.success("Candidates data uploaded successfully!")
-           
+
         } else {
             console.error("Error:", response.statusText);
         }

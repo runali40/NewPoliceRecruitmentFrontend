@@ -49,7 +49,7 @@ export const addTagger = async (rfid, chestNo, mappingId, tagNo) => {
       RecruitId: recruitId,
       barcode: tagNo
     };
-    if (mappingId !== null && mappingId !== "" && tagNo!== "") {
+    if (mappingId !== null && mappingId !== "" && tagNo !== "") {
       data.id = mappingId;
     }
     try {
@@ -93,6 +93,11 @@ export const addTagger = async (rfid, chestNo, mappingId, tagNo) => {
 };
 
 export const deleteTagger = async (id) => {
+    const isConfirmed = window.confirm(
+    "Are you sure you want to delete tags?"
+  );
+
+  if (!isConfirmed) return;
   const UserId = localStorage.getItem("userId");
   const recruitId = localStorage.getItem("recruitId");
   const data = {
@@ -110,7 +115,7 @@ export const deleteTagger = async (id) => {
     console.log("add tagger", response.data.data);
     const token1 = response.data.outcome.tokens;
     Cookies.set("UserCredential", token1, { expires: 7 });
-    toast.success("RFID Deleted Successfully!");
+    toast.success("Tags Deleted Successfully!");
     return response.data.data;
   } catch (error) {
     if (
@@ -127,6 +132,44 @@ export const deleteTagger = async (id) => {
   }
 }
 
+export const DeleteAllTags = async () => {
+  const isConfirmed = window.confirm(
+    "Are you sure you want to delete all tags?"
+  );
+
+  if (!isConfirmed) return;
+  const UserId = localStorage.getItem("userId");
+  const recruitId = localStorage.getItem("recruitId");
+  const data = {
+    userId: UserId,
+    RecruitId: recruitId,
+  };
+
+  try {
+    const response = await apiClient({
+      method: "post",
+      data: data,
+      url: `RFIDChestNoMapping/DeleteAllMapping`,
+    });
+    console.log("delete all tag", response.data.data);
+    const token1 = response.data.outcome.tokens;
+    Cookies.set("UserCredential", token1, { expires: 7 });
+    toast.success("All Tags Deleted Successfully!");
+    return response.data.data;
+  } catch (error) {
+    if (
+      error.response &&
+      error.response.data &&
+      error.response.data.outcome
+    ) {
+      const token1 = error.response.data.outcome.tokens;
+      Cookies.set("UserCredential", token1, { expires: 7 });
+    }
+    console.error(error);
+    const errors = ErrorHandler(error);
+    toast.error(errors);
+  }
+}
 
 export const InsertRIFDRunning = async (eventId) => {
   const UserId = localStorage.getItem("userId");

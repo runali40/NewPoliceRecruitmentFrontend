@@ -119,7 +119,7 @@ const ShotputReport = () => {
         setReservationCategory(selectedValue);
         console.log(selectedValue.value, "selected value");
         // setGroupId(selectedValue.value)
-        const data = await fetchAllShotput(eventId, groupId, selectedValue.label, cast);
+        const data = await fetchAllShotput(eventId, groupId, selectedValue.label, null);
         console.log(data)
         setShotputReport(data)
     }
@@ -135,7 +135,7 @@ const ShotputReport = () => {
         setCast(selectedValue);
         console.log(selectedValue.value, "selected value");
         // setGroupId(selectedValue.value)
-        const data = await fetchAllShotput(eventId, groupId, reservationCategory, selectedValue.label);
+        const data = await fetchAllShotput(eventId, groupId, null, selectedValue.label);
         console.log(data)
         setShotputReport(data)
     }
@@ -175,81 +175,204 @@ const ShotputReport = () => {
         setCurrentPage(1);
     };
 
+    //     const openPrintWindow = () => {
+    //         let tableHTML = `
+    //       <html>
+    //       <head>
+    //         <title>Report</title>
+    //         <style>
+    //           table {
+    //             width: 100%;
+    //             border-collapse: collapse;
+    //             font-family: Arial;
+    //           }
+    //           th{
+    //             padding: 8px;
+    //             border: 1px solid #000;
+    //             text-align: left;
+    //             font-size: 14px;
+    //           }
+    //           th {
+    //             background: #f2f2f2;
+    //           }
+    //           .signature-box {
+    //             height: 60px;
+    //             border: 1px solid #000;
+    //           }
+    //           .print-btn {
+    //             margin: 15px 0;
+    //             padding: 6px 12px;
+    //             border: 1px solid #000;
+    //             cursor: pointer;
+    //             background: #ddd;
+    //             font-size: 14px;
+    //           }
+    //         </style>
+    //       </head>
+    //       <body>
+
+    //         <button class="btn btn-success print-btn" onclick="startPrinting()">Print</button>
+
+    //         <script>
+    //           function startPrinting() {
+    //             const btn = document.querySelector('.print-btn');
+    //             btn.style.display = 'none';      
+    //             setTimeout(() => {
+    //               window.print();
+    //               btn.style.display = 'block';   
+    //             }, 200);
+    //           }
+    //         </script>
+
+    //      <h2>Commissioner of Police ${recruitName} City</h2>
+    //     <h3>Shot Put Report</h3>
+    //    ${groupId ? `
+    //   <h3>Group No: ${groupId}</h3>
+    //   <h3>Group Leader Name: ${groupLeaderName || ""}</h3>
+    // ` : ""}
+    //         <table>
+    //           <thead>
+    //             <tr>
+    //               <th>Sr No</th>
+    //               <th>Candidate Name</th>
+    //               <th>Chest No</th>
+    //               <th>Tag No</th>
+    //               <th>Cast</th>
+    //               <th>Parellel Reservation</th>
+    //               <th>Distance 1</th>
+    //               <th>Distance 2</th>
+    //               <th>Distance 3</th>      
+    //               <th>Score</th>
+    //               <th>Signature</th>
+    //                 <th>Group Leader Sign</th>
+    //             </tr>
+    //           </thead>
+    //           <tbody>
+    //     `;
+
+    //         // ChestNo ascending sort
+    //         const sortedData = [...shotputReport].sort((a, b) => {
+    //             const chestA = Number(a.ChestNo) || 0;
+    //             const chestB = Number(b.ChestNo) || 0;
+    //             return chestA - chestB;
+    //         });
+
+    //         sortedData.forEach((row, index) => {
+    //             tableHTML += `
+    //         <tr>
+    //           <td>${index + 1}</td>
+    //           <td>${row.CandidateName || ""}</td>
+    //           <td>${row.ChestNo || ""}</td>
+    //           <td>${row.Barcode || ""}</td>
+    //          <td>${row.Cast || ""}</td>    
+    //          <td>${row["Parallel Reservation"] || ""}</td>
+    //          <td>${row.distance1 || ""}</td>
+    //          <td>${row.distance2 || ""}</td>
+    //          <td>${row.distance3 || ""}</td>
+    //           <td>${row.score ?? ""}</td>
+    //           <td class="signature-box"></td>
+    //              ${index === 0 ? `<td class="signature-box" rowspan="${shotputReport.length}"></td>` : ""}
+    //         </tr>
+    //       `;
+    //         });
+
+    //         tableHTML += `
+    //           </tbody>
+    //         </table>
+    //       </body>
+    //       </html>
+    //     `;
+
+    //         const printWindow = window.open("", "_blank", "width=900,height=700");
+    //         printWindow.document.open();
+    //         printWindow.document.write(tableHTML);
+    //         printWindow.document.close();
+    //     };
+
     const openPrintWindow = () => {
         let tableHTML = `
-      <html>
-      <head>
-        <title>Report</title>
-        <style>
-          table {
-            width: 100%;
-            border-collapse: collapse;
-            font-family: Arial;
-          }
-          th{
-            padding: 8px;
-            border: 1px solid #000;
-            text-align: left;
-            font-size: 14px;
-          }
-          th {
-            background: #f2f2f2;
-          }
-          .signature-box {
-            height: 60px;
-            border: 1px solid #000;
-          }
-          .print-btn {
-            margin: 15px 0;
-            padding: 6px 12px;
-            border: 1px solid #000;
-            cursor: pointer;
-            background: #ddd;
-            font-size: 14px;
-          }
-        </style>
-      </head>
-      <body>
-  
-        <button class="btn btn-success print-btn" onclick="startPrinting()">Print</button>
-  
-        <script>
-          function startPrinting() {
-            const btn = document.querySelector('.print-btn');
-            btn.style.display = 'none';      
-            setTimeout(() => {
-              window.print();
-              btn.style.display = 'block';   
-            }, 200);
-          }
-        </script>
+  <html>
+  <head>
+    <title>Shot Put Report</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+      }
 
-     <h2>Commissioner of Police ${recruitName} City</h2>
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+      }
+
+      th, td {
+        border: 1px solid #000;   /* ✅ FIXED BORDER */
+        padding: 8px;
+        font-size: 14px;
+        text-align: left;
+      }
+
+      th {
+        background-color: #f2f2f2;
+        font-weight: bold;
+      }
+
+      .signature-box {
+        height: 60px;
+      }
+
+      .print-btn {
+        margin: 15px 0;
+        padding: 6px 12px;
+        border: 1px solid #000;
+        cursor: pointer;
+        background: #ddd;
+        font-size: 14px;
+      }
+
+      @media print {
+        .print-btn {
+          display: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+
+    <button class="print-btn" onclick="window.print()">Print</button>
+
+    <h2>Commissioner of Police ${recruitName} City</h2>
     <h3>Shot Put Report</h3>
-   ${groupId ? `
-  <h3>Group No: ${groupId}</h3>
-  <h3>Group Leader Name: ${groupLeaderName || ""}</h3>
-` : ""}
-        <table>
-          <thead>
-            <tr>
-              <th>Sr No</th>
-              <th>Candidate Name</th>
-              <th>Chest Number</th>
-              <th>Cast</th>
-              <th>Parellel Reservation</th>
-              <th>Distance 1</th>
-              <th>Distance 2</th>
-              <th>Distance 3</th>      
-              <th>Score</th>
-              <th>Signature</th>
-                <th>Group Leader Sign</th>
-            </tr>
-          </thead>
-          <tbody>
-    `;
 
-        // ChestNo ascending sort
+    ${groupId
+                ? `
+      <h3>Group No: ${groupId}</h3>
+      <h3>Group Leader Name: ${groupLeaderName || ""}</h3>
+      `
+                : ""
+            }
+
+    <table>
+      <thead>
+        <tr>
+          <th>Sr No</th>
+          <th>Candidate Name</th>
+          <th>Chest No</th>
+          <th>Tag No</th>
+          <th>Cast</th>
+          <th>Parallel Reservation</th>
+          <th>Distance 1</th>
+          <th>Distance 2</th>
+          <th>Distance 3</th>
+          <th>Score</th>
+          <th>Signature</th>
+          <th>Group Leader Sign</th>
+        </tr>
+      </thead>
+      <tbody>
+  `;
+
+        // ✅ ChestNo ascending sort
         const sortedData = [...shotputReport].sort((a, b) => {
             const chestA = Number(a.ChestNo) || 0;
             const chestB = Number(b.ChestNo) || 0;
@@ -258,36 +381,42 @@ const ShotputReport = () => {
 
         sortedData.forEach((row, index) => {
             tableHTML += `
-        <tr>
-          <td>${index + 1}</td>
-          <td>${row.CandidateName || ""}</td>
-          <td>${row.ChestNo || ""}</td>
-         <td>${row.Cast || ""}</td>    
-         <td>${row["Parallel Reservation"] || ""}</td>
-         <td>${row.distance1 || ""}</td>
-         <td>${row.distance2 || ""}</td>
-         <td>${row.distance3 || ""}</td>
-          <td>${row.score || ""}</td>
-          <td class="signature-box"></td>
-             ${index === 0 ? `<td class="signature-box" rowspan="${shotputReport.length}"></td>` : ""}
-        </tr>
-      `;
+      <tr>
+        <td>${index + 1}</td>
+        <td>${row.CandidateName || ""}</td>
+        <td>${row.ChestNo || ""}</td>
+        <td>${row.Barcode || ""}</td>
+        <td>${row.Cast || ""}</td>
+        <td>${row["Parallel Reservation"] || ""}</td>
+        <td>${row.distance1 || ""}</td>
+        <td>${row.distance2 || ""}</td>
+        <td>${row.distance3 || ""}</td>
+        <td>${row.score ?? ""}</td>
+        <td class="signature-box"></td>
+        ${index === 0
+                    ? `<td class="signature-box" rowspan="${sortedData.length}"></td>`
+                    : ""
+                }
+      </tr>
+    `;
         });
 
         tableHTML += `
-          </tbody>
-        </table>
-      </body>
-      </html>
-    `;
+      </tbody>
+    </table>
 
-        const printWindow = window.open("", "_blank", "width=900,height=700");
+  </body>
+  </html>
+  `;
+
+        const printWindow = window.open("", "_blank", "width=1000,height=700");
         printWindow.document.open();
         printWindow.document.write(tableHTML);
         printWindow.document.close();
     };
 
-    const download100MeterPDF = () => {
+
+    const downloadShotPutPDF = () => {
         const doc = new jsPDF("l", "mm", "a4");
 
         const pageWidth = doc.internal.pageSize.getWidth();
@@ -303,13 +432,41 @@ const ShotputReport = () => {
             { align: "center" }
         );
         // Sub Title
-        doc.setFont("helvetica", "normal");
+        doc.setFont("helvetica", "bold");
         doc.setFontSize(12);
         doc.text("Shot Put Report", pageWidth / 2, 23, { align: "center" });
+        let startY = 30;
+
+        // 🔹 Group details (center aligned)
+        if (groupId) {
+            doc.setFont("helvetica", "bold");
+
+            doc.text(
+                `Group No: ${groupId}`,
+                pageWidth / 2,
+                startY,
+                { align: "center" }
+            );
+
+            startY += 7;
+
+            doc.text(
+                `Group Leader Name: ${groupLeaderName || ""}`,
+                pageWidth / 2,
+                startY,
+                { align: "center" }
+            );
+
+            startY += 10; // ✅ EXTRA SPACE BEFORE TABLE
+        } else {
+            startY += 5; // spacing even if no group
+        }
+
         const tableColumn = [
             "Sr No",
             "Candidate Name",
             "Chest No",
+            "Tag No",
             "Cast",
             "Parallel Reservation",
             "Distance 1",
@@ -328,6 +485,7 @@ const ShotputReport = () => {
                 index + 1,
                 data.CandidateName,
                 data.ChestNo,
+                data.Barcode,
                 data.Cast,
                 data["Parallel Reservation"],
                 data.distance1,
@@ -340,7 +498,7 @@ const ShotputReport = () => {
         doc.autoTable({
             head: [tableColumn],
             body: tableRows,
-            startY: 30, // ⬅️ increase this value
+            startY: startY, // ⬅️ increase this value
             styles: { fontSize: 8 },
             headStyles: {
                 fillColor: [27, 90, 144],
@@ -400,7 +558,7 @@ const ShotputReport = () => {
                                         <button
                                             className="btn btn-sm me-2"
                                             style={headerCellStyle}
-                                            onClick={download100MeterPDF}
+                                            onClick={downloadShotPutPDF}
                                         >
                                             Download PDF
                                         </button>
@@ -527,6 +685,9 @@ const ShotputReport = () => {
                                                 Chest No
                                             </th>
                                             <th scope="col" style={headerCellStyle}>
+                                                Tag No
+                                            </th>
+                                            <th scope="col" style={headerCellStyle}>
                                                 Cast
                                             </th>
                                             <th scope="col" style={headerCellStyle}>
@@ -554,6 +715,7 @@ const ShotputReport = () => {
                                                 </td>
                                                 <td>{data.CandidateName}</td>
                                                 <td>{data.ChestNo}</td>
+                                                <td>{data.Barcode}</td>
                                                 <td>{data.Cast}</td>
                                                 <td>{data["Parallel Reservation"]}</td>
                                                 <td>{data.distance1}</td>

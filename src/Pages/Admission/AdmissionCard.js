@@ -493,7 +493,7 @@ const AdmissionCard = () => {
               flex-wrap: nowrap !important;
               align-items: flex-start !important;
               margin-bottom: 10px !important;
-              margin-left: 20px;
+              margin-left: 5px !important;
             }
 
             /* Each top section item */
@@ -501,6 +501,7 @@ const AdmissionCard = () => {
               width: 33.333% !important;
               flex: 0 0 33.333% !important;
               margin-top: 0 !important;
+              
             }
 
             /* Show first 2, hide 3rd */
@@ -531,6 +532,7 @@ const AdmissionCard = () => {
               margin-top: 0 !important;
               margin-bottom: 15px !important;
               flex-wrap: wrap !important;
+               margin-left: 5px !important;
             }
 
             .card-body > .row:nth-child(2) > .col-lg-4 {

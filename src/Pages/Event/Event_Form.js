@@ -466,7 +466,7 @@ const Event_Form = () => {
           <tr>
             <th>Sr No</th>
             <th>Chest No</th>
-             <th>Barcode No</th>
+             <th>Tag No</th>
             <th>Name</th>
             ${!isShotPut ? "<th>Start Time</th>" : ""}
             ${!isShotPut ? "<th>End Time</th>" : ""}
@@ -1071,11 +1071,19 @@ ${!isShotPut ? `
                               onChange={(momentObj) =>
                                 handleDateChange(momentObj, index, "StartTime")
                               }
+                              // inputProps={{
+                              //   readOnly: true,   // ✅ keyboard typing disabled
+                              //   disabled:
+                              //     row.Status === "False" ||
+                              //     (row.score && row.Status !== "True"),
+                              //   style: { overflow: "auto" }
+                              // }}
                               inputProps={{
-                                readOnly: true,   // ✅ keyboard typing disabled
+                                readOnly: true, // keyboard typing disabled
                                 disabled:
                                   row.Status === "False" ||
-                                  (row.score && row.Status !== "True"),
+                                  row.score === 0 ||
+                                  (row.score !== null && row.score !== undefined && row.Status !== "True"),
                                 style: { overflow: "auto" }
                               }}
                             // inputProps={{
@@ -1140,7 +1148,7 @@ ${!isShotPut ? `
                                 onKeyDown: (e) => e.preventDefault(), // extra safety
                                 disabled:
                                   row.Status === "False" ||
-                                  (row.score && row.Status !== "True"),
+                                  (row.score !== null && row.score !== undefined && row.Status !== "True"),
                                 style: { overflow: "auto" }
                               }}
 
@@ -1162,7 +1170,7 @@ ${!isShotPut ? `
                                     ? true
                                     : row.Status === "True"
                                       ? false
-                                      : !!row.score
+                                      :  row.score != null
                                 }
                                 onChange={(e) => {
                                   const inputValue = e.target.value;
@@ -1184,7 +1192,7 @@ ${!isShotPut ? `
                                     ? true
                                     : row.Status === "True"
                                       ? false
-                                      : !!row.score
+                                      :  row.score != null
                                 }
                                 // onChange={(e) => handleInputChange(index, "distance2", e.target.value)}
                                 onChange={(e) => {
@@ -1207,7 +1215,7 @@ ${!isShotPut ? `
                                     ? true
                                     : row.Status === "True"
                                       ? false
-                                      : !!row.score
+                                      :  row.score != null
                                 }
                                 // onChange={(e) => handleInputChange(index, "distance3", e.target.value)}
                                 onChange={(e) => {
@@ -1233,8 +1241,9 @@ ${!isShotPut ? `
                                   ? true
                                   : row.Status === "True"
                                     ? false
-                                    : !!row.score
+                                    : row.score != null
                               }
+
                               onChange={(e) => handleInputChange(index, "duration", e.target.value)}
                             />
                           </td>

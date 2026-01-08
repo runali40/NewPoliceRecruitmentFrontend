@@ -224,12 +224,12 @@ const AdmissionCardRejectForm = () => {
                         <div className="col-lg-4 col-md-4">
                           <label>Recruitment Year:</label>
                         </div>
-                        <div className="col-lg-8 col-md-8 mt-3 mt-lg-0 mt-md-0">
+                        <div className="col-lg-8 col-md-8  mt-lg-0 mt-md-0">
                           <label>{candidateData.RecruitmentYear}</label>
                         </div>
                       </div>
                     </div>
-                    <div className="col-lg-6 col-md-6">
+                    <div className="col-lg-6 col-md-6 mt-3 mt-lg-0 mt-md-0">
                       <div className="row">
                         <div className="col-lg-4 col-md-4 mt-3 mt-lg-0 mt-md-0">
                           <label>Application no:</label>
@@ -244,7 +244,7 @@ const AdmissionCardRejectForm = () => {
                   <div className="row mt-3">
                     <div className="col-lg-10 col-md-10">
                       <div className="row">
-                        <div className="col-lg-5 col-md-5">
+                        <div className="col-lg-5 col-md-5 mt-3 mt-lg-0 mt-md-0">
                           <label>Candidate's Full Name (in Devnagari):</label>
                         </div>
                         <div className="col-lg-7 col-md-7 mt-3 mt-lg-0 mt-md-0">
@@ -254,7 +254,7 @@ const AdmissionCardRejectForm = () => {
                     </div>
                     <div className="col-lg-10 col-md-10 mt-3">
                       <div className="row">
-                        <div className="col-lg-5 col-md-5">
+                        <div className="col-lg-5 col-md-5  mt-3 mt-lg-0 mt-md-0">
                           <label>Candidate's Full Name (in English):</label>
                         </div>
                         <div className="col-lg-7 col-md-7 mt-3 mt-lg-0 mt-md-0">
@@ -264,7 +264,7 @@ const AdmissionCardRejectForm = () => {
                     </div>
                     <div className="col-lg-10 col-md-10 mt-3">
                       <div className="row">
-                        <div className="col-lg-5 col-md-5">
+                        <div className="col-lg-5 col-md-5  mt-3 mt-lg-0 mt-md-0">
                           <label>Gender:</label>
                         </div>
                         <div className="col-lg-7 col-md-7 mt-3 mt-lg-0 mt-md-0">
@@ -274,7 +274,7 @@ const AdmissionCardRejectForm = () => {
                     </div>
                     <div className="col-lg-10 col-md-10 mt-3">
                       <div className="row">
-                        <div className="col-lg-5 col-md-5">
+                        <div className="col-lg-5 col-md-5  mt-3 mt-lg-0 mt-md-0">
                           <label>Date of Birth:</label>
                         </div>
                         <div className="col-lg-7 col-md-7 mt-3 mt-lg-0 mt-md-0">
@@ -294,7 +294,7 @@ const AdmissionCardRejectForm = () => {
                     </div> */}
                     <div className="col-lg-10 col-md-10 mt-3">
                       <div className="row">
-                        <div className="col-lg-5 col-md-5">
+                        <div className="col-lg-5 col-md-5  mt-3 mt-lg-0 mt-md-0">
                           <label>Mobile no:</label>
                         </div>
                         <div className="col-lg-7 col-md-7 mt-3 mt-lg-0 mt-md-0">
@@ -304,7 +304,7 @@ const AdmissionCardRejectForm = () => {
                     </div>
                     <div className="col-lg-10 col-md-10 mt-3">
                       <div className="row">
-                        <div className="col-lg-5 col-md-5">
+                        <div className="col-lg-5 col-md-5  mt-3 mt-lg-0 mt-md-0">
                           <label>Document Verification Status:</label>
                         </div>
                         <div className="col-lg-7 col-md-7 mt-3 mt-lg-0 mt-md-0">
@@ -314,7 +314,7 @@ const AdmissionCardRejectForm = () => {
                     </div>
                     <div className="col-lg-10 col-md-10 mt-3">
                       <div className="row">
-                        <div className="col-lg-5 col-md-5">
+                        <div className="col-lg-5 col-md-5  mt-3 mt-lg-0 mt-md-0">
                           <label>Document Date:</label>
                         </div>
                         <div className="col-lg-7 col-md-7 mt-3 mt-lg-0 mt-md-0">
@@ -324,7 +324,7 @@ const AdmissionCardRejectForm = () => {
                     </div>
                     <div className="col-lg-10 col-md-10 mt-3">
                       <div className="row">
-                        <div className="col-lg-5 col-md-5">
+                        <div className="col-lg-5 col-md-5  mt-3 mt-lg-0 mt-md-0">
                           <label> Physical Test Result (Height/Chest):</label>
                         </div>
                         <div className="col-lg-7 col-md-7 mt-3 mt-lg-0 mt-md-0">
@@ -334,7 +334,7 @@ const AdmissionCardRejectForm = () => {
                     </div>
                     <div className="col-lg-10 col-md-10 mt-3">
                       <div className="row">
-                        <div className="col-lg-5 col-md-5">
+                        <div className="col-lg-5 col-md-5  mt-3 mt-lg-0 mt-md-0">
                           <label> Height:</label>
                         </div>
                         <div className="col-lg-7 col-md-7 mt-3 mt-lg-0 mt-md-0">
@@ -348,7 +348,7 @@ const AdmissionCardRejectForm = () => {
                       <>
                         <div className="col-lg-10 col-md-10 mt-3">
                           <div className="row">
-                            <div className="col-lg-5 col-md-5">
+                            <div className="col-lg-5 col-md-5  mt-3 mt-lg-0 mt-md-0">
                               <label>Chest Normal:</label>
                             </div>
                             <div className="col-lg-7 col-md-7 mt-3 mt-lg-0 mt-md-0">
@@ -358,7 +358,7 @@ const AdmissionCardRejectForm = () => {
                         </div>
                         <div className="col-lg-10 col-md-10 mt-3">
                           <div className="row">
-                            <div className="col-lg-5 col-md-5">
+                            <div className="col-lg-5 col-md-5  mt-3 mt-lg-0 mt-md-0">
                               <label>Chest Inhale:</label>
                             </div>
                             <div className="col-lg-7 col-md-7 mt-3 mt-lg-0 mt-md-0">
@@ -371,7 +371,7 @@ const AdmissionCardRejectForm = () => {
 
                     <div className="col-lg-10 col-md-10 mt-3">
                       <div className="row">
-                        <div className="col-lg-5 col-md-5">
+                        <div className="col-lg-5 col-md-5  mt-3 mt-lg-0 mt-md-0">
                           <label>Physical Test Date:</label>
                         </div>
                         <div className="col-lg-7 col-md-7 mt-3 mt-lg-0 mt-md-0">
@@ -381,7 +381,7 @@ const AdmissionCardRejectForm = () => {
                     </div>
                     <div className="col-lg-10 col-md-10 mt-3">
                       <div className="row">
-                        <div className="col-lg-5 col-md-5">
+                        <div className="col-lg-5 col-md-5  mt-3 mt-lg-0 mt-md-0">
                           <label>Rejection Reason:</label>
                         </div>
                         <div className="col-lg-7 col-md-7 mt-3 mt-lg-0 mt-md-0">

@@ -143,7 +143,7 @@ const All100MeterReport = () => {
     setReservationCategory(selectedValue);
     console.log(selectedValue.value, "selected value");
     // setGroupId(selectedValue.value)
-    const data = await fetchAll100Meter(eventId, groupId, selectedValue.label, cast);
+    const data = await fetchAll100Meter(eventId, groupId, selectedValue.label, null);
     console.log(data)
     setAll100MeterReport(data)
   }
@@ -159,7 +159,7 @@ const All100MeterReport = () => {
     setCast(selectedValue);
     console.log(selectedValue.value, "selected value");
     // setGroupId(selectedValue.value)
-    const data = await fetchAll100Meter(eventId, groupId, reservationCategory, selectedValue.label);
+    const data = await fetchAll100Meter(eventId, groupId, null, selectedValue.label);
     console.log(data)
     setAll100MeterReport(data)
   }
@@ -386,99 +386,99 @@ ${groupId ? `
 
   //   doc.save("100_Meter_Report.pdf");
   // };
-const download100MeterPDF = () => {
-  const doc = new jsPDF("l", "mm", "a4");
-  const pageWidth = doc.internal.pageSize.getWidth();
+  const download100MeterPDF = () => {
+    const doc = new jsPDF("l", "mm", "a4");
+    const pageWidth = doc.internal.pageSize.getWidth();
 
-  // Header
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(16);
-  doc.text(
-    `Commissioner of Police ${recruitName} City`,
-    pageWidth / 2,
-    15,
-    { align: "center" }
-  );
+    // Header
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(16);
+    doc.text(
+      `Commissioner of Police ${recruitName} City`,
+      pageWidth / 2,
+      15,
+      { align: "center" }
+    );
 
-  // Report Title
-  doc.setFontSize(12);
-  doc.setFont("helvetica", "bold");
-  doc.text("100 Meter Report", pageWidth / 2, 23, { align: "center" });
+    // Report Title
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "bold");
+    doc.text("100 Meter Report", pageWidth / 2, 23, { align: "center" });
 
-  let startY = 30;
+    let startY = 30;
 
-// 🔹 Group details (center aligned)
-if (groupId) {
-  doc.setFont("helvetica", "bold");
+    // 🔹 Group details (center aligned)
+    if (groupId) {
+      doc.setFont("helvetica", "bold");
 
-  doc.text(
-    `Group No: ${groupId}`,
-    pageWidth / 2,
-    startY,
-    { align: "center" }
-  );
+      doc.text(
+        `Group No: ${groupId}`,
+        pageWidth / 2,
+        startY,
+        { align: "center" }
+      );
 
-  startY += 7;
+      startY += 7;
 
-  doc.text(
-    `Group Leader Name: ${groupLeaderName || ""}`,
-    pageWidth / 2,
-    startY,
-    { align: "center" }
-  );
+      doc.text(
+        `Group Leader Name: ${groupLeaderName || ""}`,
+        pageWidth / 2,
+        startY,
+        { align: "center" }
+      );
 
-  startY += 5; // space before table
-}
+      startY += 5; // space before table
+    }
 
-  const tableColumn = [
-    "Sr No",
-    "Candidate Name",
-    "Chest No",
-    "Tag No",
-    "Cast",
-    "Parallel Reservation",
-    "Start Time",
-    "End Time",
-    "Duration",
-    "Score"
-  ];
+    const tableColumn = [
+      "Sr No",
+      "Candidate Name",
+      "Chest No",
+      "Tag No",
+      "Cast",
+      "Parallel Reservation",
+      "Start Time",
+      "End Time",
+      "Duration",
+      "Score"
+    ];
 
-  // 🔹 SORT DATA BY CHEST NO (ASC)
-  const sortedData = [...all100MeterReport].sort(
-    (a, b) => Number(a.ChestNo) - Number(b.ChestNo)
-  );
+    // 🔹 SORT DATA BY CHEST NO (ASC)
+    const sortedData = [...all100MeterReport].sort(
+      (a, b) => Number(a.ChestNo) - Number(b.ChestNo)
+    );
 
-  const tableRows = sortedData.map((data, index) => ([
-    index + 1,
-    data.CandidateName,
-    data.ChestNo,
-    data.Barcode,
-    data.Cast,
-    data["Parallel Reservation"],
-    data.StartTime === "00:00:00.00" || data.StartTime === "00:00:00.000"
-      ? ""
-      : data.StartTime || "",
-    data.EndTime === "00:00:00.00" || data.EndTime === "00:00:00.000"
-      ? ""
-      : data.EndTime || "",
-    data.duration,
-    data.score
-  ]));
+    const tableRows = sortedData.map((data, index) => ([
+      index + 1,
+      data.CandidateName,
+      data.ChestNo,
+      data.Barcode,
+      data.Cast,
+      data["Parallel Reservation"],
+      data.StartTime === "00:00:00.00" || data.StartTime === "00:00:00.000"
+        ? ""
+        : data.StartTime || "",
+      data.EndTime === "00:00:00.00" || data.EndTime === "00:00:00.000"
+        ? ""
+        : data.EndTime || "",
+      data.duration,
+      data.score
+    ]));
 
-  doc.autoTable({
-    head: [tableColumn],
-    body: tableRows,
-    startY: startY + 5,
-    styles: { fontSize: 8 },
-    headStyles: {
-      fillColor: [27, 90, 144],
-      textColor: 255,
-      fontStyle: "bold",
-    },
-  });
+    doc.autoTable({
+      head: [tableColumn],
+      body: tableRows,
+      startY: startY + 5,
+      styles: { fontSize: 8 },
+      headStyles: {
+        fillColor: [27, 90, 144],
+        textColor: 255,
+        fontStyle: "bold",
+      },
+    });
 
-  doc.save("100_Meter_Report.pdf");
-};
+    doc.save("100_Meter_Report.pdf");
+  };
 
 
   const sortedData = [...all100MeterReport].sort(
@@ -648,8 +648,8 @@ if (groupId) {
                       <th scope="col" style={headerCellStyle}>
                         Chest No
                       </th>
-                        <th scope="col" style={headerCellStyle}>
-                       Tag No
+                      <th scope="col" style={headerCellStyle}>
+                        Tag No
                       </th>
                       <th scope="col" style={headerCellStyle}>
                         Cast
@@ -679,7 +679,7 @@ if (groupId) {
                         </td>
                         <td>{data.CandidateName}</td>
                         <td>{data.ChestNo}</td>
-                         <td>{data.Barcode}</td>
+                        <td>{data.Barcode}</td>
                         <td>{data.Cast}</td>
                         <td>{data["Parallel Reservation"]}</td>
                         {/* <td>{data.StartTime}</td> */}
