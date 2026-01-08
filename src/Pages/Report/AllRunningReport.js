@@ -220,7 +220,7 @@ const AllRunningReport = () => {
     <h3> Running Report</h3>
     ${groupId ? `
   <h3>Group No: ${groupId}</h3>
-  <h3>Group Leader Name: ${groupLeaderName || ""}</h3>
+
 ` : ""}
         <table>
           <thead>
@@ -317,12 +317,12 @@ const AllRunningReport = () => {
 
             startY += 7;
 
-            doc.text(
-                `Group Leader Name: ${groupLeaderName || ""}`,
-                pageWidth / 2,
-                startY,
-                { align: "center" }
-            );
+            // doc.text(
+            //     `Group Leader Name: ${groupLeaderName || ""}`,
+            //     pageWidth / 2,
+            //     startY,
+            //     { align: "center" }
+            // );
 
             startY += 10; // ✅ EXTRA SPACE BEFORE TABLE
         } else {
