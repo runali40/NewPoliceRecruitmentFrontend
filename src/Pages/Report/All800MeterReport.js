@@ -8,6 +8,8 @@ import { getAllGroup } from '../../Components/Api/EventApi';
 import { ArrowBack, Refresh } from '@material-ui/icons';
 import jsPDF from "jspdf";
 import "jspdf-autotable";
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
 
 const All800MeterReport = () => {
   const navigate = useNavigate();
@@ -69,17 +71,56 @@ const All800MeterReport = () => {
     }
   };
 
+  // const handleGroup = async (selected) => {
+  //   const selectedValue = selected;
+  //   setGroup(selectedValue);
+  //   console.log(selectedValue.value, "selected value");
+  //   setGroupId(selectedValue.value)
+  //   const data = await fetchAll800Meter(eventId, selectedValue.value, reservationCategory, cast);
+  //   console.log(data)
+  //   setGroupLeaderName(data[0].GrpLdrName)
+  //   console.log(data[0].GrpLdrName, "leader name")
+  //   setAll800MeterReport(data)
+  // }
+
   const handleGroup = async (selected) => {
-    const selectedValue = selected;
-    setGroup(selectedValue);
-    console.log(selectedValue.value, "selected value");
-    setGroupId(selectedValue.value)
-    const data = await fetchAll800Meter(eventId, selectedValue.value, reservationCategory, cast);
-    console.log(data)
-    setGroupLeaderName(data[0].GrpLdrName)
-    console.log(data[0].GrpLdrName, "leader name")
-    setAll800MeterReport(data)
-  }
+    if (!selected) return;
+
+    const groupIdValue = selected.value;
+
+    // 1️⃣ set dropdown state
+    setGroup(selected);
+    setGroupId(groupIdValue);
+
+    // 2️⃣ clear old data immediately
+    setAll800MeterReport([]);
+    setGroupLeaderName("");
+
+    try {
+      const data = await fetchAll800Meter(
+        eventId,
+        groupIdValue,        // ✅ direct value
+        reservationCategory,
+        cast
+      );
+
+      console.log(data, "API DATA");
+
+      if (data && data.length > 0) {
+        setGroupLeaderName(data[0]?.GrpLdrName || "");
+        setAll800MeterReport(data);
+      } else {
+        // 👇 group selected but no data
+        setGroupLeaderName("");
+        setAll800MeterReport([]);
+      }
+    } catch (error) {
+      console.error("Error fetching 800 meter data", error);
+      setAll800MeterReport([]);
+      setGroupLeaderName("");
+    }
+  };
+
 
   const AllCategory = async () => {
     try {
@@ -275,54 +316,134 @@ const All800MeterReport = () => {
     doc.save("800_Meter_Report.pdf");
   };
 
+  const download800MeterExcel = () => {
+    // ✅ sort by Chest No ascending
+    const sortedData = [...all800MeterReport].sort(
+      (a, b) => Number(a.ChestNo) - Number(b.ChestNo)
+    );
+
+    const excelData = sortedData.map((data, index) => ({
+      "Sr No": index + 1,
+      "Candidate Name": data.CandidateName || "",
+      "Chest No": data.ChestNo || "",
+      "Barcode": data.Barcode || "",
+      "Cast": data.Cast || "",
+      "Parallel Reservation": data["Parallel Reservation"] || "",
+      "Start Time":
+        data.StartTime === "00:00:00.00" ||
+          data.StartTime === "00:00:00.000"
+          ? ""
+          : data.StartTime || "",
+      "End Time":
+        data.EndTime === "00:00:00.00" ||
+          data.EndTime === "00:00:00.000"
+          ? ""
+          : data.EndTime || "",
+      "Duration": data.duration || "",
+      "Lap Count": data.Lapcount || "",
+      "Score": data.score ?? "",
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(excelData);
+
+    // ✅ auto column width
+    worksheet["!cols"] = Object.keys(excelData[0]).map(() => ({ wch: 20 }));
+
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "800 Meter Report");
+
+    const excelBuffer = XLSX.write(workbook, {
+      bookType: "xlsx",
+      type: "array",
+    });
+
+    const file = new Blob([excelBuffer], {
+      type:
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
+
+    saveAs(file, "800_Meter_Report.xlsx");
+  };
+
   const openPrintWindow = () => {
     let tableHTML = `
       <html>
       <head>
-        <title>Report</title>
-        <style>
-          table {
-            width: 100%;
-            border-collapse: collapse;
-            font-family: Arial;
-          }
-          th, td {
-            padding: 8px;
-            border: 1px solid #000;
-            text-align: left;
-            font-size: 14px;
-          }
-          th {
-            background: #f2f2f2;
-          }
-          .signature-box {
-            height: 60px;
-            border: 1px solid #000;
-          }
-          .print-btn {
-            margin: 15px 0;
-            padding: 6px 12px;
-            border: 1px solid #000;
-            cursor: pointer;
-            background: #ddd;
-            font-size: 14px;
-          }
-        </style>
+        <title>800 Meter Report</title>
+         <style>
+        body {
+          margin: 10px;
+          font-family: Arial;
+        }
+
+        h2 {
+          margin: 5px 0;
+          font-size: 18px;
+        }
+
+        h3 {
+          margin: 3px 0;
+          font-size: 16px;
+        }
+
+        .header-section {
+          page-break-inside: avoid;
+          page-break-after: avoid;
+        }
+
+        table {
+          width: 100%;
+          border-collapse: collapse;
+          margin-top: 10px;
+          border: 1px solid #000;
+        }
+
+        th, td {
+          padding: 6px;
+          border: 1px solid #000;
+          text-align: left;
+          font-size: 12px;
+        }
+
+        th {
+          background: #f2f2f2;
+          font-weight: bold;
+        }
+
+        tr {
+          page-break-inside: avoid;
+          break-inside: avoid;
+        }
+
+        tbody {
+          page-break-inside: auto;
+        }
+
+        .signature-box {
+          height: 50px;
+          border-top: 1px solid #000;
+          border-bottom: 1px solid #000;
+          border-left: 1px solid #000;
+          border-right: 1px solid #000;
+        }
+
+        .group-leader-sign {
+          height: 50px;
+          border-top: 1px solid #000 !important;
+          border-bottom: 1px solid #000 !important;
+          border-left: 1px solid #000 !important;
+          border-right: 1px solid #000 !important;
+          vertical-align: top;
+        }
+
+        thead {
+          display: table-header-group;
+        }
+      </style>
       </head>
       <body>
   
-        <button class="btn btn-success print-btn" onclick="startPrinting()">Print</button>
-  
-        <script>
-          function startPrinting() {
-            const btn = document.querySelector('.print-btn');
-            btn.style.display = 'none';      
-            setTimeout(() => {
-              window.print();
-              btn.style.display = 'block';   
-            }, 200);
-          }
-        </script>
+       <div class="header-section">
   
      <h2>Commissioner of Police ${recruitName} City</h2>
     <h3>800 Meter Running Report</h3>
@@ -330,6 +451,7 @@ const All800MeterReport = () => {
   <h3>Group No: ${groupId}</h3>
   <h3>Group Leader Name: ${groupLeaderName || ""}</h3>
 ` : ""}
+</div>
         <table>
           <thead>
             <tr>
@@ -394,6 +516,10 @@ const All800MeterReport = () => {
     printWindow.document.open();
     printWindow.document.write(tableHTML);
     printWindow.document.close();
+
+    printWindow.onload = function () {
+      printWindow.print();
+    };
   };
 
   const sortedData = [...all800MeterReport].sort(
@@ -446,7 +572,14 @@ const All800MeterReport = () => {
                       style={headerCellStyle}
                       onClick={download800MeterPDF}
                     >
-                      Download PDF
+                      PDF
+                    </button>
+                    <button
+                      className="btn btn-sm me-2"
+                      style={headerCellStyle}
+                      onClick={download800MeterExcel}
+                    >
+                      Excel
                     </button>
                     <button className="btn me-2" style={headerCellStyle} /* onClick={() => window.print()} */ onClick={openPrintWindow}>Print</button>
                     <button className="btn" style={headerCellStyle} onClick={() => navigate(-1)}>  <ArrowBack /></button>

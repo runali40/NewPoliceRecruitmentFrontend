@@ -10,6 +10,8 @@ import { getAllGroup } from '../../Components/Api/EventApi';
 import { ArrowBack, Refresh } from "@material-ui/icons";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
 
 const All100MeterReport = () => {
   const navigate = useNavigate();
@@ -101,18 +103,56 @@ const All100MeterReport = () => {
   };
 
 
-  const handleGroup = async (selected) => {
-    const selectedValue = selected;
-    setGroup(selectedValue);
-    console.log(selectedValue.value, "selected value");
-    setGroupId(selectedValue.value)
-    const data = await fetchAll100Meter(eventId, selectedValue.value, reservationCategory, cast);
-    console.log(data)
-    setGroupLeaderName(data[0].GrpLdrName)
-    console.log(data[0].GrpLdrName, "leader name")
-    setAll100MeterReport(data)
-  }
+  // const handleGroup = async (selected) => {
+  //   const selectedValue = selected;
+  //   setGroup(selectedValue);
+  //   console.log(selectedValue.value, "selected value");
+  //   setGroupId(selectedValue.value)
+  //   const data = await fetchAll100Meter(eventId, selectedValue.value, reservationCategory, cast);
+  //   console.log(data)
+  //   setGroupLeaderName(data[0].GrpLdrName)
+  //   console.log(data[0].GrpLdrName, "leader name")
+  //   setAll100MeterReport(data)
+  // }
 
+    const handleGroup = async (selected) => {
+      if (!selected) return;
+  
+      const groupIdValue = selected.value;
+  
+      // 1️⃣ set dropdown state
+      setGroup(selected);
+      setGroupId(groupIdValue);
+  
+      // 2️⃣ clear old data immediately
+      setAll100MeterReport([]);
+      setGroupLeaderName("");
+  
+      try {
+        const data = await fetchAll100Meter(
+          eventId,
+          groupIdValue,        // ✅ direct value
+          reservationCategory,
+          cast
+        );
+  
+        console.log(data, "API DATA");
+  
+        if (data && data.length > 0) {
+          setGroupLeaderName(data[0]?.GrpLdrName || "");
+          setAll100MeterReport(data);
+        } else {
+          // 👇 group selected but no data
+          setGroupLeaderName("");
+          setAll100MeterReport([]);
+        }
+      } catch (error) {
+        console.error("Error fetching 100 meter data", error);
+        setAll100MeterReport([]);
+        setGroupLeaderName("");
+      }
+    };
+  
   const handleCategory = async (selected) => {
     const selectedValue = selected;
     setCategory(selectedValue);
@@ -187,205 +227,496 @@ const All100MeterReport = () => {
     setCurrentPage(1);
   };
 
+  //   const openPrintWindow = () => {
+  //   let tableHTML = `
+  //     <html>
+  //     <head>
+  //       <title>100 Meter Report</title>
+  //       <style>
+  //         table {
+  //           width: 100%;
+  //           border-collapse: collapse;
+  //           font-family: Arial;
+  //         }
+
+  //         th, td {
+  //           padding: 8px;
+  //           border: 1px solid #000;
+  //           text-align: left;
+  //           font-size: 14px;
+  //         }
+
+  //         th {
+  //           background: #f2f2f2;
+  //         }
+
+  //         .signature-box {
+  //           height: 60px;
+  //           border: 1px solid #000;
+  //         }
+
+  //         .print-btn {
+  //           margin: 15px 0;
+  //           padding: 6px 12px;
+  //           border: 1px solid #000;
+  //           cursor: pointer;
+  //           background: #ddd;
+  //           font-size: 14px;
+  //         }
+
+
+  //       </style>
+  //     </head>
+
+  //     <body>
+
+  //       <button class="print-btn" onclick="startPrinting()">Print</button>
+
+  //       <script>
+  //         function startPrinting() {
+  //           const btn = document.querySelector('.print-btn');
+  //           btn.style.display = 'none';
+  //           setTimeout(() => {
+  //             window.print();
+  //             btn.style.display = 'block';
+  //           }, 200);
+  //         }
+  //       </script>
+
+  //       <h2>Commissioner of Police ${recruitName} City</h2>
+  //       <h3>100 Meter Running Report</h3>
+
+  //       ${groupId ? `
+  //         <h3>Group No: ${groupId}</h3>
+  //         <h3>Group Leader Name: ${groupLeaderName || ""}</h3>
+  //       ` : ""}
+
+  //       <table>
+  //         <thead>
+  //           <tr>
+  //             <th>Sr No</th>
+  //             <th>Candidate Name</th>
+  //             <th>Chest No</th>
+  //             <th>Tag No</th>
+  //             <th>Cast</th>
+  //             <th>Parallel Reservation</th>
+  //             <th>Start Time</th>
+  //             <th>End Time</th>
+  //             <th>Duration</th>
+  //             <th>Score</th>
+  //             <th>Signature</th>
+  //             <th>Group Leader Sign</th>
+  //           </tr>
+  //         </thead>
+  //         <tbody>
+  //   `;
+
+  //   // ✅ Chest No Ascending
+  //   const sortedData = [...all100MeterReport].sort((a, b) => {
+  //     const chestA = Number(a.ChestNo) || 0;
+  //     const chestB = Number(b.ChestNo) || 0;
+  //     return chestA - chestB;
+  //   });
+
+  //   sortedData.forEach((row, index) => {
+  //     tableHTML += `
+  //       <tr>
+  //         <td>${index + 1}</td>
+  //         <td>${row.CandidateName ?? ""}</td>
+  //         <td>${row.ChestNo ?? ""}</td>
+  //         <td>${row.Barcode ?? ""}</td>
+  //         <td>${row.Cast ?? ""}</td>
+  //         <td>${row["Parallel Reservation"] ?? ""}</td>
+
+  //         <td>${
+  //           row.StartTime === "00:00:00.00" || row.StartTime === "00:00:00.000"
+  //             ? ""
+  //             : row.StartTime ?? ""
+  //         }</td>
+
+  //         <td>${
+  //           row.EndTime === "00:00:00.00" || row.EndTime === "00:00:00.000"
+  //             ? ""
+  //             : row.EndTime ?? ""
+  //         }</td>
+
+  //         <td>${row.duration ?? ""}</td>
+  //         <td>${row.score ?? ""}</td>
+
+  //         <td class="signature-box"></td>
+
+  //         ${
+  //           index === 0
+  //             ? `<td class="signature-box" rowspan="${sortedData.length}"></td>`
+  //             : ""
+  //         }
+  //       </tr>
+  //     `;
+  //   });
+
+  //   tableHTML += `
+  //         </tbody>
+  //       </table>
+  //     </body>
+  //     </html>
+  //   `;
+
+  //   const printWindow = window.open("", "_blank", "width=1000,height=700");
+  //   printWindow.document.open();
+  //   printWindow.document.write(tableHTML);
+  //   printWindow.document.close();
+  // };
+
+
+  // const openPrintWindow = () => {
+  //   const printDate = new Date().toLocaleString();
+
+  //   let tableHTML = `
+  // <html>
+  // <head>
+  //   <title>100 Meter Report</title>
+  //   <style>
+  //     @page {
+  //       size: A4 landscape;
+  //       margin: 15mm;
+  //     }
+
+  //     body {
+  //       font-family: Arial;
+  //       font-size: 13px;
+  //       margin: 0;
+  //     }
+
+  //     /* HEADER ROW */
+  //     .top-header {
+  //       display: flex;
+  //       justify-content: space-between;
+  //       font-size: 12px;
+  //       margin-bottom: 10px;
+  //     }
+
+  //     table {
+  //       width: 100%;
+  //       border-collapse: collapse;
+  //     }
+
+  //     th, td {
+  //       border: 1px solid #000;
+  //       padding: 6px;
+  //       text-align: left;
+  //     }
+
+  //     th {
+  //       background: #f2f2f2;
+  //     }
+
+  //     .signature-box {
+  //       height: 60px;
+  //       border: 1px solid #000;
+  //     }
+
+  //     /* PRINT FIXES */
+  //     @media print {
+  //       thead {
+  //         display: table-header-group;
+  //       }
+
+  //       tr, td, th {
+  //         page-break-inside: avoid;
+  //       }
+
+  //       h2, h3 {
+  //         page-break-after: avoid;
+  //       }
+
+  //       table {
+  //         page-break-before: avoid;
+  //       }
+
+  //       .report-wrapper {
+  //         page-break-inside: avoid;
+  //       }
+
+  //       .print-btn {
+  //         display: none;
+  //       }
+
+  //       /* PAGE NUMBER */
+  //       body::after {
+  //         counter-increment: page;
+  //         content: "Page " counter(page);
+  //         position: fixed;
+  //         bottom: 5mm;
+  //         right: 10mm;
+  //         font-size: 12px;
+  //       }
+  //     }
+  //   </style>
+  // </head>
+
+  // <body>
+
+  //   <button class="print-btn" onclick="startPrinting()">Print</button>
+
+  //   <script>
+  //     function startPrinting() {
+  //       document.querySelector('.print-btn').style.display = 'none';
+  //       setTimeout(() => window.print(), 200);
+  //     }
+  //   </script>
+
+  //   <!-- NORMAL HEADER (NOT FIXED) -->
+  //   <div class="top-header">
+  //     <div>${printDate}</div>
+  //     <div><b>100 Meter Report</b></div>
+  //   </div>
+
+  //   <div class="report-wrapper">
+  //     <h2>Commissioner of Police ${recruitName} City</h2>
+  //     <h3>100 Meter Running Report</h3>
+
+  //     ${groupId
+  //       ? `
+  //       <h3>Group No: ${groupId}</h3>
+  //       <h3>Group Leader Name: ${groupLeaderName || ""}</h3>
+  //       `
+  //       : ""
+  //     }
+
+  //     <table>
+  //       <thead>
+  //         <tr>
+  //           <th>Sr No</th>
+  //           <th>Candidate Name</th>
+  //           <th>Chest No</th>
+  //           <th>Tag No</th>
+  //           <th>Cast</th>
+  //           <th>Parallel Reservation</th>
+  //           <th>Start Time</th>
+  //           <th>End Time</th>
+  //           <th>Duration</th>
+  //           <th>Score</th>
+  //           <th>Signature</th>
+  //           <th>Group Leader Sign</th>
+  //         </tr>
+  //       </thead>
+  //       <tbody>
+  // `;
+
+  //   const sortedData = [...all100MeterReport].sort(
+  //     (a, b) => (Number(a.ChestNo) || 0) - (Number(b.ChestNo) || 0)
+  //   );
+
+  //   sortedData.forEach((row, index) => {
+  //     tableHTML += `
+  //     <tr>
+  //       <td>${index + 1}</td>
+  //       <td>${row.CandidateName ?? ""}</td>
+  //       <td>${row.ChestNo ?? ""}</td>
+  //       <td>${row.Barcode ?? ""}</td>
+  //       <td>${row.Cast ?? ""}</td>
+  //       <td>${row["Parallel Reservation"] ?? ""}</td>
+
+  //       <td>${row.StartTime === "00:00:00.00" || row.StartTime === "00:00:00.000"
+  //         ? ""
+  //         : row.StartTime ?? ""
+  //       }</td>
+
+  //       <td>${row.EndTime === "00:00:00.00" || row.EndTime === "00:00:00.000"
+  //         ? ""
+  //         : row.EndTime ?? ""
+  //       }</td>
+
+  //       <td>${row.duration ?? ""}</td>
+  //       <td>${row.score ?? ""}</td>
+
+  //       <td class="signature-box"></td>
+
+  //       ${index === 0
+  //         ? `<td class="signature-box" rowspan="${sortedData.length}"></td>`
+  //         : ""
+  //       }
+  //     </tr>
+  //   `;
+  //   });
+
+  //   tableHTML += `
+  //       </tbody>
+  //     </table>
+  //   </div>
+
+  // </body>
+  // </html>
+  // `;
+
+  //   const printWindow = window.open("", "_blank", "width=1200,height=800");
+  //   printWindow.document.open();
+  //   printWindow.document.write(tableHTML);
+  //   printWindow.document.close();
+  // };
+
   const openPrintWindow = () => {
     let tableHTML = `
-      <html>
-      <head>
-        <title>Report</title>
-        <style>
-          table {
-            width: 100%;
-            border-collapse: collapse;
-            font-family: Arial;
-          }
-          th, td {
-            padding: 8px;
-            border: 1px solid #000;
-            text-align: left;
-            font-size: 14px;
-          }
-          th {
-            background: #f2f2f2;
-          }
-          .signature-box {
-            height: 60px;
-            border: 1px solid #000;
-          }
-          .print-btn {
-            margin: 15px 0;
-            padding: 6px 12px;
-            border: 1px solid #000;
-            cursor: pointer;
-            background: #ddd;
-            font-size: 14px;
-          }
-        </style>
-      </head>
-      <body>
-  
-        <button class="btn btn-success print-btn" onclick="startPrinting()">Print</button>
-  
-        <script>
-          function startPrinting() {
-            const btn = document.querySelector('.print-btn');
-            btn.style.display = 'none';      
-            setTimeout(() => {
-              window.print();
-              btn.style.display = 'block';   
-            }, 200);
-          }
-        </script>
-  
-    <h2>Commissioner of Police ${recruitName} City</h2>
-    <h3>100 Meter Running Report</h3>
-${groupId ? `
-  <h3>Group No: ${groupId}</h3>
-  <h3>Group Leader Name: ${groupLeaderName || ""}</h3>
-` : ""}
-        <table>
-          <thead>
-            <tr>
-              <th>Sr No</th>
-              <th>Candidate Name</th>
-              <th>Chest No</th>
-               <th>Tag No</th>
-              <th>Cast</th>
-              <th>Parellel Reservation</th>
-              <th>Start Time</th>
-              <th>End Time</th>
-              <th>Duration</th>      
-              <th>Score</th>
-              <th>Signature</th>
-               <th>Group Leader Sign</th>
-            </tr>
-          </thead>
-          <tbody>
-    `;
+    <html>
+    <head>
+      <title>100 Meter Report</title>
+      <style>
+        body {
+          margin: 10px;
+          font-family: Arial;
+        }
 
-    // ChestNo ascending sort
+        h2 {
+          margin: 5px 0;
+          font-size: 18px;
+        }
+
+        h3 {
+          margin: 3px 0;
+          font-size: 16px;
+        }
+
+        .header-section {
+          page-break-inside: avoid;
+          page-break-after: avoid;
+        }
+
+        table {
+          width: 100%;
+          border-collapse: collapse;
+          margin-top: 10px;
+          border: 1px solid #000;
+        }
+
+        th, td {
+          padding: 6px;
+          border: 1px solid #000;
+          text-align: left;
+          font-size: 12px;
+        }
+
+        th {
+          background: #f2f2f2;
+          font-weight: bold;
+        }
+
+        tr {
+          page-break-inside: avoid;
+          break-inside: avoid;
+        }
+
+        tbody {
+          page-break-inside: auto;
+        }
+
+        .signature-box {
+          height: 50px;
+          border-top: 1px solid #000;
+          border-bottom: 1px solid #000;
+          border-left: 1px solid #000;
+          border-right: 1px solid #000;
+        }
+
+        .group-leader-sign {
+          height: 50px;
+          border-top: 1px solid #000 !important;
+          border-bottom: 1px solid #000 !important;
+          border-left: 1px solid #000 !important;
+          border-right: 1px solid #000 !important;
+          vertical-align: top;
+        }
+
+        thead {
+          display: table-header-group;
+        }
+      </style>
+    </head>
+
+    <body>
+      <div class="header-section">
+        <h2>Commissioner of Police ${recruitName} City</h2>
+        <h3>100 Meter Running Report</h3>
+
+        ${groupId ? `
+          <h3>Group No: ${groupId}</h3>
+          <h3>Group Leader Name: ${groupLeaderName || ""}</h3>
+        ` : ""}
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Sr No</th>
+            <th>Candidate Name</th>
+            <th>Chest No</th>
+            <th>Tag No</th>
+            <th>Cast</th>
+            <th>Parallel Reservation</th>
+            <th>Start Time</th>
+            <th>End Time</th>
+            <th>Duration</th>
+            <th>Score</th>
+            <th>Signature</th>
+            <th>Group Leader Sign</th>
+          </tr>
+        </thead>
+        <tbody>
+  `;
+
     const sortedData = [...all100MeterReport].sort((a, b) => {
       const chestA = Number(a.ChestNo) || 0;
       const chestB = Number(b.ChestNo) || 0;
       return chestA - chestB;
     });
 
+    // Calculate total height for group leader sign cell
+    const totalHeight = sortedData.length * 50;
+
     sortedData.forEach((row, index) => {
       tableHTML += `
-    <tr>
-      <td>${index + 1}</td>
-      <td>${row.CandidateName || ""}</td>
-      <td>${row.ChestNo || ""}</td>
-      <td>${row.Barcode || ""}</td>
-      <td>${row.Cast || ""}</td>    
-      <td>${row["Parallel Reservation"] || ""}</td>
-
-      <td>${row.StartTime === "00:00:00.00" || row.StartTime === "00:00:00.000"
+      <tr>
+        <td>${index + 1}</td>
+        <td>${row.CandidateName ?? ""}</td>
+        <td>${row.ChestNo ?? ""}</td>
+        <td>${row.Barcode ?? ""}</td>
+        <td>${row.Cast ?? ""}</td>
+        <td>${row["Parallel Reservation"] ?? ""}</td>
+        <td>${row.StartTime === "00:00:00.00" || row.StartTime === "00:00:00.000"
           ? ""
-          : row.StartTime || ""
+          : row.StartTime ?? ""
         }</td>
-
-      <td>${row.EndTime === "00:00:00.00" || row.EndTime === "00:00:00.000"
+        <td>${row.EndTime === "00:00:00.00" || row.EndTime === "00:00:00.000"
           ? ""
-          : row.EndTime || ""
+          : row.EndTime ?? ""
         }</td>
-
-      <td>${row.duration || ""}</td>
-      <td>${row.score ?? ""}</td>
-
-      <td class="signature-box"></td>
-
-      ${index === 0
-          ? `<td class="signature-box" rowspan="${sortedData.length}"></td>`
+        <td>${row.duration ?? ""}</td>
+        <td>${row.score ?? ""}</td>
+        <td class="signature-box"></td>
+        ${index === 0
+          ? `<td class="group-leader-sign" rowspan="${sortedData.length}" style="height: ${totalHeight}px; min-height: ${totalHeight}px;"></td>`
           : ""
         }
-    </tr>
-  `;
+      </tr>
+    `;
     });
 
-
     tableHTML += `
-          </tbody>
-        </table>
-      </body>
-      </html>
-    `;
+        </tbody>
+      </table>
+    </body>
+    </html>
+  `;
 
-    const printWindow = window.open("", "_blank", "width=900,height=700");
+    const printWindow = window.open("", "_blank", "width=1000,height=700");
     printWindow.document.open();
     printWindow.document.write(tableHTML);
     printWindow.document.close();
+
+    printWindow.onload = function () {
+      printWindow.print();
+    };
   };
 
-  // const download100MeterPDF = () => {
-  //   const doc = new jsPDF("l", "mm", "a4");
-  //   const pageWidth = doc.internal.pageSize.getWidth();
-
-  //   // Header
-  //   doc.setFont("helvetica", "bold");
-  //   doc.setFontSize(16);
-  //   doc.text(
-  //     `Commissioner of Police ${recruitName} City`,
-  //     pageWidth / 2,
-  //     15,
-  //     { align: "center" }
-  //   );
-
-  //   doc.setFont("helvetica", "normal");
-  //   doc.setFontSize(12);
-  //   doc.text("100 Meter Report", pageWidth / 2, 23, { align: "center" });
-
-
-  //   const tableColumn = [
-  //     "Sr No",
-  //     "Candidate Name",
-  //     "Chest No",
-  //     "Barcode",
-  //     "Cast",
-  //     "Parallel Reservation",
-  //     "Start Time",
-  //     "End Time",
-  //     "Duration",
-  //     "Score"
-  //   ];
-
-  //   // 🔹 SORT DATA BY CHEST NO (ASC)
-  //   const sortedData = [...all100MeterReport].sort(
-  //     (a, b) => Number(a.ChestNo) - Number(b.ChestNo)
-  //   );
-
-  //   const tableRows = sortedData.map((data, index) => ([
-  //     index + 1,
-  //     data.CandidateName,
-  //     data.ChestNo,
-  //     data.Barcode,
-  //     data.Cast,
-  //     data["Parallel Reservation"],
-  //     // data.StartTime,
-  //     // data.EndTime,
-  //     data.StartTime === "00:00:00.00" || data.StartTime === "00:00:00.000"
-  //       ? ""
-  //       : data.StartTime || "",
-  //     data.EndTime === "00:00:00.00" || data.EndTime === "00:00:00.000"
-  //       ? ""
-  //       : data.EndTime || "",
-  //     data.duration,
-  //     data.score
-  //   ]));
-
-  //   doc.autoTable({
-  //     head: [tableColumn],
-  //     body: tableRows,
-  //     startY: 30,
-  //     styles: { fontSize: 8 },
-  //     headStyles: {
-  //       fillColor: [27, 90, 144],
-  //       textColor: 255,
-  //       fontStyle: "bold",
-  //     },
-  //   });
-
-  //   doc.save("100_Meter_Report.pdf");
-  // };
   const download100MeterPDF = () => {
     const doc = new jsPDF("l", "mm", "a4");
     const pageWidth = doc.internal.pageSize.getWidth();
@@ -480,7 +811,48 @@ ${groupId ? `
     doc.save("100_Meter_Report.pdf");
   };
 
+  const download100MeterExcel = () => {
+    const sortedData = [...all100MeterReport].sort(
+      (a, b) => Number(a.ChestNo) - Number(b.ChestNo)
+    );
+    const excelData = sortedData.map((data, index) => ({
+      "Sr No":
+        (currentPage - 1) * itemsPerPage + index + 1,
+      "Candidate Name": data.CandidateName || "",
+      "Chest No": data.ChestNo || "",
+      "Barcode": data.Barcode || "",
+      "Cast": data.Cast || "",
+      "Parallel Reservation": data["Parallel Reservation"] || "",
+      "Start Time":
+        data.StartTime === "00:00:00.00" ||
+          data.StartTime === "00:00:00.000"
+          ? ""
+          : data.StartTime || "",
+      "End Time":
+        data.EndTime === "00:00:00.00" ||
+          data.EndTime === "00:00:00.000"
+          ? ""
+          : data.EndTime || "",
+      "Duration": data.duration || "",
+      "Score": data.score ?? "",
+    }));
 
+    const worksheet = XLSX.utils.json_to_sheet(excelData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "100 Meter Report");
+
+    const excelBuffer = XLSX.write(workbook, {
+      bookType: "xlsx",
+      type: "array",
+    });
+
+    const file = new Blob([excelBuffer], {
+      type:
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
+
+    saveAs(file, "100_Meter_Report.xlsx");
+  };
   const sortedData = [...all100MeterReport].sort(
     (a, b) => Number(a.ChestNo) - Number(b.ChestNo)
   );
@@ -526,7 +898,14 @@ ${groupId ? `
                       style={headerCellStyle}
                       onClick={download100MeterPDF}
                     >
-                      Download PDF
+                      PDF
+                    </button>
+                    <button
+                      className="btn btn-sm me-2"
+                      style={headerCellStyle}
+                      onClick={download100MeterExcel}
+                    >
+                      Excel
                     </button>
                     <button className="btn me-2" style={headerCellStyle} /* onClick={() => window.print()} */ onClick={openPrintWindow} >Print</button>
                     <button className="btn" style={headerCellStyle} onClick={() => navigate(-1)}><ArrowBack /></button>

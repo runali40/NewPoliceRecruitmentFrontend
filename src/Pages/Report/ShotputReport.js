@@ -4,7 +4,8 @@ import { Table, Button } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
-
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
 import Select from 'react-select'
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -72,17 +73,56 @@ const ShotputReport = () => {
         }
     };
 
-    const handleGroup = async (selected) => {
-        const selectedValue = selected;
-        setGroup(selectedValue);
-        console.log(selectedValue.value, "selected value");
-        setGroupId(selectedValue.value)
-        const data = await fetchAllShotput(eventId, selectedValue.value, reservationCategory, cast);
-        console.log(data)
-        setGroupLeaderName(data[0].GrpLdrName)
-        console.log(data[0].GrpLdrName, "leader name")
-        setShotputReport(data)
-    }
+    // const handleGroup = async (selected) => {
+    //     const selectedValue = selected;
+    //     setGroup(selectedValue);
+    //     console.log(selectedValue.value, "selected value");
+    //     setGroupId(selectedValue.value)
+    //     const data = await fetchAllShotput(eventId, selectedValue.value, reservationCategory, cast);
+    //     console.log(data)
+    //     setGroupLeaderName(data[0].GrpLdrName)
+    //     console.log(data[0].GrpLdrName, "leader name")
+    //     setShotputReport(data)
+    // }
+
+         const handleGroup = async (selected) => {
+            if (!selected) return;
+        
+            const groupIdValue = selected.value;
+        
+            // 1️⃣ set dropdown state
+            setGroup(selected);
+            setGroupId(groupIdValue);
+        
+            // 2️⃣ clear old data immediately
+            setShotputReport([]);
+            setGroupLeaderName("");
+        
+            try {
+              const data = await fetchAllShotput(
+                eventId,
+                groupIdValue,        // ✅ direct value
+                reservationCategory,
+                cast
+              );
+        
+              console.log(data, "API DATA");
+        
+              if (data && data.length > 0) {
+                setGroupLeaderName(data[0]?.GrpLdrName || "");
+                setShotputReport(data);
+              } else {
+                // 👇 group selected but no data
+                setGroupLeaderName("");
+                setShotputReport([]);
+              }
+            } catch (error) {
+              console.error("Error fetching 1600 meter data", error);
+              setShotputReport([]);
+              setGroupLeaderName("");
+            }
+          };
+    
 
     const AllCategory = async () => {
         try {
@@ -294,52 +334,80 @@ const ShotputReport = () => {
   <html>
   <head>
     <title>Shot Put Report</title>
-    <style>
-      body {
-        font-family: Arial, sans-serif;
-      }
-
-      table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 10px;
-      }
-
-      th, td {
-        border: 1px solid #000;   /* ✅ FIXED BORDER */
-        padding: 8px;
-        font-size: 14px;
-        text-align: left;
-      }
-
-      th {
-        background-color: #f2f2f2;
-        font-weight: bold;
-      }
-
-      .signature-box {
-        height: 60px;
-      }
-
-      .print-btn {
-        margin: 15px 0;
-        padding: 6px 12px;
-        border: 1px solid #000;
-        cursor: pointer;
-        background: #ddd;
-        font-size: 14px;
-      }
-
-      @media print {
-        .print-btn {
-          display: none;
+     <style>
+        body {
+          margin: 10px;
+          font-family: Arial;
         }
-      }
-    </style>
+
+        h2 {
+          margin: 5px 0;
+          font-size: 18px;
+        }
+
+        h3 {
+          margin: 3px 0;
+          font-size: 16px;
+        }
+
+        .header-section {
+          page-break-inside: avoid;
+          page-break-after: avoid;
+        }
+
+        table {
+          width: 100%;
+          border-collapse: collapse;
+          margin-top: 10px;
+          border: 1px solid #000;
+        }
+
+        th, td {
+          padding: 6px;
+          border: 1px solid #000;
+          text-align: left;
+          font-size: 12px;
+        }
+
+        th {
+          background: #f2f2f2;
+          font-weight: bold;
+        }
+
+        tr {
+          page-break-inside: avoid;
+          break-inside: avoid;
+        }
+
+        tbody {
+          page-break-inside: auto;
+        }
+
+        .signature-box {
+          height: 50px;
+          border-top: 1px solid #000;
+          border-bottom: 1px solid #000;
+          border-left: 1px solid #000;
+          border-right: 1px solid #000;
+        }
+
+        .group-leader-sign {
+          height: 50px;
+          border-top: 1px solid #000 !important;
+          border-bottom: 1px solid #000 !important;
+          border-left: 1px solid #000 !important;
+          border-right: 1px solid #000 !important;
+          vertical-align: top;
+        }
+
+        thead {
+          display: table-header-group;
+        }
+      </style>
   </head>
   <body>
 
-    <button class="print-btn" onclick="window.print()">Print</button>
+        <div class="header-section">
 
     <h2>Commissioner of Police ${recruitName} City</h2>
     <h3>Shot Put Report</h3>
@@ -351,7 +419,7 @@ const ShotputReport = () => {
       `
                 : ""
             }
-
+</div>
     <table>
       <thead>
         <tr>
@@ -413,6 +481,10 @@ const ShotputReport = () => {
         printWindow.document.open();
         printWindow.document.write(tableHTML);
         printWindow.document.close();
+
+        printWindow.onload = function () {
+            printWindow.print();
+        };
     };
 
 
@@ -510,6 +582,46 @@ const ShotputReport = () => {
         doc.save("Shotput_Report.pdf");
     };
 
+    const downloadShotPutExcel = () => {
+        // ✅ Sort by Chest No Ascending
+        const sortedData = [...shotputReport].sort(
+            (a, b) => Number(a.ChestNo) - Number(b.ChestNo)
+        );
+
+        const excelData = sortedData.map((data, index) => ({
+            "Sr No": index + 1,
+            "Candidate Name": data.CandidateName ?? "",
+            "Chest No": data.ChestNo ?? "",
+            "Barcode": data.Barcode ?? "",
+            "Cast": data.Cast ?? "",
+            "Parallel Reservation": data["Parallel Reservation"] ?? "",
+            "Distance 1": data.distance1 ?? "",
+            "Distance 2": data.distance2 ?? "",
+            "Distance 3": data.distance3 ?? "",
+            "Score": data.score ?? "",   // ✅ 0 will show
+        }));
+
+        const worksheet = XLSX.utils.json_to_sheet(excelData);
+
+        // ✅ Auto column width
+        worksheet["!cols"] = Object.keys(excelData[0]).map(() => ({ wch: 20 }));
+
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "Shot Put Report");
+
+        const excelBuffer = XLSX.write(workbook, {
+            bookType: "xlsx",
+            type: "array",
+        });
+
+        const file = new Blob([excelBuffer], {
+            type:
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        });
+
+        saveAs(file, "Shot_Put_Report.xlsx");
+    };
+
     const sortedData = [...shotputReport].sort(
         (a, b) => Number(a.ChestNo) - Number(b.ChestNo)
     );
@@ -560,7 +672,14 @@ const ShotputReport = () => {
                                             style={headerCellStyle}
                                             onClick={downloadShotPutPDF}
                                         >
-                                            Download PDF
+                                            PDF
+                                        </button>
+                                        <button
+                                            className="btn btn-sm me-2"
+                                            style={headerCellStyle}
+                                            onClick={downloadShotPutExcel}
+                                        >
+                                            Excel
                                         </button>
                                         <button className="btn me-2" style={headerCellStyle} /* onClick={() => window.print()} */ onClick={openPrintWindow} >Print</button>
                                         <button className="btn" style={headerCellStyle} onClick={() => navigate(-1)}>  <ArrowBack /></button>

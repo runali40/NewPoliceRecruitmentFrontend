@@ -8,6 +8,8 @@ import { getAllGroup } from '../../Components/Api/EventApi';
 import { ArrowBack, Refresh } from '@material-ui/icons';
 import jsPDF from "jspdf";
 import "jspdf-autotable";
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
 
 const All1600MeterReport = () => {
   const navigate = useNavigate();
@@ -70,17 +72,55 @@ const All1600MeterReport = () => {
     }
   };
 
-  const handleGroup = async (selected) => {
-    const selectedValue = selected;
-    setGroup(selectedValue);
-    console.log(selectedValue.value, "selected value");
-    setGroupId(selectedValue.value)
-    const data = await fetchAll1600Meter(eventId, selectedValue.value, reservationCategory, cast);
-    console.log(data)
-    setGroupLeaderName(data[0].GrpLdrName)
-    console.log(data[0].GrpLdrName, "leader name")
-    setAll1600MeterReport(data)
-  }
+  // const handleGroup = async (selected) => {
+  //   const selectedValue = selected;
+  //   setGroup(selectedValue);
+  //   console.log(selectedValue.value, "selected value");
+  //   setGroupId(selectedValue.value)
+  //   const data = await fetchAll1600Meter(eventId, selectedValue.value, reservationCategory, cast);
+  //   console.log(data)
+  //   setGroupLeaderName(data[0].GrpLdrName)
+  //   console.log(data[0].GrpLdrName, "leader name")
+  //   setAll1600MeterReport(data)
+  // }
+
+     const handleGroup = async (selected) => {
+        if (!selected) return;
+    
+        const groupIdValue = selected.value;
+    
+        // 1️⃣ set dropdown state
+        setGroup(selected);
+        setGroupId(groupIdValue);
+    
+        // 2️⃣ clear old data immediately
+        setAll1600MeterReport([]);
+        setGroupLeaderName("");
+    
+        try {
+          const data = await fetchAll1600Meter(
+            eventId,
+            groupIdValue,        // ✅ direct value
+            reservationCategory,
+            cast
+          );
+    
+          console.log(data, "API DATA");
+    
+          if (data && data.length > 0) {
+            setGroupLeaderName(data[0]?.GrpLdrName || "");
+            setAll1600MeterReport(data);
+          } else {
+            // 👇 group selected but no data
+            setGroupLeaderName("");
+            setAll1600MeterReport([]);
+          }
+        } catch (error) {
+          console.error("Error fetching 1600 meter data", error);
+          setAll1600MeterReport([]);
+          setGroupLeaderName("");
+        }
+      };
 
   const AllCategory = async () => {
     try {
@@ -177,58 +217,92 @@ const All1600MeterReport = () => {
     let tableHTML = `
       <html>
       <head>
-        <title>Report</title>
-        <style>
-          table {
-            width: 100%;
-            border-collapse: collapse;
-            font-family: Arial;
-          }
-          th, td {
-            padding: 8px;
-            border: 1px solid #000;
-            text-align: left;
-            font-size: 14px;
-          }
-          th {
-            background: #f2f2f2;
-          }
-          .signature-box {
-            height: 60px;
-            border: 1px solid #000;
-          }
-          .print-btn {
-            margin: 15px 0;
-            padding: 6px 12px;
-            border: 1px solid #000;
-            cursor: pointer;
-            background: #ddd;
-            font-size: 14px;
-          }
-        </style>
+        <title>1600 Meter Report</title>
+       <style>
+        body {
+          margin: 10px;
+          font-family: Arial;
+        }
+
+        h2 {
+          margin: 5px 0;
+          font-size: 18px;
+        }
+
+        h3 {
+          margin: 3px 0;
+          font-size: 16px;
+        }
+
+        .header-section {
+          page-break-inside: avoid;
+          page-break-after: avoid;
+        }
+
+        table {
+          width: 100%;
+          border-collapse: collapse;
+          margin-top: 10px;
+          border: 1px solid #000;
+        }
+
+        th, td {
+          padding: 6px;
+          border: 1px solid #000;
+          text-align: left;
+          font-size: 12px;
+        }
+
+        th {
+          background: #f2f2f2;
+          font-weight: bold;
+        }
+
+        tr {
+          page-break-inside: avoid;
+          break-inside: avoid;
+        }
+
+        tbody {
+          page-break-inside: auto;
+        }
+
+        .signature-box {
+          height: 50px;
+          border-top: 1px solid #000;
+          border-bottom: 1px solid #000;
+          border-left: 1px solid #000;
+          border-right: 1px solid #000;
+        }
+
+        .group-leader-sign {
+          height: 50px;
+          border-top: 1px solid #000 !important;
+          border-bottom: 1px solid #000 !important;
+          border-left: 1px solid #000 !important;
+          border-right: 1px solid #000 !important;
+          vertical-align: top;
+        }
+
+        thead {
+          display: table-header-group;
+        }
+      </style>
       </head>
       <body>
   
-        <button class="btn btn-success print-btn" onclick="startPrinting()">Print</button>
-  
-        <script>
-          function startPrinting() {
-            const btn = document.querySelector('.print-btn');
-            btn.style.display = 'none';      
-            setTimeout(() => {
-              window.print();
-              btn.style.display = 'block';   
-            }, 200);
-          }
-        </script>
+    
   
 
+  
+  <div class="header-section">
      <h2>Commissioner of Police ${recruitName} City</h2>
     <h3>1600 Meter Running Report</h3>
     ${groupId ? `
   <h3>Group No: ${groupId}</h3>
   <h3>Group Leader Name: ${groupLeaderName || ""}</h3>
 ` : ""}
+</div>
         <table>
           <thead>
             <tr>
@@ -293,107 +367,158 @@ const All1600MeterReport = () => {
     printWindow.document.open();
     printWindow.document.write(tableHTML);
     printWindow.document.close();
+        printWindow.onload = function () {
+      printWindow.print();
+    };
   };
 
-const download1600MeterPDF = () => {
-  const doc = new jsPDF("l", "mm", "a4");
-  const pageWidth = doc.internal.pageSize.getWidth();
+  const download1600MeterPDF = () => {
+    const doc = new jsPDF("l", "mm", "a4");
+    const pageWidth = doc.internal.pageSize.getWidth();
 
-  // 🔹 Main Title
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(16);
-  doc.text(
-    `Commissioner of Police ${recruitName} City`,
-    pageWidth / 2,
-    15,
-    { align: "center" }
-  );
-
-  // 🔹 Sub Title
-  doc.setFontSize(12);
-  doc.text("1600 Meter Report", pageWidth / 2, 23, { align: "center" });
-
-  let startY = 30; // 👈 dynamic Y position
-
-  // 🔹 Group Details
-  if (groupId) {
+    // 🔹 Main Title
     doc.setFont("helvetica", "bold");
-
-    doc.text(`Group No: ${groupId}`, pageWidth / 2, startY, {
-      align: "center",
-    });
-
-    startY += 7;
-
+    doc.setFontSize(16);
     doc.text(
-      `Group Leader Name: ${groupLeaderName || ""}`,
+      `Commissioner of Police ${recruitName} City`,
       pageWidth / 2,
-      startY,
+      15,
       { align: "center" }
     );
 
-    startY += 10; // ✅ EXTRA SPACE BEFORE TABLE
-  } else {
-    startY += 5; // spacing even if no group
-  }
+    // 🔹 Sub Title
+    doc.setFontSize(12);
+    doc.text("1600 Meter Report", pageWidth / 2, 23, { align: "center" });
 
-  // 🔹 Table Columns
-  const tableColumn = [
-    "Sr No",
-    "Candidate Name",
-    "Chest No",
-    "Tag No",
-    "Cast",
-    "Parallel Reservation",
-    "Start Time",
-    "End Time",
-    "Duration",
-    "Lap",
-    "Score",
-  ];
+    let startY = 30; // 👈 dynamic Y position
 
-  // 🔹 SORT BY CHEST NO
-  const sortedData = [...all1600MeterReport].sort(
-    (a, b) => Number(a.ChestNo) - Number(b.ChestNo)
-  );
+    // 🔹 Group Details
+    if (groupId) {
+      doc.setFont("helvetica", "bold");
 
-  const tableRows = [];
-  sortedData.forEach((data, index) => {
-    tableRows.push([
-      index + 1,
-      data.CandidateName || "",
-      data.ChestNo || "",
-      data.Barcode || "",
-      data.Cast || "",
-      data["Parallel Reservation"] || "",
-      data.StartTime === "00:00:00.00" || data.StartTime === "00:00:00.000"
-        ? ""
-        : data.StartTime || "",
-      data.EndTime === "00:00:00.00" || data.EndTime === "00:00:00.000"
-        ? ""
-        : data.EndTime || "",
-      data.duration || "",
-      data.Lapcount || "",
-      data.score || "",
-    ]);
-  });
+      doc.text(`Group No: ${groupId}`, pageWidth / 2, startY, {
+        align: "center",
+      });
 
-  // 🔹 AutoTable with proper spacing
-  doc.autoTable({
-    head: [tableColumn],
-    body: tableRows,
-    startY: startY, // ✅ FIXED HERE
-    styles: { fontSize: 8 },
-    headStyles: {
-      fillColor: [27, 90, 144],
-      textColor: 255,
-      fontStyle: "bold",
-    },
-  });
+      startY += 7;
 
-  doc.save("1600_Meter_Report.pdf");
-};
+      doc.text(
+        `Group Leader Name: ${groupLeaderName || ""}`,
+        pageWidth / 2,
+        startY,
+        { align: "center" }
+      );
 
+      startY += 10; // ✅ EXTRA SPACE BEFORE TABLE
+    } else {
+      startY += 5; // spacing even if no group
+    }
+
+    // 🔹 Table Columns
+    const tableColumn = [
+      "Sr No",
+      "Candidate Name",
+      "Chest No",
+      "Tag No",
+      "Cast",
+      "Parallel Reservation",
+      "Start Time",
+      "End Time",
+      "Duration",
+      "Lap",
+      "Score",
+    ];
+
+    // 🔹 SORT BY CHEST NO
+    const sortedData = [...all1600MeterReport].sort(
+      (a, b) => Number(a.ChestNo) - Number(b.ChestNo)
+    );
+
+    const tableRows = [];
+    sortedData.forEach((data, index) => {
+      tableRows.push([
+        index + 1,
+        data.CandidateName || "",
+        data.ChestNo || "",
+        data.Barcode || "",
+        data.Cast || "",
+        data["Parallel Reservation"] || "",
+        data.StartTime === "00:00:00.00" || data.StartTime === "00:00:00.000"
+          ? ""
+          : data.StartTime || "",
+        data.EndTime === "00:00:00.00" || data.EndTime === "00:00:00.000"
+          ? ""
+          : data.EndTime || "",
+        data.duration || "",
+        data.Lapcount || "",
+        data.score || "",
+      ]);
+    });
+
+    // 🔹 AutoTable with proper spacing
+    doc.autoTable({
+      head: [tableColumn],
+      body: tableRows,
+      startY: startY, // ✅ FIXED HERE
+      styles: { fontSize: 8 },
+      headStyles: {
+        fillColor: [27, 90, 144],
+        textColor: 255,
+        fontStyle: "bold",
+      },
+    });
+
+    doc.save("1600_Meter_Report.pdf");
+  };
+
+  const download1600MeterExcel = () => {
+    // ✅ Sort by Chest No Ascending
+    const sortedData = [...all1600MeterReport].sort(
+      (a, b) => Number(a.ChestNo) - Number(b.ChestNo)
+    );
+
+    const excelData = sortedData.map((data, index) => ({
+      "Sr No": index + 1,
+      "Candidate Name": data.CandidateName ?? "",
+      "Chest No": data.ChestNo ?? "",
+      "Barcode": data.Barcode ?? "",
+      "Cast": data.Cast ?? "",
+      "Parallel Reservation": data["Parallel Reservation"] ?? "",
+      "Start Time":
+        data.StartTime === "00:00:00.00" ||
+          data.StartTime === "00:00:00.000"
+          ? ""
+          : data.StartTime ?? "",
+      "End Time":
+        data.EndTime === "00:00:00.00" ||
+          data.EndTime === "00:00:00.000"
+          ? ""
+          : data.EndTime ?? "",
+      "Duration": data.duration ?? "",
+      "Lap Count": data.Lapcount ?? "",
+      "Score": data.score ?? "",   // ✅ 0 will show
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(excelData);
+
+    // ✅ Auto column width
+    worksheet["!cols"] = Object.keys(excelData[0]).map(() => ({ wch: 20 }));
+
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "1600 Meter Report");
+
+    const excelBuffer = XLSX.write(workbook, {
+      bookType: "xlsx",
+      type: "array",
+    });
+
+    const file = new Blob([excelBuffer], {
+      type:
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
+
+    saveAs(file, "1600_Meter_Report.xlsx");
+  };
 
   const sortedData = [...all1600MeterReport].sort(
     (a, b) => Number(a.ChestNo) - Number(b.ChestNo)
@@ -446,7 +571,16 @@ const download1600MeterPDF = () => {
                       style={headerCellStyle}
                       onClick={download1600MeterPDF}
                     >
-                      Download PDF
+                      PDF
+
+                    </button>
+                    <button
+                      className="btn btn-sm me-2"
+                      style={headerCellStyle}
+                      onClick={download1600MeterExcel}
+                    >
+
+                      Excel
                     </button>
                     <button className="btn me-2" style={headerCellStyle} /* onClick={() => window.print()} */ onClick={openPrintWindow}>Print</button>
                     <button className="btn" style={headerCellStyle} onClick={() => navigate(-1)}>  <ArrowBack /></button>
