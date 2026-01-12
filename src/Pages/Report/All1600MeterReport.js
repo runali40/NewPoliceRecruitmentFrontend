@@ -451,7 +451,7 @@ const All1600MeterReport = () => {
           : data.EndTime || "",
         data.duration || "",
         data.Lapcount || "",
-        data.score || "",
+        data.score ?? "",
       ]);
     });
 
