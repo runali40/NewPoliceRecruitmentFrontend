@@ -648,6 +648,7 @@ const All100MeterReport = () => {
           <tr>
             <th>Sr No</th>
             <th>Candidate Name</th>
+            <th>Gender</th>
             <th>Chest No</th>
             <th>Tag No</th>
             <th>Cast</th>
@@ -677,6 +678,7 @@ const All100MeterReport = () => {
       <tr>
         <td>${index + 1}</td>
         <td>${row.CandidateName ?? ""}</td>
+        <td>${row.Gender ?? ""}</td>
         <td>${row.ChestNo ?? ""}</td>
         <td>${row.Barcode ?? ""}</td>
         <td>${row.Cast ?? ""}</td>
@@ -764,6 +766,7 @@ const All100MeterReport = () => {
     const tableColumn = [
       "Sr No",
       "Candidate Name",
+      "Gender",
       "Chest No",
       "Tag No",
       "Cast",
@@ -782,6 +785,7 @@ const All100MeterReport = () => {
     const tableRows = sortedData.map((data, index) => ([
       index + 1,
       data.CandidateName,
+       data.Gender,
       data.ChestNo,
       data.Barcode,
       data.Cast,
@@ -819,6 +823,7 @@ const All100MeterReport = () => {
       "Sr No":
         (currentPage - 1) * itemsPerPage + index + 1,
       "Candidate Name": data.CandidateName || "",
+       "Gender": data.Gender || "",
       "Chest No": data.ChestNo || "",
       "Barcode": data.Barcode || "",
       "Cast": data.Cast || "",
@@ -1024,6 +1029,9 @@ const All100MeterReport = () => {
                       <th scope="col" style={headerCellStyle}>
                         Candidate Name
                       </th>
+                       <th scope="col" style={headerCellStyle}>
+                        Gender
+                      </th>
                       <th scope="col" style={headerCellStyle}>
                         Chest No
                       </th>
@@ -1057,6 +1065,7 @@ const All100MeterReport = () => {
                           {(currentPage - 1) * itemsPerPage + index + 1}
                         </td>
                         <td>{data.CandidateName}</td>
+                        <td>{data.Gender}</td>
                         <td>{data.ChestNo}</td>
                         <td>{data.Barcode}</td>
                         <td>{data.Cast}</td>

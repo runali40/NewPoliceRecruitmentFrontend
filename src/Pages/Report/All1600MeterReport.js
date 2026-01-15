@@ -84,43 +84,43 @@ const All1600MeterReport = () => {
   //   setAll1600MeterReport(data)
   // }
 
-     const handleGroup = async (selected) => {
-        if (!selected) return;
-    
-        const groupIdValue = selected.value;
-    
-        // 1️⃣ set dropdown state
-        setGroup(selected);
-        setGroupId(groupIdValue);
-    
-        // 2️⃣ clear old data immediately
-        setAll1600MeterReport([]);
+  const handleGroup = async (selected) => {
+    if (!selected) return;
+
+    const groupIdValue = selected.value;
+
+    // 1️⃣ set dropdown state
+    setGroup(selected);
+    setGroupId(groupIdValue);
+
+    // 2️⃣ clear old data immediately
+    setAll1600MeterReport([]);
+    setGroupLeaderName("");
+
+    try {
+      const data = await fetchAll1600Meter(
+        eventId,
+        groupIdValue,        // ✅ direct value
+        reservationCategory,
+        cast
+      );
+
+      console.log(data, "API DATA");
+
+      if (data && data.length > 0) {
+        setGroupLeaderName(data[0]?.GrpLdrName || "");
+        setAll1600MeterReport(data);
+      } else {
+        // 👇 group selected but no data
         setGroupLeaderName("");
-    
-        try {
-          const data = await fetchAll1600Meter(
-            eventId,
-            groupIdValue,        // ✅ direct value
-            reservationCategory,
-            cast
-          );
-    
-          console.log(data, "API DATA");
-    
-          if (data && data.length > 0) {
-            setGroupLeaderName(data[0]?.GrpLdrName || "");
-            setAll1600MeterReport(data);
-          } else {
-            // 👇 group selected but no data
-            setGroupLeaderName("");
-            setAll1600MeterReport([]);
-          }
-        } catch (error) {
-          console.error("Error fetching 1600 meter data", error);
-          setAll1600MeterReport([]);
-          setGroupLeaderName("");
-        }
-      };
+        setAll1600MeterReport([]);
+      }
+    } catch (error) {
+      console.error("Error fetching 1600 meter data", error);
+      setAll1600MeterReport([]);
+      setGroupLeaderName("");
+    }
+  };
 
   const AllCategory = async () => {
     try {
@@ -308,6 +308,7 @@ const All1600MeterReport = () => {
             <tr>
               <th>Sr No</th>
               <th>Candidate Name</th>
+               <th>Gender</th>
               <th>Chest No</th>
               <th>Tag No</th>
               <th>Cast</th>
@@ -335,6 +336,7 @@ const All1600MeterReport = () => {
         <tr>
           <td>${index + 1}</td>
           <td>${row.CandidateName || ""}</td>
+          <td>${row.Gender || ""}</td>
           <td>${row.ChestNo || ""}</td>
           <td>${row.Barcode || ""}</td>
            <td>${row.Cast || ""}</td>    
@@ -367,7 +369,7 @@ const All1600MeterReport = () => {
     printWindow.document.open();
     printWindow.document.write(tableHTML);
     printWindow.document.close();
-        printWindow.onload = function () {
+    printWindow.onload = function () {
       printWindow.print();
     };
   };
@@ -418,6 +420,7 @@ const All1600MeterReport = () => {
     const tableColumn = [
       "Sr No",
       "Candidate Name",
+      "Gender",
       "Chest No",
       "Tag No",
       "Cast",
@@ -439,6 +442,7 @@ const All1600MeterReport = () => {
       tableRows.push([
         index + 1,
         data.CandidateName || "",
+        data.Gender || "",
         data.ChestNo || "",
         data.Barcode || "",
         data.Cast || "",
@@ -480,6 +484,7 @@ const All1600MeterReport = () => {
     const excelData = sortedData.map((data, index) => ({
       "Sr No": index + 1,
       "Candidate Name": data.CandidateName ?? "",
+      "Gender": data.Gender ?? "",
       "Chest No": data.ChestNo ?? "",
       "Barcode": data.Barcode ?? "",
       "Cast": data.Cast ?? "",
@@ -702,6 +707,9 @@ const All1600MeterReport = () => {
                         Candidate Name
                       </th>
                       <th scope="col" style={headerCellStyle}>
+                        Gender
+                      </th>
+                      <th scope="col" style={headerCellStyle}>
                         Chest No
                       </th>
                       <th scope="col" style={headerCellStyle}>
@@ -737,6 +745,7 @@ const All1600MeterReport = () => {
                           {(currentPage - 1) * itemsPerPage + index + 1}
                         </td>
                         <td>{data.CandidateName}</td>
+                        <td>{data.Gender}</td>
                         <td>{data.ChestNo}</td>
                         <td>{data.Barcode}</td>
                         <td>{data.Cast}</td>
