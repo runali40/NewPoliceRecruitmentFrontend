@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { fetchAll800Meter, getAllCast, GetCategory, getReservationCategory } from '../../Components/Api/DailyReportApi'
+import { fetchAll800Meter, getAllCast, getAllGender, GetCategory, getReservationCategory } from '../../Components/Api/DailyReportApi'
 import { useNavigate } from 'react-router-dom';
 import { Table, Button } from "react-bootstrap";
 import { Pagination } from '../../Components/Utils/Pagination';
@@ -10,6 +10,10 @@ import jsPDF from "jspdf";
 import "jspdf-autotable";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
+import { DateRange } from "react-date-range";
+import 'react-date-range/dist/styles.css';
+import 'react-date-range/dist/theme/default.css';
+import { enUS } from "date-fns/locale";
 
 const All800MeterReport = () => {
   const navigate = useNavigate();
@@ -33,6 +37,58 @@ const All800MeterReport = () => {
   const [reservationCategory, setReservationCategory] = useState("")
   const [allCast, setAllCast] = useState([])
   const [cast, setCast] = useState("")
+  const [fromDate, setFromDate] = useState()
+  const [toDate, setToDate] = useState()
+  const [allGender, setAllGender] = useState([])
+  const [gender, setGender] = useState("")
+  const [selectDate, setSelectDate] = useState();
+  const [range, setRange] = useState([
+    {
+      startDate: null,
+      endDate: null,
+      key: "selection",
+    },
+  ]);
+
+  const [showPicker, setShowPicker] = useState(false);
+
+
+  const handleSelect = async (item) => {
+    const selection = item.selection;
+    setRange([selection]);
+
+    // ⛔ sirf start date select hua → kuch mat karo
+    if (!selection.startDate || !selection.endDate) {
+      return;
+    }
+
+    const formatDate = (date) => {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const day = String(date.getDate()).padStart(2, "0");
+      return `${year}-${month}-${day}`;
+    };
+
+    const formattedStart = formatDate(selection.startDate);
+    const formattedEnd = formatDate(selection.endDate);
+
+    // ✅ dono dates set karo
+    setFromDate(formattedStart);
+    setToDate(formattedEnd);
+    setSelectDate(`${formattedStart} - ${formattedEnd}`);
+
+    const data = await fetchAll800Meter(
+      eventId,
+      groupId,
+      reservationCategory,
+      cast,
+      formattedStart,
+      formattedEnd
+    );
+
+    setAll800MeterReport(data);
+    setShowPicker(false);
+  };
 
   const headerCellStyle = {
     backgroundColor: "rgb(27, 90, 144)",
@@ -48,10 +104,11 @@ const All800MeterReport = () => {
     AllCategory();
     AllReservationCategory();
     getAllCastData();
+    AllGender();
   }, [eventId])
 
   const Get800MeterData = async () => {
-    const data = await fetchAll800Meter(eventId, groupId, reservationCategory, cast);
+    const data = await fetchAll800Meter(eventId, groupId, reservationCategory, cast, fromDate, toDate);
     console.log(data)
     setAll800MeterReport(data)
   }
@@ -101,7 +158,9 @@ const All800MeterReport = () => {
         eventId,
         groupIdValue,        // ✅ direct value
         reservationCategory,
-        cast
+        cast,
+        fromDate,
+        toDate
       );
 
       console.log(data, "API DATA");
@@ -157,7 +216,8 @@ const All800MeterReport = () => {
     setReservationCategory(selectedValue);
     console.log(selectedValue.value, "selected value");
     // setGroupId(selectedValue.value)
-    const data = await fetchAll800Meter(eventId, groupId, selectedValue.label, null);
+    const data = await fetchAll800Meter(eventId, groupId, selectedValue.label, null, fromDate,
+      toDate);
     console.log(data)
     setAll800MeterReport(data)
   }
@@ -173,7 +233,7 @@ const All800MeterReport = () => {
     setCast(selectedValue);
     console.log(selectedValue.value, "selected value");
     // setGroupId(selectedValue.value)
-    const data = await fetchAll800Meter(eventId, groupId, null, selectedValue.label);
+    const data = await fetchAll800Meter(eventId, groupId, null, selectedValue.label, fromDate, toDate);
     console.log(data)
     setAll800MeterReport(data)
   }
@@ -184,11 +244,46 @@ const All800MeterReport = () => {
     setGroupId("");
     setGroup("");
     setCategory("")
-
-    const data = await fetchAll800Meter(eventId, "", "", "");
+    setGender("")
+    setFromDate("")
+    setToDate("")
+    setRange([
+      {
+        startDate: null,
+        endDate: null,
+        key: "selection",
+      },
+    ]);
+    const data = await fetchAll800Meter(eventId, "", "", "", fromDate, toDate);
     console.log(data)
     setAll800MeterReport(data)
   };
+
+  const AllGender = async () => {
+    try {
+      const data = await getAllGender();
+      console.log("All Gender Response:", data);
+
+      const options = data.map((data) => ({
+        value: data.value,
+        label: `${data.label} `,
+      }));
+      setAllGender(options);
+    } catch (error) {
+      console.log("All Gender Error:", error);
+    }
+  };
+
+  const handleGender = async (selected) => {
+    const selectedValue = selected;
+    setGender(selectedValue);
+    console.log(selectedValue.value, "selected value");
+    // setGroupId(selectedValue.value)
+    const data = await fetchAll800Meter(groupId, null, null, null, selectedValue.label, fromDate, toDate);
+    console.log(data)
+    setAll800MeterReport(data)
+  }
+
 
   const handleSearch = (e) => {
     const searchDataValue = e.target.value.toLowerCase();
@@ -614,6 +709,33 @@ const All800MeterReport = () => {
 
                   <div className="col-lg-3 col-md-3 col-12 mt-3 mt-md-0">
 
+                    <div title="Date" style={{ width: "250px" }}>
+                      <input
+                        type="text"
+                        readOnly
+                        className="form-control"
+                        placeholder="Start Date - End Date"
+                        value={
+                          range[0].startDate && range[0].endDate
+                            ? `${range[0].startDate.toLocaleDateString()} - ${range[0].endDate.toLocaleDateString()}`
+                            : ""
+                        }
+                        onClick={() => setShowPicker(!showPicker)}
+                      />
+
+                    </div>
+
+                    {showPicker && (
+                      <div style={{ position: "absolute", zIndex: 9999 }}>
+                        <DateRange
+                          ranges={range}
+                          locale={enUS}
+                          onChange={handleSelect}
+                          moveRangeOnFirstSelection={false}
+                        />
+                      </div>
+                    )}
+
                   </div>
 
                   <div className="col-lg-3 col-md-3 col-12 mt-3 mt-md-0">
@@ -693,7 +815,21 @@ const All800MeterReport = () => {
                       }}
                     />
                   </div>
-
+                  <div className="col-lg-3 col-md-3 col-12 mt-3 mt-md-0">
+                    <Select
+                      value={gender}
+                      onChange={handleGender}
+                      options={allGender}
+                      placeholder="Select Gender"
+                      styles={{
+                        control: (provided) => ({
+                          ...provided,
+                          width: "100%",     // FULL WIDTH
+                          minHeight: "35px",
+                        }),
+                      }}
+                    />
+                  </div>
                 </div>
                 <br />
                 <Table striped hover responsive className="border text-left">

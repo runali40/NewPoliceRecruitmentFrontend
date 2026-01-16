@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { fetchAll100Meter, getAllCast, GetCategory, getReservationCategory } from '../../Components/Api/DailyReportApi'
+import { fetchAll100Meter, getAllCast, getAllGender, GetCategory, getReservationCategory } from '../../Components/Api/DailyReportApi'
 import { Table, Button } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import Select from 'react-select'
@@ -12,6 +12,10 @@ import jsPDF from "jspdf";
 import "jspdf-autotable";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
+import { DateRange } from "react-date-range";
+import 'react-date-range/dist/styles.css';
+import 'react-date-range/dist/theme/default.css';
+import { enUS } from "date-fns/locale";
 
 const All100MeterReport = () => {
   const navigate = useNavigate();
@@ -35,7 +39,71 @@ const All100MeterReport = () => {
   const [reservationCategory, setReservationCategory] = useState("")
   const [allCast, setAllCast] = useState([])
   const [cast, setCast] = useState("")
+  const [allGender, setAllGender] = useState([])
+  const [gender, setGender] = useState("")
   const [refreshKey, setRefreshKey] = useState(0);
+  const [fromDate, setFromDate] = useState()
+  const [toDate, setToDate] = useState()
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  };
+
+  const [selectDate, setSelectDate] = useState();
+  const [range, setRange] = useState([
+    {
+      startDate: null,
+      endDate: null,
+      key: "selection",
+    },
+  ]);
+
+  const [showPicker, setShowPicker] = useState(false);
+
+
+  const handleSelect = async (item) => {
+    const selection = item.selection;
+    setRange([selection]);
+
+    // ⛔ sirf start date select hua → kuch mat karo
+    if (!selection.startDate || !selection.endDate) {
+      return;
+    }
+
+    const formatDate = (date) => {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const day = String(date.getDate()).padStart(2, "0");
+      return `${year}-${month}-${day}`;
+    };
+
+    const formattedStart = formatDate(selection.startDate);
+    const formattedEnd = formatDate(selection.endDate);
+
+    // ✅ dono dates set karo
+    setFromDate(formattedStart);
+    setToDate(formattedEnd);
+    setSelectDate(`${formattedStart} - ${formattedEnd}`);
+
+    const data = await fetchAll100Meter(
+      eventId,
+      groupId,
+      reservationCategory,
+      cast,
+      gender,
+      formattedStart,
+      formattedEnd
+    );
+
+    setAll100MeterReport(data);
+    setShowPicker(false);
+  };
+
+
 
   const headerCellStyle = {
     backgroundColor: "rgb(27, 90, 144)",
@@ -51,6 +119,7 @@ const All100MeterReport = () => {
     AllCategory();
     AllReservationCategory();
     getAllCastData();
+    AllGender();
   }, [])
 
 
@@ -60,14 +129,24 @@ const All100MeterReport = () => {
     setGroupId("");
     setGroup("");
     setCategory("")
-
-    const data = await fetchAll100Meter(eventId, "", "", "");
+    setGender("")
+    setSelectDate("")
+    setFromDate("")
+    setToDate("")
+    setRange([
+      {
+        startDate: null,
+        endDate: null,
+        key: "selection",
+      },
+    ]);
+    const data = await fetchAll100Meter(eventId, "", "", "", gender, fromDate, toDate);
     console.log(data)
     setAll100MeterReport(data)
   };
 
   const Get100MeterData = async () => {
-    const data = await fetchAll100Meter(eventId, groupId, reservationCategory, cast);
+    const data = await fetchAll100Meter(eventId, groupId, reservationCategory, cast, gender, fromDate, toDate);
     console.log(data)
     setAll100MeterReport(data)
   }
@@ -115,44 +194,46 @@ const All100MeterReport = () => {
   //   setAll100MeterReport(data)
   // }
 
-    const handleGroup = async (selected) => {
-      if (!selected) return;
-  
-      const groupIdValue = selected.value;
-  
-      // 1️⃣ set dropdown state
-      setGroup(selected);
-      setGroupId(groupIdValue);
-  
-      // 2️⃣ clear old data immediately
+  const handleGroup = async (selected) => {
+    if (!selected) return;
+
+    const groupIdValue = selected.value;
+
+    // 1️⃣ set dropdown state
+    setGroup(selected);
+    setGroupId(groupIdValue);
+
+    // 2️⃣ clear old data immediately
+    setAll100MeterReport([]);
+    setGroupLeaderName("");
+
+    try {
+      const data = await fetchAll100Meter(
+        eventId,
+        groupIdValue,        // ✅ direct value
+        reservationCategory,
+        cast,
+        gender,
+        fromDate, toDate
+      );
+
+      console.log(data, "API DATA");
+
+      if (data && data.length > 0) {
+        setGroupLeaderName(data[0]?.GrpLdrName || "");
+        setAll100MeterReport(data);
+      } else {
+        // 👇 group selected but no data
+        setGroupLeaderName("");
+        setAll100MeterReport([]);
+      }
+    } catch (error) {
+      console.error("Error fetching 100 meter data", error);
       setAll100MeterReport([]);
       setGroupLeaderName("");
-  
-      try {
-        const data = await fetchAll100Meter(
-          eventId,
-          groupIdValue,        // ✅ direct value
-          reservationCategory,
-          cast
-        );
-  
-        console.log(data, "API DATA");
-  
-        if (data && data.length > 0) {
-          setGroupLeaderName(data[0]?.GrpLdrName || "");
-          setAll100MeterReport(data);
-        } else {
-          // 👇 group selected but no data
-          setGroupLeaderName("");
-          setAll100MeterReport([]);
-        }
-      } catch (error) {
-        console.error("Error fetching 100 meter data", error);
-        setAll100MeterReport([]);
-        setGroupLeaderName("");
-      }
-    };
-  
+    }
+  };
+
   const handleCategory = async (selected) => {
     const selectedValue = selected;
     setCategory(selectedValue);
@@ -183,7 +264,7 @@ const All100MeterReport = () => {
     setReservationCategory(selectedValue);
     console.log(selectedValue.value, "selected value");
     // setGroupId(selectedValue.value)
-    const data = await fetchAll100Meter(eventId, groupId, selectedValue.label, null);
+    const data = await fetchAll100Meter(eventId, groupId, selectedValue.label, null, gender, fromDate, toDate);
     console.log(data)
     setAll100MeterReport(data)
   }
@@ -199,7 +280,32 @@ const All100MeterReport = () => {
     setCast(selectedValue);
     console.log(selectedValue.value, "selected value");
     // setGroupId(selectedValue.value)
-    const data = await fetchAll100Meter(eventId, groupId, null, selectedValue.label);
+    const data = await fetchAll100Meter(eventId, groupId, null, selectedValue.label, gender, fromDate, toDate);
+    console.log(data)
+    setAll100MeterReport(data)
+  }
+
+  const AllGender = async () => {
+    try {
+      const data = await getAllGender();
+      console.log("All Gender Response:", data);
+
+      const options = data.map((data) => ({
+        value: data.value,
+        label: `${data.label} `,
+      }));
+      setAllGender(options);
+    } catch (error) {
+      console.log("All Gender Error:", error);
+    }
+  };
+
+  const handleGender = async (selected) => {
+    const selectedValue = selected;
+    setGender(selectedValue);
+    console.log(selectedValue.value, "selected value");
+    // setGroupId(selectedValue.value)
+    const data = await fetchAll100Meter(groupId, null, null, null, selectedValue.label, fromDate, toDate);
     console.log(data)
     setAll100MeterReport(data)
   }
@@ -785,7 +891,7 @@ const All100MeterReport = () => {
     const tableRows = sortedData.map((data, index) => ([
       index + 1,
       data.CandidateName,
-       data.Gender,
+      data.Gender,
       data.ChestNo,
       data.Barcode,
       data.Cast,
@@ -823,7 +929,7 @@ const All100MeterReport = () => {
       "Sr No":
         (currentPage - 1) * itemsPerPage + index + 1,
       "Candidate Name": data.CandidateName || "",
-       "Gender": data.Gender || "",
+      "Gender": data.Gender || "",
       "Chest No": data.ChestNo || "",
       "Barcode": data.Barcode || "",
       "Cast": data.Cast || "",
@@ -938,6 +1044,34 @@ const All100MeterReport = () => {
                   </div>
 
                   <div className="col-lg-3 col-md-3 col-12 mt-3 mt-md-0">
+
+                    <div title="Date" style={{ width: "250px" }}>
+                      <input
+                        type="text"
+                        readOnly
+                        className="form-control"
+                        placeholder="Start Date - End Date"
+                        value={
+                          range[0].startDate && range[0].endDate
+                            ? `${range[0].startDate.toLocaleDateString()} - ${range[0].endDate.toLocaleDateString()}`
+                            : ""
+                        }
+                        onClick={() => setShowPicker(!showPicker)}
+                      />
+
+                    </div>
+
+                    {showPicker && (
+                      <div style={{ position: "absolute", zIndex: 9999 }}>
+                        <DateRange
+                          ranges={range}
+                          locale={enUS}
+                          onChange={handleSelect}
+                          moveRangeOnFirstSelection={false}
+                        />
+                      </div>
+                    )}
+
                   </div>
 
                   <div className="col-lg-3 col-md-3 col-12 mt-3 mt-md-0">
@@ -971,7 +1105,7 @@ const All100MeterReport = () => {
 
 
 
-                  <div className="col-lg-3 col-md-3 col-12 mt-3 mt-md-0">
+                  <div className="col-lg-2 col-md-2 col-12 mt-3 mt-md-0">
                     <Select
                       value={group}
                       onChange={handleGroup}
@@ -1002,7 +1136,7 @@ const All100MeterReport = () => {
                       }}
                     />
                   </div>
-                  <div className="col-lg-3 col-md-3 col-12 mt-3 mt-md-0">
+                  <div className="col-lg-2 col-md-2 col-12 mt-3 mt-md-0">
                     <Select
                       value={cast}
                       onChange={handleCast}
@@ -1017,7 +1151,21 @@ const All100MeterReport = () => {
                       }}
                     />
                   </div>
-
+                  <div className="col-lg-2 col-md-2 col-12 mt-3 mt-md-0">
+                    <Select
+                      value={gender}
+                      onChange={handleGender}
+                      options={allGender}
+                      placeholder="Select Gender"
+                      styles={{
+                        control: (provided) => ({
+                          ...provided,
+                          width: "100%",     // FULL WIDTH
+                          minHeight: "35px",
+                        }),
+                      }}
+                    />
+                  </div>
                 </div>
                 <br />
                 <Table striped hover responsive className="border text-left">
@@ -1029,7 +1177,7 @@ const All100MeterReport = () => {
                       <th scope="col" style={headerCellStyle}>
                         Candidate Name
                       </th>
-                       <th scope="col" style={headerCellStyle}>
+                      <th scope="col" style={headerCellStyle}>
                         Gender
                       </th>
                       <th scope="col" style={headerCellStyle}>

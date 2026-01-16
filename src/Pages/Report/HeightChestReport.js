@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { fetchAll100Meter, getAllCast, GetCategory, getReservationCategory } from '../../Components/Api/DailyReportApi'
+import { fetchAllHeightChest, getAllCast, getAllGender, GetCategory, getReservationCategory } from '../../Components/Api/DailyReportApi'
 import { Table, Button } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import Select from 'react-select'
@@ -12,6 +12,10 @@ import jsPDF from "jspdf";
 import "jspdf-autotable";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
+import { DateRange } from "react-date-range";
+import 'react-date-range/dist/styles.css';
+import 'react-date-range/dist/theme/default.css';
+import { enUS } from "date-fns/locale";
 
 const HeightChestReport = () => {
     const navigate = useNavigate();
@@ -20,7 +24,7 @@ const HeightChestReport = () => {
     const parentId = localStorage.getItem("parentId")
     console.log(parentId, "parent id")
     const recruitName = localStorage.getItem("recruitName");
-    const [all100MeterReport, setAll100MeterReport] = useState([]);
+    const [HeightChestReport, setHeightChestReport] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(10); // Initial value
     const [selectedItemsPerPage, setSelectedItemsPerPage] = useState(10);
@@ -34,16 +38,74 @@ const HeightChestReport = () => {
     const [allReservationCategory, setAllReservationCategory] = useState([])
     const [reservationCategory, setReservationCategory] = useState("")
     const [allCast, setAllCast] = useState([])
+    const [allGender, setAllGender] = useState([])
+    const [gender, setGender] = useState("")
     const [cast, setCast] = useState("")
     const [refreshKey, setRefreshKey] = useState(0);
+    const [fromDate, setFromDate] = useState()
+    const [toDate, setToDate] = useState()
 
     const headerCellStyle = {
         backgroundColor: "rgb(27, 90, 144)",
         color: "#fff",
     };
 
+    const formatDate = (dateString) => {
+        const date = new Date(dateString);
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const day = String(date.getDate()).padStart(2, "0");
+        return `${year}-${month}-${day}`;
+    };
+
+    const [selectDate, setSelectDate] = useState("");
+
+    const [range, setRange] = useState([
+        {
+            startDate: null,
+            endDate: null,
+            key: "selection",
+        },
+    ]);
+
+    const [showPicker, setShowPicker] = useState(false);
+
+    const handleSelect = async (item) => {
+        const newRange = [item.selection];
+        setRange(newRange);
+
+        // Helper function to format date properly
+        const formatDate = (date) => {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        };
+
+        // 👉 Print selected dates
+        console.log("Start Date:", newRange[0].startDate);
+        console.log("End Date:", newRange[0].endDate);
+
+        const formattedStart = formatDate(newRange[0].startDate);
+        const formattedEnd = formatDate(newRange[0].endDate);
+
+        console.log(formattedStart); // "2025-12-02" ✓
+        console.log(formattedEnd);   // "2025-12-30" ✓
+        setSelectDate(formattedStart)
+        setFromDate(formattedStart)
+        setToDate(formattedEnd)
+        // fetchData(doc, heightChest, allStatus, formattedStart, formattedStart, formattedEnd);
+        const data = await fetchAllHeightChest(groupId, "", "", "", formattedStart, formattedEnd);
+        console.log(data)
+        setHeightChestReport(data)
+        // 👉 Auto close calendar when both dates are selected
+        if (newRange[0].startDate && newRange[0].endDate) {
+            setShowPicker(false);
+        }
+    }
+
     useEffect(() => {
-        Get100MeterData();
+        GetHeightChestData();
     }, [eventId])
 
     useEffect(() => {
@@ -51,6 +113,7 @@ const HeightChestReport = () => {
         AllCategory();
         AllReservationCategory();
         getAllCastData();
+        AllGender();
     }, [])
 
 
@@ -60,17 +123,44 @@ const HeightChestReport = () => {
         setGroupId("");
         setGroup("");
         setCategory("")
+        setGender("")
+        setFromDate("")
+        setToDate("")
+        setRange([
+            {
+                startDate: null,
+                endDate: null,
+                key: "selection",
+            },
+        ]);
 
-        const data = await fetchAll100Meter(eventId, "", "", "");
+        // 🔹 Close calendar if open
+        setShowPicker(false);
+        const data = await fetchAllHeightChest("", "", "", "", "", "");
         console.log(data)
-        setAll100MeterReport(data)
+        setHeightChestReport(data)
     };
 
-    const Get100MeterData = async () => {
-        const data = await fetchAll100Meter(eventId, groupId, reservationCategory, cast);
+    const GetHeightChestData = async () => {
+        const data = await fetchAllHeightChest(groupId, reservationCategory, cast, gender, fromDate, toDate);
         console.log(data)
-        setAll100MeterReport(data)
+        setHeightChestReport(data)
     }
+
+    const AllGender = async () => {
+        try {
+            const data = await getAllGender();
+            console.log("All Gender Response:", data);
+
+            const options = data.map((data) => ({
+                value: data.value,
+                label: `${data.label} `,
+            }));
+            setAllGender(options);
+        } catch (error) {
+            console.log("All Gender Error:", error);
+        }
+    };
 
     const AllGroup = async (categoryId) => {
         try {
@@ -86,6 +176,16 @@ const HeightChestReport = () => {
             console.log("AllGroup Error:", error);
         }
     };
+
+    const handleGender = async (selected) => {
+        const selectedValue = selected;
+        setGender(selectedValue);
+        console.log(selectedValue.value, "selected value");
+        // setGroupId(selectedValue.value)
+        const data = await fetchAllHeightChest(groupId, null, null, selectedValue.label, fromDate, toDate);
+        console.log(data)
+        setHeightChestReport(data)
+    }
 
     const AllCategory = async () => {
         try {
@@ -108,11 +208,11 @@ const HeightChestReport = () => {
     //   setGroup(selectedValue);
     //   console.log(selectedValue.value, "selected value");
     //   setGroupId(selectedValue.value)
-    //   const data = await fetchAll100Meter(eventId, selectedValue.value, reservationCategory, cast);
+    //   const data = await fetchAllHeightChest(eventId, selectedValue.value, reservationCategory, cast);
     //   console.log(data)
     //   setGroupLeaderName(data[0].GrpLdrName)
     //   console.log(data[0].GrpLdrName, "leader name")
-    //   setAll100MeterReport(data)
+    //   setHeightChestReport(data)
     // }
 
     const handleGroup = async (selected) => {
@@ -125,12 +225,12 @@ const HeightChestReport = () => {
         setGroupId(groupIdValue);
 
         // 2️⃣ clear old data immediately
-        setAll100MeterReport([]);
+        setHeightChestReport([]);
         setGroupLeaderName("");
 
         try {
-            const data = await fetchAll100Meter(
-                eventId,
+            const data = await fetchAllHeightChest(
+
                 groupIdValue,        // ✅ direct value
                 reservationCategory,
                 cast
@@ -140,15 +240,15 @@ const HeightChestReport = () => {
 
             if (data && data.length > 0) {
                 setGroupLeaderName(data[0]?.GrpLdrName || "");
-                setAll100MeterReport(data);
+                setHeightChestReport(data);
             } else {
                 // 👇 group selected but no data
                 setGroupLeaderName("");
-                setAll100MeterReport([]);
+                setHeightChestReport([]);
             }
         } catch (error) {
             console.error("Error fetching 100 meter data", error);
-            setAll100MeterReport([]);
+            setHeightChestReport([]);
             setGroupLeaderName("");
         }
     };
@@ -173,9 +273,9 @@ const HeightChestReport = () => {
     //   setReservationCategory(selectedValue);
     //   console.log(selectedValue.value, "selected value");
     //   // setGroupId(selectedValue.value)
-    //   const data = await fetchAll100Meter(eventId, groupId, selectedValue.label, cast);
+    //   const data = await fetchAllHeightChest(eventId, groupId, selectedValue.label, cast);
     //   console.log(data)
-    //   setAll100MeterReport(data)
+    //   setHeightChestReport(data)
     // }
 
     const handleReservationCategory = async (selected) => {
@@ -183,9 +283,9 @@ const HeightChestReport = () => {
         setReservationCategory(selectedValue);
         console.log(selectedValue.value, "selected value");
         // setGroupId(selectedValue.value)
-        const data = await fetchAll100Meter(eventId, groupId, selectedValue.label, null);
+        const data = await fetchAllHeightChest(groupId, selectedValue.label, null);
         console.log(data)
-        setAll100MeterReport(data)
+        setHeightChestReport(data)
     }
 
     const getAllCastData = async () => {
@@ -199,9 +299,9 @@ const HeightChestReport = () => {
         setCast(selectedValue);
         console.log(selectedValue.value, "selected value");
         // setGroupId(selectedValue.value)
-        const data = await fetchAll100Meter(eventId, groupId, null, selectedValue.label);
+        const data = await fetchAllHeightChest(groupId, null, selectedValue.label);
         console.log(data)
-        setAll100MeterReport(data)
+        setHeightChestReport(data)
     }
 
     const handleSearch = (e) => {
@@ -209,14 +309,14 @@ const HeightChestReport = () => {
         setSearchData(searchDataValue);
 
         if (searchDataValue.trim() === "") {
-            Get100MeterData();
+            GetHeightChestData();
         } else {
-            const filteredData = all100MeterReport.filter(
+            const filteredData = HeightChestReport.filter(
                 (report) =>
                     report.ChestNo.toLowerCase().includes(searchDataValue) ||
                     report.CandidateName.toLowerCase().includes(searchDataValue)
             );
-            setAll100MeterReport(filteredData);
+            setHeightChestReport(filteredData);
             setCurrentPage(1);
         }
     };
@@ -332,7 +432,7 @@ const HeightChestReport = () => {
         <tbody>
   `;
 
-        const sortedData = [...all100MeterReport].sort((a, b) => {
+        const sortedData = [...HeightChestReport].sort((a, b) => {
             const chestA = Number(a.ChestNo) || 0;
             const chestB = Number(b.ChestNo) || 0;
             return chestA - chestB;
@@ -348,11 +448,12 @@ const HeightChestReport = () => {
         <td>${row.CandidateName ?? ""}</td>
         <td>${row.Gender ?? ""}</td>
         <td>${row.ChestNo ?? ""}</td>
-        <td>${row.Barcode ?? ""}</td>
+       
         <td>${row.Cast ?? ""}</td>
         <td>${row["Parallel Reservation"] ?? ""}</td>
-        <td>${row.duration ?? ""}</td>
-        <td>${row.score ?? ""}</td>
+        <td>${row.Height ?? ""}</td>
+        <td>${row.Chest_normal ?? ""}</td>
+         <td>${row.Chest_inhale ?? ""}</td>
       </tr>
     `;
         });
@@ -415,7 +516,6 @@ const HeightChestReport = () => {
             "Candidate Name",
             "Gender",
             "Chest No",
-            "Tag No",
             "Cast",
             "Parallel Reservation",
             "Height",
@@ -424,7 +524,7 @@ const HeightChestReport = () => {
         ];
 
         // 🔹 SORT DATA BY CHEST NO (ASC)
-        const sortedData = [...all100MeterReport].sort(
+        const sortedData = [...HeightChestReport].sort(
             (a, b) => Number(a.ChestNo) - Number(b.ChestNo)
         );
 
@@ -433,17 +533,12 @@ const HeightChestReport = () => {
             data.CandidateName,
             data.Gender,
             data.ChestNo,
-            data.Barcode,
             data.Cast,
             data["Parallel Reservation"],
-            data.StartTime === "00:00:00.00" || data.StartTime === "00:00:00.000"
-                ? ""
-                : data.StartTime || "",
-            data.EndTime === "00:00:00.00" || data.EndTime === "00:00:00.000"
-                ? ""
-                : data.EndTime || "",
-            data.duration,
-            data.score
+            data.Height,
+            data.Chest_normal,
+            data.Chest_inhale,
+
         ]));
 
         doc.autoTable({
@@ -458,11 +553,11 @@ const HeightChestReport = () => {
             },
         });
 
-        doc.save("100_Meter_Report.pdf");
+        doc.save("Height_Chest_Report.pdf");
     };
 
     const download100MeterExcel = () => {
-        const sortedData = [...all100MeterReport].sort(
+        const sortedData = [...HeightChestReport].sort(
             (a, b) => Number(a.ChestNo) - Number(b.ChestNo)
         );
         const excelData = sortedData.map((data, index) => ({
@@ -473,8 +568,9 @@ const HeightChestReport = () => {
             "Chest No": data.ChestNo || "",
             "Cast": data.Cast || "",
             "Parallel Reservation": data["Parallel Reservation"] || "",
-            "Duration": data.duration || "",
-            "Score": data.score ?? "",
+            "Height": data.Height ?? "",
+            "Chest Normal": data.Chest_normal ?? "",
+            "Chest Inhale": data.Chest_inhale ?? "",
         }));
 
         const worksheet = XLSX.utils.json_to_sheet(excelData);
@@ -491,9 +587,9 @@ const HeightChestReport = () => {
                 "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         });
 
-        saveAs(file, "100_Meter_Report.xlsx");
+        saveAs(file, "Height_Chest_Report.xlsx");
     };
-    const sortedData = [...all100MeterReport].sort(
+    const sortedData = [...HeightChestReport].sort(
         (a, b) => Number(a.ChestNo) - Number(b.ChestNo)
     );
 
@@ -573,6 +669,34 @@ const HeightChestReport = () => {
                                     </div>
 
                                     <div className="col-lg-3 col-md-3 col-12 mt-3 mt-md-0">
+
+                                        <div title="Date" style={{ width: "250px" }}>
+                                            <input
+                                                type="text"
+                                                readOnly
+                                                className="form-control"
+                                                placeholder="Start Date - End Date"
+                                                value={
+                                                    range[0].startDate && range[0].endDate
+                                                        ? `${range[0].startDate.toLocaleDateString()} - ${range[0].endDate.toLocaleDateString()}`
+                                                        : ""
+                                                }
+                                                onClick={() => setShowPicker(!showPicker)}
+                                            />
+
+                                        </div>
+
+                                        {showPicker && (
+                                            <div style={{ position: "absolute", zIndex: 9999 }}>
+                                                <DateRange
+                                                    ranges={range}
+                                                    locale={enUS}
+                                                    onChange={handleSelect}
+                                                    moveRangeOnFirstSelection={false}
+                                                />
+                                            </div>
+                                        )}
+
                                     </div>
 
                                     <div className="col-lg-3 col-md-3 col-12 mt-3 mt-md-0">
@@ -654,9 +778,9 @@ const HeightChestReport = () => {
                                     </div>
                                     <div className="col-lg-3 col-md-3 col-12 mt-3 mt-md-0">
                                         <Select
-                                            value={cast}
-                                            onChange={handleCast}
-                                            options={allCast}
+                                            value={gender}
+                                            onChange={handleGender}
+                                            options={allGender}
                                             placeholder="Select Gender"
                                             styles={{
                                                 control: (provided) => ({
@@ -710,12 +834,11 @@ const HeightChestReport = () => {
                                                 <td>{data.CandidateName}</td>
                                                 <td>{data.Gender}</td>
                                                 <td>{data.ChestNo}</td>
-                                                <td>{data.Barcode}</td>
                                                 <td>{data.Cast}</td>
                                                 <td>{data["Parallel Reservation"]}</td>
-                                                {/* <td>{data.StartTime}</td> */}
-                                                <td>{data.duration}</td>
-                                                <td>{data.score}</td>
+                                                <td>{data.Height}</td>
+                                                <td>{data.Chest_normal}</td>
+                                                <td>{data.Chest_inhale}</td>
                                             </tr>
                                         ))}
 
@@ -725,8 +848,8 @@ const HeightChestReport = () => {
                                     <div className="col-lg-4 col-md-4 col-12 ">
                                         <h6 className="text-lg-start text-md-start text-center">
                                             Showing {indexOfFirstItem + 1} to{" "}
-                                            {Math.min(indexOfLastItem, all100MeterReport.length)} of{" "}
-                                            {all100MeterReport.length} entries
+                                            {Math.min(indexOfLastItem, HeightChestReport.length)} of{" "}
+                                            {HeightChestReport.length} entries
                                         </h6>
                                     </div>
                                     <div className="col-lg-4 col-md-4 col-12"></div>
@@ -734,7 +857,7 @@ const HeightChestReport = () => {
                                         <Pagination
                                             currentPage={currentPage}
                                             setCurrentPage={setCurrentPage}
-                                            allData={all100MeterReport}
+                                            allData={HeightChestReport}
                                             itemsPerPage={itemsPerPage}
                                         />
                                     </div>

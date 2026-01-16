@@ -552,6 +552,7 @@ const Sidebar = () => {
                                           "1600MeterReport",
                                           "800MeterReport",
                                           "shotputReport",
+                                          "heightChestReport",
                                           "allRunningReport",
                                           "dailyReport",
                                           "groundTest",

@@ -28,7 +28,7 @@ export const fetchDailyReports = async (params, setCandidateData) => {
     }
 };
 
-export const fetchAll100Meter = async (eventId, groupId, parallelReservation, cast) => {
+export const fetchAll100Meter = async (eventId, groupId, parallelReservation, cast, gender, fromDate, toDate) => {
     const recruitId = localStorage.getItem("recruitId");
     const UserId = localStorage.getItem("userId");
     const params = {
@@ -39,7 +39,10 @@ export const fetchAll100Meter = async (eventId, groupId, parallelReservation, ca
         Eventid: eventId,
         Groupid: groupId || "",
         ParallelReservation: parallelReservation || "",
-        Cast: cast || ""
+        Cast: cast || "",
+        Gender: gender,
+        FromDate: fromDate,
+        ToDate: toDate
     };
     try {
         const response = await apiClient({
@@ -64,7 +67,7 @@ export const fetchAll100Meter = async (eventId, groupId, parallelReservation, ca
     }
 };
 
-export const fetchAll800Meter = async (eventId, groupId, parallelReservation, cast) => {
+export const fetchAll800Meter = async (eventId, groupId, parallelReservation, cast, gender, fromDate, toDate) => {
     const recruitId = localStorage.getItem("recruitId");
     const UserId = localStorage.getItem("userId");
     const params = {
@@ -75,7 +78,10 @@ export const fetchAll800Meter = async (eventId, groupId, parallelReservation, ca
         Eventid: eventId,
         Groupid: groupId,
         ParallelReservation: parallelReservation,
-        Cast: cast
+        Cast: cast,
+        Gender: gender,
+        FromDate: fromDate,
+        ToDate: toDate
     };
     try {
         const response = await apiClient({
@@ -100,7 +106,7 @@ export const fetchAll800Meter = async (eventId, groupId, parallelReservation, ca
     }
 };
 
-export const fetchAll1600Meter = async (eventId, groupId, parallelReservation, cast) => {
+export const fetchAll1600Meter = async (eventId, groupId, parallelReservation, cast, gender, fromDate, toDate) => {
     const recruitId = localStorage.getItem("recruitId");
     const UserId = localStorage.getItem("userId");
     const params = {
@@ -111,7 +117,10 @@ export const fetchAll1600Meter = async (eventId, groupId, parallelReservation, c
         Eventid: eventId,
         Groupid: groupId,
         ParallelReservation: parallelReservation,
-        Cast: cast
+        Cast: cast,
+        Gender: gender,
+        FromDate: fromDate,
+        ToDate: toDate
     };
     try {
         const response = await apiClient({
@@ -136,7 +145,7 @@ export const fetchAll1600Meter = async (eventId, groupId, parallelReservation, c
     }
 };
 
-export const fetchAllShotput = async (eventId, groupId, parallelReservation, cast) => {
+export const fetchAllShotput = async (eventId, groupId, parallelReservation, cast, gender, fromDate, toDate) => {
     const recruitId = localStorage.getItem("recruitId");
     const UserId = localStorage.getItem("userId");
     const params = {
@@ -147,7 +156,10 @@ export const fetchAllShotput = async (eventId, groupId, parallelReservation, cas
         Eventid: eventId,
         Groupid: groupId,
         ParallelReservation: parallelReservation,
-        Cast: cast
+        Cast: cast,
+        Gender: gender,
+        FromDate: fromDate,
+        ToDate: toDate
     };
     try {
         const response = await apiClient({
@@ -172,7 +184,7 @@ export const fetchAllShotput = async (eventId, groupId, parallelReservation, cas
     }
 };
 
-export const fetchAllReport = async (groupId, parallelReservation, cast) => {
+export const fetchAllReport = async (groupId, parallelReservation, cast, gender, fromDate, toDate) => {
     const recruitId = localStorage.getItem("recruitId");
     const UserId = localStorage.getItem("userId");
     const params = {
@@ -181,7 +193,10 @@ export const fetchAllReport = async (groupId, parallelReservation, cast) => {
         RecruitId: recruitId,
         Groupid: groupId,
         ParallelReservation: parallelReservation,
-        Cast: cast
+        Cast: cast,
+        Gender: gender,
+        FromDate: fromDate,
+        ToDate: toDate
         // Eventid: "a551671a-ec99-4d5f-8231-bab05c679342"
     };
     try {
@@ -205,6 +220,85 @@ export const fetchAllReport = async (groupId, parallelReservation, cast) => {
         const errors = ErrorHandler(error);
         toast.error(errors);
     }
+};
+
+export const fetchAllHeightChest = async (groupId, parallelReservation, cast, gender, fromDate, toDate) => {
+    const recruitId = localStorage.getItem("recruitId");
+    const UserId = localStorage.getItem("userId");
+    const params = {
+
+        UserId: UserId,
+        RecruitId: recruitId,
+        // Eventid: "9f0177f5-42ff-430e-8ed5-1a48517d2197"
+        // Eventid: eventId,
+        Groupid: groupId,
+        ParallelReservation: parallelReservation,
+        Cast: cast,
+        Gender: gender,
+        // FromDate: null,
+        // ToDate : null,
+        FromDate: fromDate,
+        ToDate: toDate
+    };
+    try {
+        const response = await apiClient({
+            method: "get",
+            params: params,
+            url: `CandidateDailyReport/GetHeightChestDataAll`,
+        });
+        const candidateData = response.data.data;
+
+        // setCandidateData(candidateData);
+        const token1 = response.data.outcome.tokens;
+        Cookies.set("UserCredential", token1, { expires: 7 });
+        return candidateData;
+    } catch (error) {
+        if (error.response && error.response.data && error.response.data.outcome) {
+            const token1 = error.response.data.outcome.tokens;
+            Cookies.set("UserCredential", token1, { expires: 7 });
+        }
+        console.error(error);
+        const errors = ErrorHandler(error);
+        toast.error(errors);
+    }
+};
+
+export const getAllGender = () => {
+    const UserId = localStorage.getItem("userId");
+    const recruitId = localStorage.getItem("recruitId");
+    return apiClient({
+        method: "get",
+        url: `ParameterValueMaster/GetAll`.toString(),
+        params: {
+            UserId: UserId,
+
+            pv_parameterid: "a12076dd-f5e5-482a-9672-78995a0924a6",
+            pv_isactive: "1"
+        },
+    })
+        .then((response) => {
+            console.log("response all gender", response.data.data);
+            const token1 = response.data.outcome.tokens;
+            Cookies.set("UserCredential", token1, { expires: 7 });
+            return response.data.data.map((item) => ({
+                value: item.pv_id,
+                label: item.pv_parametervalue,
+            }));
+        })
+        .catch((error) => {
+            if (
+                error.response &&
+                error.response.data &&
+                error.response.data.outcome
+            ) {
+                const token1 = error.response.data.outcome.tokens;
+                Cookies.set("UserCredential", token1, { expires: 7 });
+            }
+            console.log(error);
+            const errors = ErrorHandler(error);
+            toast.error(errors);
+            return [];
+        });
 };
 
 export const GetCategory = async (groupId) => {
@@ -300,7 +394,7 @@ export const getAllCast = () => {
                 label: item.pv_parametervalue,
             }));
             return temp;
-           
+
         })
         .catch((error) => {
             if (error.response && error.response.data && error.response.data.outcome) {
