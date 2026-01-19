@@ -58,6 +58,7 @@ import ShotputReport from './Pages/Report/ShotputReport';
 import AllRunningReport from './Pages/Report/AllRunningReport';
 import AppealCandidate from './Pages/Candidate/AppealCandidate';
 import HeightChestReport from './Pages/Report/HeightChestReport';
+import Biometric1 from './Pages/Biometric/Biometric1';
 
 const routes = [
     { path: '/', exact: true, name: 'Login', element: Login },
@@ -70,7 +71,8 @@ const routes = [
     { path: '/measurement', name: 'Measurement', element: Measurement },
     { path: '/event/:pid/:id', name: 'Event', element: Event },
     { path: '/event_form', name: 'Event_100_Form', element: Event_Form },
-    { path: '/biometric', name: 'Biometric', element: Biometric },
+    // { path: '/biometric', name: 'Biometric', element: Biometric },
+     { path: '/biometric', name: 'Biometric', element: Biometric1 },
     { path: '/shotputForm', name: 'ShotputForm', element: ShotputForm },
     { path: '/admissionCard', name: 'Admission Card', element: AdmissionCard },
     { path: '/appeal', name: 'Appeal', element: AppealForm },
