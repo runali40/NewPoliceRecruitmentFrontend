@@ -5,10 +5,11 @@ import { useNavigate } from "react-router-dom";
 import { Pagination } from '../../Components/Utils/Pagination';
 import { getAllRejectedData, getRejectedData, updateRejected } from '../../Components/Api/RejectedCandidateApi';
 import { toast } from "react-toastify";
+import { getAppealData } from '../../Components/Api/EventApi';
 
 const AppealCandidate = () => {
     const navigate = useNavigate();
-    const [allRejectedCandidate, setAllRejectedCandidate] = useState([]);
+    const [allAppealCandidate, setAllAppealCandidate] = useState([]);
     const [searchData, setSearchData] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(10);
@@ -37,24 +38,6 @@ const AppealCandidate = () => {
         setItemsPerPage(parseInt(e.target.value));
         setCurrentPage(1);
     };
-    // const handleSearch = (e) => {
-    //     const searchDataValue = e.target.value.toLowerCase();
-    //     setSearchData(searchDataValue);
-
-    //     if (searchDataValue.trim() === "") {
-    //         // If search input is empty, fetch all data
-    //         //   getAllData();
-    //     } else {
-    //         // Filter data based on search input value
-    //         const filteredData = allRejectedCandidate.filter(
-    //             (rejected) =>
-    //                 rejected.FatherName_English.toLowerCase().includes(searchDataValue) ||
-    //                 rejected.ChestNo.toLowerCase().includes(searchDataValue)
-    //         );
-    //         setAllRejectedCandidate(filteredData);
-    //         setCurrentPage(1);
-    //     }
-    // };
 
     const handleSearch = (e) => {
         const searchDataValue = e.target.value.trim(); // Trim spaces
@@ -69,7 +52,7 @@ const AppealCandidate = () => {
             const lowerCaseSearch = searchDataValue.toLowerCase();
 
             // Filter data based on search input value
-            const filteredData = allRejectedCandidate.filter((rejected) => {
+            const filteredData = allAppealCandidate.filter((rejected) => {
                 const firstName = rejected.FirstName_English ? rejected.FirstName_English.toLowerCase() : "";
                 const surname = rejected.Surname_English ? rejected.Surname_English.toLowerCase() : "";
                 const chestNo = rejected.ChestNo ? rejected.ChestNo.toLowerCase() : "";
@@ -83,7 +66,7 @@ const AppealCandidate = () => {
                 );
             });
 
-            setAllRejectedCandidate(filteredData);
+            setAllAppealCandidate(filteredData);
             setCurrentPage(1);
         }
     };
@@ -93,12 +76,10 @@ const AppealCandidate = () => {
         getAllData();
     }, [currentPage, itemsPerPage]);
 
-    const getAllData = () => {
-        getAllRejectedData(active).then((data) => {
-            setAllRejectedCandidate(data)
-        }).catch((error) => {
-            console.log(error);
-        })
+    const getAllData = async () => {
+        const data = await getAppealData();
+        console.log(data, "get appeal")
+        setAllAppealCandidate(data)
     };
 
 
@@ -168,9 +149,14 @@ const AppealCandidate = () => {
         }
     };
 
+    const navigateAppeal = (canId, eventId) => {
+        console.log(canId, "candID")
+        navigate("/appeal", { state: { candidateid: canId, eventId: eventId } });
+    };
+
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    const currentItems = allRejectedCandidate.slice(indexOfFirstItem, indexOfLastItem);
+    const currentItems = allAppealCandidate.slice(indexOfFirstItem, indexOfLastItem);
     return (
         <>
             <div className="container-fluid">
@@ -257,15 +243,15 @@ const AppealCandidate = () => {
                                             <th scope="col" style={headerCellStyle}>
                                                 Reason
                                             </th>
-                                            <th scope="col" style={headerCellStyle}>
+                                            {/* <th scope="col" style={headerCellStyle}>
                                                 Reason for reject
-                                            </th>
+                                            </th> */}
                                             <th scope="col" style={headerCellStyle}>
                                                 Status
                                             </th>
-                                            {/* <th scope="col" style={headerCellStyle}>
+                                            <th scope="col" style={headerCellStyle}>
                                                 Action
-                                            </th> */}
+                                            </th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -276,21 +262,25 @@ const AppealCandidate = () => {
                                                         <td>   {(currentPage - 1) * itemsPerPage + index + 1}</td>
                                                         <td>{data.ApplicationNo}</td>
                                                         <td>{data.ChestNo}</td>
-                                                        <td style={{ cursor: "pointer" }} >{data.FirstName_English + " " + data.FatherName_English + " " + data.Surname_English}</td>
-                                                        <td>{data.appealcount}</td>
+                                                        <td style={{ cursor: "pointer" }} >{data.CandidateName}</td>
+                                                        {/* <td>{data.appealcount}</td> */}
+                                                        <td>{data.NoOfAttemp}</td>
                                                         <td>{data.ApprovedBy}</td>
-                                                        <td>{data.stages}</td>
+                                                        {/* <td>{data.stages}</td> */}
                                                         <td>{data.ReasonofReject}</td>
                                                         <td>{data.Status}</td>
-                                                        {/* <td>
+                                                        <td>
                                                             <div className="d-flex ms-2">
                                                                 <button
                                                                     className="btn btn-sm btn-success  mr-2"
                                                                     type="button"
-                                                                    onClick={() => getRejected(data.CandidateId)}
-                                                                    disabled={(data.appealcount).toString() === "3"}>Apply for Appeal</button>
+                                                                    // onClick={() => getRejected(data.CandidateId)}
+                                                                    // disabled={(data.NoOfAttemp).toString() === "3"}
+                                                                    onClick={() => navigateAppeal(data.CandidateId, data.EventId)}
+                                                                >
+                                                                    Appeal</button>
                                                             </div>
-                                                        </td> */}
+                                                        </td>
                                                     </tr>
                                                 )
                                             })
@@ -301,8 +291,8 @@ const AppealCandidate = () => {
                                     <div className="col-lg-4 col-md-4 col-12 ">
                                         <h6 className="text-lg-start text-center">
                                             Showing {indexOfFirstItem + 1} to{" "}
-                                            {Math.min(indexOfLastItem, allRejectedCandidate.length)} of{" "}
-                                            {allRejectedCandidate.length} entries
+                                            {Math.min(indexOfLastItem, allAppealCandidate.length)} of{" "}
+                                            {allAppealCandidate.length} entries
                                         </h6>
                                     </div>
                                     <div className="col-lg-4 col-md-4 col-12"></div>
@@ -310,7 +300,7 @@ const AppealCandidate = () => {
                                         <Pagination
                                             currentPage={currentPage}
                                             setCurrentPage={setCurrentPage}
-                                            allData={allRejectedCandidate}
+                                            allData={allAppealCandidate}
                                             itemsPerPage={itemsPerPage}
                                         />
                                     </div>

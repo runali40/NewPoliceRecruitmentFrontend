@@ -286,3 +286,63 @@ export const getGroupLeader = async (id, candidateId) => {
     throw error;
   }
 };
+
+export const AddAppeal = async (candidateId, eventId) => {
+  const recruitId = localStorage.getItem("recruitId");
+  const UserId = localStorage.getItem("userId");
+  const data = {
+    userId: UserId,
+    RecruitId: recruitId,
+  candidateID : candidateId,
+  eventid : eventId
+  };
+  try {
+    const response = await apiClient({
+      method: "post",
+      url: `Running/InsertAppeal`,
+      data: data,
+    });
+    const token = response.data.outcome.tokens;
+    localStorage.setItem("UserCredential", token);
+    return response.data.data;
+  } catch (error) {
+    if (error.response && error.response.data && error.response.data.outcome) {
+      const token1 = error.response.data.outcome.tokens;
+      Cookies.set("UserCredential", token1, { expires: 7 });
+    }
+    console.error("Error adding running event:", error);
+    const errors = ErrorHandler(error);
+    toast.error(errors);
+    throw error;
+  }
+};
+
+export const getAppealData = async (menuId, groupId) => {
+  console.log(menuId, "menuId")
+  const recruitId = localStorage.getItem("recruitId");
+  const UserId = localStorage.getItem("userId");
+  try {
+    const response = await apiClient({
+      method: "get",
+      url: `Running/GetAllAppealData`.toString(),
+      params: {
+        UserId: UserId,
+        RecruitId: recruitId,
+      },
+    });
+    const token = response.data.outcome.tokens;
+    localStorage.setItem("UserCredential", token);
+    // const title = response.data.outcome.outcomeDetail;
+    // localStorage.setItem("title", title);
+    return response.data.data;
+  } catch (error) {
+    if (error.response && error.response.data && error.response.data.outcome) {
+      const token1 = error.response.data.outcome.tokens;
+      Cookies.set("UserCredential", token1, { expires: 7 });
+    }
+    console.error("Error fetching all running events:", error);
+    const errors = ErrorHandler(error);
+    toast.error(errors);
+    throw error;
+  }
+};

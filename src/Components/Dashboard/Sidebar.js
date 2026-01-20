@@ -421,6 +421,7 @@ const Sidebar = () => {
                   [
                     "Candidate",
                     "Rejected Candidate",
+                    "Appeal Candidate",
                     "RFID Mapping",
                     "Events",
                     "Reports",
@@ -432,6 +433,7 @@ const Sidebar = () => {
                   const menuOrder = [
                     "Candidate",
                     "Rejected Candidate",
+                    "Appeal Candidate",
                     "RFID Mapping",
                     "Events",
                     "Reports",
@@ -444,7 +446,7 @@ const Sidebar = () => {
                   <li className="dropdown" key={index}>
 
                     {/* ---------------- TOP LEVEL MENUS (DIRECT LINKS) ---------------- */}
-                    {["Candidate", "Rejected Candidate", "Recruitment", "RFID Mapping"].includes(
+                    {["Candidate", "Rejected Candidate", "Appeal Candidate", "Recruitment", "RFID Mapping"].includes(
                       menuItem.m_menuname
                     ) ? (
                       <NavLink to={menuItem.m_action} onClick={toggleSidebarOnSmallDevices}>

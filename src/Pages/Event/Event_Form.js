@@ -12,6 +12,7 @@ import {
   addRunningEvent,
   getAllRunningEvents,
   getGroupLeader,
+  AddAppeal,
 } from "../../Components/Api/EventApi";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -399,6 +400,16 @@ const Event_Form = () => {
     console.log(canId, "candID")
     navigate("/appeal", { state: { candidateid: canId, eventName: eventName, eventId: eventId } });
   };
+
+  const AppealCandidate = async (canId, eventId) => {
+    console.log(canId, "candID")
+    console.log(eventId, "eventId")
+    const data = await AddAppeal(canId, eventId)
+    console.log(data, "appeal candidate")
+    const runningEvents = await getAllRunningEvents(menuId, groupId);
+    console.log(runningEvents, "running events");
+
+  }
 
   const openPrintWindow = () => {
     const isShotPut = title.toLowerCase() === "shot put";
@@ -1079,10 +1090,10 @@ ${!isShotPut ? `
                               //   style: { overflow: "auto" }
                               // }}
                               inputProps={{
-                                readOnly: true, // keyboard typing disabled
+                                readOnly: true,   // ✅ no keyboard typing
+                                onKeyDown: (e) => e.preventDefault(), // extra safety
                                 disabled:
                                   row.Status === "False" ||
-                                  row.score === 0 ||
                                   (row.score !== null && row.score !== undefined && row.Status !== "True"),
                                 style: { overflow: "auto" }
                               }}
@@ -1170,7 +1181,7 @@ ${!isShotPut ? `
                                     ? true
                                     : row.Status === "True"
                                       ? false
-                                      :  row.score != null
+                                      : row.score != null
                                 }
                                 onChange={(e) => {
                                   const inputValue = e.target.value;
@@ -1192,7 +1203,7 @@ ${!isShotPut ? `
                                     ? true
                                     : row.Status === "True"
                                       ? false
-                                      :  row.score != null
+                                      : row.score != null
                                 }
                                 // onChange={(e) => handleInputChange(index, "distance2", e.target.value)}
                                 onChange={(e) => {
@@ -1215,7 +1226,7 @@ ${!isShotPut ? `
                                     ? true
                                     : row.Status === "True"
                                       ? false
-                                      :  row.score != null
+                                      : row.score != null
                                 }
                                 // onChange={(e) => handleInputChange(index, "distance3", e.target.value)}
                                 onChange={(e) => {
@@ -1302,15 +1313,42 @@ ${!isShotPut ? `
                         <td className="py-4">{row.score}</td>
                         <td>
                           {/* <button className="btn btn-success btn-sm mt-2 appeal-button" onClick={() => navigateAppeal(row.CandidateID, row.EventName, row.EventId)}>Appeal</button> */}
-                          <button
+                          {/* <button
                             className="btn btn-success btn-sm mt-2 appeal-button"
                             onClick={() =>
-                              navigateAppeal(row.CandidateID, row.EventName, row.EventId)
+                              // navigateAppeal(row.CandidateID, row.EventName, row.EventId)
+                              AppealCandidate(row.CandidateID, row.EventId)
                             }
                             disabled={row.NoOfAttemp >= 2}
                           >
-                            Appeal
+
+                            {
+                              row.Status === "True"
+                                ? "Appeal Approved"
+                                : row.Status === "False" && row.Remark === "Applied"
+                                  ? "Appeal Applied"
+                                  : "Appeal"
+                            }
+                          </button> */}
+                          <button
+                            className={`btn btn-sm mt-2 appeal-button ${row.Status === "True"
+                              ? "btn-success"
+                              : row.Status === "False" && row.Remark === "Applied"
+                                ? "btn-secondary"
+                                : "btn-primary"
+                              }`}
+                            onClick={() => AppealCandidate(row.CandidateID, row.EventId)}
+                          // disabled={Number(row.NoOfAttemp) > 1}
+                          >
+                            {
+                              row.Status === "True"
+                                ? "Appeal Approved"
+                                : row.Status === "False" && row.Remark === "Applied"
+                                  ? "Appeal Applied"
+                                  : "Appeal"
+                            }
                           </button>
+
                         </td>
                       </tr>
                     ))}

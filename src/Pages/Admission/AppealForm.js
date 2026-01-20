@@ -52,7 +52,8 @@ const AppealForm = () => {
       toast.success(response.outcome.outcomeDetail);
       reset();
       await fetchAllAppeals(); // Ensure that appeals are fetched before navigating
-      navigate(`/candidate/${state.candidateid}`);
+      // navigate(`/candidate/${state.candidateid}`);
+      navigate('/appealCandidate')
     } catch (error) {
       console.error("Error submitting appeal:", error);
     }
@@ -74,7 +75,7 @@ const AppealForm = () => {
                       type="button"
                       className="btn text-white"
                       style={{ backgroundColor: "rgb(27, 90, 144)" }}
-                      onClick={() => navigate("/candidate")}
+                      onClick={() => navigate("/appealCandidate")}
                     >
                       <ArrowBack />
                     </button>
