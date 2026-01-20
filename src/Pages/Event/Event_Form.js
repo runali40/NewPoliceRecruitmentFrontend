@@ -1333,17 +1333,25 @@ ${!isShotPut ? `
                           <button
                             className={`btn btn-sm mt-2 appeal-button ${row.Status === "True"
                               ? "btn-success"
-                              : row.Status === "False" && row.Remark === "Applied"
+                              : (row.Status === "False" || row.Status === null) && row.Remark === "Applied"
                                 ? "btn-secondary"
                                 : "btn-primary"
                               }`}
                             onClick={() => AppealCandidate(row.CandidateID, row.EventId)}
                           // disabled={Number(row.NoOfAttemp) > 1}
                           >
-                            {
+                            {/* {
                               row.Status === "True"
                                 ? "Appeal Approved"
                                 : row.Status === "False" && row.Remark === "Applied"
+                                  ? "Appeal Applied"
+                                  : "Appeal"
+                            } */}
+                            {
+                              row.Status === "True"
+                                ? "Appeal Approved"
+                                : (row.Status === "False" || row.Status === null) &&
+                                  row.Remark === "Applied"
                                   ? "Appeal Applied"
                                   : "Appeal"
                             }
