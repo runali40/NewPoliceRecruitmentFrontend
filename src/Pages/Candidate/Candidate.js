@@ -2791,18 +2791,18 @@ const Candidate = () => {
                     {/* </div> */}
 
                     {/* <div className="mt-4"> */}
-                    {(DutyName === "Document Verification" ||
+                   {/*  {(DutyName === "Document Verification" ||
                       DutyName === "All" ||
                       DutyName === "null") && (
                         <button
                           onClick={handleDocValidationClick}
-                          // disabled={
-                          //   !candidateId ||
-                          //   documentUploaded === "True" ||
-                          //   (documentUploaded === "False" &&
-                          //     appealStatus !== "Approved") ||
-                          //   measurementStatus === false
-                          // }
+                          disabled={
+                            !candidateId ||
+                            documentUploaded === "True" ||
+                            (documentUploaded === "False" &&
+                              appealStatus !== "Approved") ||
+                            measurementStatus === false
+                          }
                           className={`btn btn-primary btn-sm p-2 rounded-4  mx-3 position-relative ${documentUploaded === "True"
                             ? "btn-success"
                             : documentUploaded === "False"
@@ -2814,7 +2814,7 @@ const Candidate = () => {
                         >
                           Verify Documents
                         </button>
-                      )}
+                      )}*/}
 
                     {DutyName === "Biometric" ||
                       DutyName === "All" ||
@@ -2854,7 +2854,7 @@ const Candidate = () => {
                             : ""
                           }`}
                       >
-                        Check Height and Chest
+                         Height and Chest
                       </button>
                     ) : null}
 

@@ -66,39 +66,34 @@ const Measurement = () => {
     ? candidateSignRef.current.getTrimmedCanvas().toDataURL("image/png")
     : null;
 
-  const AddChestHeight = () => {
-    const recruitId = localStorage.getItem("recruitId");
-    const UserId = localStorage.getItem("userId");
+  // const AddChestHeight = () => {
+  //   const recruitId = localStorage.getItem("recruitId");
+  //   const UserId = localStorage.getItem("userId");
 
-    // Get signature only when submitting
-    // let signature = null;
-    // if (candidateSignRef.current && !candidateSignRef.current.isEmpty()) {
-    //   signature = candidateSignRef.current.getTrimmedCanvas().toDataURL("image/png");
-    // }
-    let signature = savedSignature;
-    if (height === "" /* || signature === null */) {
-      toast.warning("Please fill the details!");
-    } else {
-      const data = {
-        candidate_id: candidateId,
-        RecruitId: recruitId,
-        height: height,
-        chest_normal: chestNormal === "" ? 0 : chestNormal,
-        chest_Inhale: chestInhale === "" ? 0 : chestInhale,
-        time: "",
-        verify_by: "",
-        interval: "",
-        createdby: "",
-        created_date: new Date().toISOString(),
-        userId: UserId,
-        isactive: "1",
-        Signature: signature,
-        category: category
-      };
-      addChestHeight(data, navigate, candidateId, fullNameEnglish);
-      // openPrintWindow()
-    }
-  };
+  //   let signature = savedSignature;
+  //   if (height === "" /* || signature === null */) {
+  //     toast.warning("Please fill the details!");
+  //   } else {
+  //     const data = {
+  //       candidate_id: candidateId,
+  //       RecruitId: recruitId,
+  //       height: height,
+  //       chest_normal: chestNormal === "" ? 0 : chestNormal,
+  //       chest_Inhale: chestInhale === "" ? 0 : chestInhale,
+  //       time: "",
+  //       verify_by: "",
+  //       interval: "",
+  //       createdby: "",
+  //       created_date: new Date().toISOString(),
+  //       userId: UserId,
+  //       isactive: "1",
+  //       Signature: signature,
+  //       category: category
+  //     };
+  //     addChestHeight(data, navigate, candidateId, fullNameEnglish);
+  //     // openPrintWindow()
+  //   }
+  // };
 
   // const handleSaveSignature = () => {
   //   if (modalSignRef.current) {
@@ -120,6 +115,44 @@ const Measurement = () => {
   //     handleSignClose()
   //   }
   // };
+
+  const AddChestHeight = () => {
+    const recruitId = localStorage.getItem("recruitId");
+    const UserId = localStorage.getItem("userId");
+
+    let signature = savedSignature;
+
+    // 🔹 Validation condition based on gender
+    if (
+      (gender === "Female" && height === "") ||
+      (gender === "Male" &&
+        (height === "" || chestNormal === "" || chestInhale === ""))
+    ) {
+      toast.warning("Please fill the required details!");
+      return;
+    }
+
+    const data = {
+      candidate_id: candidateId,
+      RecruitId: recruitId,
+      height: height,
+      chest_normal: chestNormal === "" ? 0 : chestNormal,
+      chest_Inhale: chestInhale === "" ? 0 : chestInhale,
+      time: "",
+      verify_by: "",
+      interval: "",
+      createdby: "",
+      created_date: new Date().toISOString(),
+      userId: UserId,
+      isactive: "1",
+      Signature: signature,
+      category: category
+    };
+
+    addChestHeight(data, navigate, candidateId, fullNameEnglish);
+    // openPrintWindow()
+  };
+
   const handleSaveSignature = () => {
     if (modalSignRef.current && !modalSignRef.current.isEmpty()) {
       // High quality trimmed signature
@@ -328,10 +361,13 @@ const Measurement = () => {
                             placeholder="Enter Height"
                             value={height}
                             // onChange={(e) => setHeight(e.target.value)}
-                            maxLength={4}
+                            maxLength={6}
+
                             onChange={(e) => {
                               const value = e.target.value;
-                              if (/^\d*$/.test(value)) {
+
+                              // allow digits with optional decimal (only one dot)
+                              if (/^\d*\.?\d*$/.test(value)) {
                                 setHeight(value);
                               }
                             }}
@@ -358,10 +394,13 @@ const Measurement = () => {
                               placeholder="Normal"
                               value={chestNormal}
                               // onChange={(e) => setChestNormal(e.target.value)}
-                              maxLength={4}
+                              maxLength={6}
+
                               onChange={(e) => {
                                 const value = e.target.value;
-                                if (/^\d*$/.test(value)) {
+
+                                // allow digits with optional decimal (only one dot)
+                                if (/^\d*\.?\d*$/.test(value)) {
                                   setChestNormal(value);
                                 }
                               }}
@@ -379,10 +418,18 @@ const Measurement = () => {
                               placeholder="After Inhale"
                               value={chestInhale}
                               // onChange={(e) => setChestInhale(e.target.value)}
-                              maxLength={4}
+                              maxLength={6}
+                              // onChange={(e) => {
+                              //   const value = e.target.value;
+                              //   if (/^\d*$/.test(value)) {
+                              //     setChestInhale(value);
+                              //   }
+                              // }}
                               onChange={(e) => {
                                 const value = e.target.value;
-                                if (/^\d*$/.test(value)) {
+
+                                // allow digits with optional decimal (only one dot)
+                                if (/^\d*\.?\d*$/.test(value)) {
                                   setChestInhale(value);
                                 }
                               }}
