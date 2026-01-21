@@ -222,7 +222,7 @@ export const fetchAllReport = async (groupId, parallelReservation, cast, gender,
     }
 };
 
-export const fetchAllHeightChest = async (groupId, parallelReservation, cast, gender, fromDate, toDate) => {
+export const fetchAllHeightChest = async (groupId, parallelReservation, cast, gender, fromDate, toDate, pass, fail) => {
     const recruitId = localStorage.getItem("recruitId");
     const UserId = localStorage.getItem("userId");
     const params = {
@@ -238,7 +238,9 @@ export const fetchAllHeightChest = async (groupId, parallelReservation, cast, ge
         // FromDate: null,
         // ToDate : null,
         FromDate: fromDate,
-        ToDate: toDate
+        ToDate: toDate,
+        Pass: pass,
+        Fail: fail
     };
     try {
         const response = await apiClient({

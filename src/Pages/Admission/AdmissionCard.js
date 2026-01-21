@@ -139,447 +139,191 @@ const AdmissionCard = () => {
   return (
     <>
       <style>
-        {`
-@media print and (orientation: portrait) {
-  body * {
-    visibility: hidden;
-  }
 
-  #section-to-print, #section-to-print * {
-    visibility: visible;
-  }
-
-  #section-to-print {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-  }
-
-  .rejected-stamp {
-    position: absolute;
-    top: 200px;
-    right: 20px;
-    width: 300px;
-    height: 300px;
-    opacity: 0.5;
-    transition: opacity 1s ease-in-out;
-  }
-
-  .row {
-    display: flex;
-    flex-wrap: wrap;
-  }
-
-  .col-lg-4, .col-md-4 {
-    width: 33.333333%;
-  }
-
-  .col-lg-8, .col-md-8 {
-    width: 66.666667%;
-    margin-top: 0;
-  }
-
-  .col-lg-5, .col-md-5 {
-    width: 41.666667%;
-  }
-
-  .col-lg-7, .col-md-7 {
-    width: 58.333333%;
-  }
-
-  .print-section {
-    display: none;
-  }
- /* Adjusted .image-box */
-  .image-box {
-    width: 110%;  /* Decreased the width */
-    height: 30%; /* Set a specific height */
-    position: relative;
-    background-color: #f0f0f0;
-    border: 2px solid #ccc;
-    border-radius: 8px;
-    overflow: hidden;
-  }
-}
-
-@media print and (orientation: landscape) {
-  body * {
-    visibility: hidden;
-  }
-
-  #section-to-print, #section-to-print * {
-    visibility: visible;
-  }
-
-  #section-to-print {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-  }
-
-  .rejected-stamp {
-    position: absolute;
-    top: 150px;
-    right: 30px;
-    width: 400px;
-    height: 400px;
-    opacity: 0.5;
-    transition: opacity 1s ease-in-out;
-  }
-
-  .row {
-    display: flex;
-    flex-wrap: wrap;
-  }
-
-  .col-lg-4, .col-md-4 {
-    width: 25%;
-  }
-
-  .col-lg-8, .col-md-8 {
-    width: 75%;
-    margin-top: 0;
-  }
-
-  .col-lg-5, .col-md-5 {
-    width: 45%;
-  }
-
-  .col-lg-7, .col-md-7 {
-    width: 55%;
-  }
-
-  .print-section {
-    display: none;
-  }
-     /* Adjusted .image-box for landscape mode */
-  .image-box {
-    width: 130%;  /* Decreased the width */
-    height: 30%; /* Set a specific height */
-    position: relative;
-    background-color: #f0f0f0;
-    border: 2px solid #ccc;
-    border-radius: 8px;
-    overflow: hidden;
-  }
-}
-
-`}
-      </style>
-      <style>
         {
-
-
           `
-                   @media print {
-            /* Page setup - A4 with minimal margins */
-            @page {
-              margin: 10mm;
-              size: A4 portrait;
-            }
+          /* ---------------- PRINT ONLY ---------------- */
+@media print {
+  @page {
+    size: A4;
+    margin: 0;
+  }
+  
+  body * {
+    visibility: hidden;
+  }
 
-            /* Reset browser defaults */
-            html, body {
-              margin: 0 !important;
-              padding: 0 !important;
-              width: 100% !important;
-              height: 100% !important;
-            }
+  #admitCardPrint,
+  #admitCardPrint * {
+    visibility: visible !important;
+  }
 
-            /* Hide everything except admit card */
-            body * {
-              visibility: hidden !important;
-            }
+  button,
+  .btn,
+  .no-print,
+  .print-section,
+  .shadow,
+  .card-shadow {
+    display: none !important;
+  }
 
-            #admitCardPrint, 
-            #admitCardPrint * {
-              visibility: visible !important;
-            }
+  body {
+    background: #fff !important;
+    color: #000 !important;
+    font-family: "Times New Roman", serif;
+    font-size: 13px;
+    margin: 0;
+  }
 
-            /* Position admit card to fill page */
-            #admitCardPrint {
-              position: absolute !important;
-              top: 0 !important;
-              left: 0 !important;
-              width: 100% !important;
-              margin: 0 !important;
-              padding: 15px !important;
-              box-sizing: border-box !important;
-            }
+  .container,
+  .container-fluid {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
 
-            /* Remove shadows and adjust card spacing */
-            .card {
-              margin: 0 !important;
-              box-shadow: none !important;
-              border: 1px solid #ddd !important;
-            }
+  #admitCardPrint {
+    width: 210mm;
+    margin: auto;
+  }
 
-            /* Hide print button and back button */
-            .btn, button {
-              display: none !important;
-            }
+  .card {
+    border: 1.5px solid #000 !important;
+    box-shadow: none !important;
+  }
 
-            /* Ensure proper row display */
-            .row {
-              display: flex !important;
-              flex-wrap: wrap !important;
-              margin-left: -15px !important;
-              margin-right: -15px !important;
-              width: calc(100% + 30px) !important;
-            }
+  .card-header {
+    background: #fff !important;
+    border-bottom: 1.5px solid #000 !important;
+    padding: 8px !important;
+  }
 
-            /* Column widths - maintain Bootstrap grid */
-            .col-lg-3, .col-lg-4 {
-              width: 33.333% !important;
-              flex: 0 0 33.333% !important;
-            }
+  .card-body {
+    padding: 10px !important;
+  }
 
-            .col-lg-5 {
-              width: 41.666% !important;
-              flex: 0 0 41.666% !important;
-            }
+  h4 {
+    font-size: 15px !important;
+    font-weight: 700 !important;
+    text-transform: uppercase;
+    margin: 0;
+  }
 
-            .col-lg-7 {
-              width: 58.333% !important;
-              flex: 0 0 58.333% !important;
-            }
+  label {
+    font-size: 13px !important;
+    white-space: nowrap;
+  }
 
-            .col-lg-8 {
-              width: 66.666% !important;
-              flex: 0 0 66.666% !important;
-            }
+  /* Top info section */
+  .top-print-info {
+    margin-bottom: 8px;
+  }
 
-            /* Fix main layout - left side 70%, right side 30% */
-            .card-body > .row > .col-lg-9 {
-              width: 68% !important;
-              flex: 0 0 68% !important;
-            }
+  .top-print-info .row {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    margin: 0 !important;
+  }
 
-            .card-body > .row > .col-lg-3 {
-              width: 32% !important;
-              flex: 0 0 32% !important;
-              position: relative !important;
-              top: 0 !important;
-            }
+  .top-print-info .col-lg-4,
+  .top-print-info .col-md-4,
+  .top-print-info .col-4 {
+    flex: 0 0 33.33% !important;
+    max-width: 33.33% !important;
+    padding: 2px 8px !important;
+  }
 
-            /* Personal Information section - proper spacing */
-            .card-body > .row > .col-lg-9 > .row {
-              margin-bottom: 8px !important;
-            }
+  .top-print-info .row > div > div {
+    display: grid !important;
+    grid-template-columns: 58% 42%;
+    column-gap: 6px;
+    align-items: baseline;
+  }
 
-            .card-body > .row > .col-lg-9 > .row > div {
-              display: inline-block !important;
-            }
+  .top-print-info .row + .row {
+    margin-top: 4px !important;
+  }
 
-            .col-lg-6 {
-              width: 50% !important;
-              flex: 0 0 50% !important;
-            }
+  /* Personal information section */
+  .personal-information.bg-white {
+    border: none !important;
+    border-bottom: 1.5px solid #000 !important;
+    margin-top: 10px !important;
+    padding: 4px 0 6px 0 !important;
+  }
 
-            /* Add padding to columns */
-            [class*="col-"] {
-              padding-left: 15px !important;
-              padding-right: 15px !important;
-            }
+  .personal-information.bg-white h4,
+  .personal-information.bg-white .card-title {
+    font-size: 14px !important;
+    font-weight: 700 !important;
+    margin: 0 !important;
+    padding-bottom: 4px !important;
+    text-transform: uppercase;
+  }
 
-            /* Image sizing for photos */
-            .image-box {
-              width: 100% !important;
-              max-width: 115px !important;
-              height: 100px !important;
-              object-fit: cover !important;
-              border: 2px solid #333 !important;
-              display: block !important;
-              margin: 0 auto !important;
-            }
+  .card-body .row {
+    margin-bottom: 6px !important;
+  }
 
-            /* Right side section - chest no and photos */
-            .card-body > .row > .col-lg-3 {
-              display: flex !important;
-              flex-direction: column !important;
-              align-items: flex-end !important;
-            }
+  /* HEIGHT, CHEST NORMAL, CHEST INHALE FIX - sirf inko same line pe laayega */
+  .height,
+  .chest-normal,
+  .chest-inhale {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    margin-top: 6px !important;
+  }
 
-            .card-body > .row > .col-lg-3 > .row {
-              width: 100% !important;
-              margin: 5px 0 !important;
-            }
+  .height .col-lg-8,
+  .height .col-md-8,
+  .height .col-sm-8,
+  .chest-normal .col-lg-8,
+  .chest-normal .col-md-8,
+  .chest-normal .col-8,
+  .chest-inhale .col-lg-8,
+  .chest-inhale .col-md-8,
+  .chest-inhale .col-8 {
+    flex: 0 0 60% !important;
+    max-width: 60% !important;
+  }
 
-            /* Chest No row - keep in one line */
-            .card-body > .row > .col-lg-3 > .row:first-child {
-              display: flex !important;
-              flex-wrap: nowrap !important;
-              align-items: center !important;
-              justify-content: flex-end !important;
-              margin-top: 0 !important;
-            }
+  .height .col-lg-4,
+  .height .col-md-4,
+  .height .col-sm-8,
+  .chest-normal .col-lg-4,
+  .chest-normal .col-md-4,
+  .chest-normal .col-4,
+  .chest-inhale .col-lg-4,
+  .chest-inhale .col-md-4,
+  .chest-inhale .col-4 {
+    flex: 0 0 40% !important;
+    max-width: 40% !important;
+  }
 
-            .card-body > .row > .col-lg-3 > .row:first-child > .col-lg-8,
-            .card-body > .row > .col-lg-3 > .row:first-child > .col-lg-4 {
-              width: auto !important;
-              flex: 0 0 auto !important;
-              white-space: nowrap !important;
-            }
+  .height .text-end,
+  .chest-normal .text-end,
+  .chest-inhale .text-end {
+    text-align: right !important;
+  }
 
-            /* Photos row side by side */
-            .card-body > .row > .col-lg-3 > .row .col-lg-6 {
-              padding: 5px !important;
-            }
+  /* Image box */
+  .image-box {
+    width: 120px;
+    height: 120px;
+    border: 1px solid #000;
+    object-fit: cover;
+  }
 
-            /* Typography - INCREASED FONT SIZES */
-            label {
-              font-size: 16px !important;
-              line-height: 1.6 !important;
-              color: #000 !important;
-              font-weight: normal !important;
-            }
+  .fw-bold {
+    font-weight: 700 !important;
+  }
 
-            h4 {
-              font-size: 22px !important;
-              font-weight: bold !important;
-              margin: 15px 0 !important;
-              color: #000 !important;
-            }
-
-            /* Card header styling */
-            .card-header {
-              padding: 12px 15px !important;
-              background-color: #f8f9fa !important;
-              border-bottom: 2px solid #333 !important;
-            }
-
-            .card-body {
-              padding: 20px !important;
-            }
-
-            /* Spacing adjustments */
-            .mt-3 {
-              margin-top: 15px !important;
-            }
-
-            .mt-4 {
-              margin-top: 20px !important;
-            }
-
-            /* Text alignment */
-            .text-center {
-              text-align: center !important;
-            }
-
-            .text-start {
-              text-align: left !important;
-            }
-
-            .text-end {
-              text-align: right !important;
-            }
-
-            /* Border styling */
-            .border {
-              border: 1px solid #333 !important;
-            }
-
-            /* Ensure chest number is prominent */
-            .col-lg-3 label b {
-              font-weight: bold !important;
-              font-size: 20px !important;
-            }
-
-            /* TOP SECTION - First 2 items in LINE 1 (Recruitment Year & Port Name) */
-            .card-body > .row:first-child {
-              display: flex !important;
-              flex-wrap: nowrap !important;
-              align-items: flex-start !important;
-              margin-bottom: 10px !important;
-              margin-left: 5px !important;
-            }
-
-            /* Each top section item */
-            .card-body > .row:first-child > .col-lg-4 {
-              width: 33.333% !important;
-              flex: 0 0 33.333% !important;
-              margin-top: 0 !important;
-              
-            }
-
-            /* Show first 2, hide 3rd */
-            .card-body > .row:first-child > .col-lg-4:nth-child(1),
-            .card-body > .row:first-child > .col-lg-4:nth-child(2) {
-              display: flex !important;
-            }
-
-            .card-body > .row:first-child > .col-lg-4:nth-child(3) {
-              display: none !important;
-            }
-
-            /* Inner rows normal layout */
-            .card-body > .row:first-child .row {
-              display: flex !important;
-              flex-wrap: wrap !important;
-              width: 100% !important;
-            }
-
-            .card-body > .row:first-child .row > div {
-              width: auto !important;
-              padding: 0 5px 0 0 !important;
-            }
-
-            /* APPLICATION NO ROW - LINE 2 */
-            .card-body > .row:nth-child(2) {
-              display: flex !important;
-              margin-top: 0 !important;
-              margin-bottom: 15px !important;
-              flex-wrap: wrap !important;
-               margin-left: 5px !important;
-            }
-
-            .card-body > .row:nth-child(2) > .col-lg-4 {
-              width: 50% !important;
-              flex: 0 0 50% !important;
-            }
-
-            .card-body > .row:nth-child(2) .row {
-              display: flex !important;
-              flex-wrap: wrap !important;
-            }
-
-            .card-body > .row:nth-child(2) .row > div {
-              width: auto !important;
-              padding: 0 5px 0 0 !important;
-            }
-
-            /* Background colors */
-            .bg-white {
-              background-color: #fff !important;
-            }
-
-            /* Container spacing */
-            .container, .container-fluid {
-              width: 100% !important;
-              padding: 0 !important;
-              margin: 0 !important;
-            }
-
-            /* Prevent page breaks inside important sections */
-            .card-body,
-            .row {
-              page-break-inside: avoid !important;
-            }
-
-            /* Flex utilities */
-            .d-flex {
-              display: flex !important;
-            }
-
-            .gap-3 {
-              display: none !important; /* Hide button container */
-            }
-          }
-                   `
-
-
+  * {
+    color: #000 !important;
+    background: transparent !important;
+  }
+}
+          `
         }
       </style>
       <div className="container-fluid" /* id="section-to-print" */ id="admitCardPrint">
@@ -623,62 +367,66 @@ const AdmissionCard = () => {
                 >
                   <div className="row align-items-center">
                     <div className="col">
-                      <h4 className="card-title fw-bold text-center">
+                      {/* <h4 className="card-title fw-bold text-center">
                         Admit Card
+                      </h4> */}
+                      <h4 className="card-title fw-bold text-center" >
+                        Police Recruitment Examination – Admit Card
                       </h4>
                     </div>
                   </div>
                 </div>
                 <div className="card-body">
-                  <div className="row ">
-                    <div className="col-lg-4 col-md-4 col-md-4">
-                      <div className="row mx-2">
-                        <div className="col-lg-8 col-md-8 col-6 recruitmentYear" >
-                          <label htmlFor="recruitmentYear">
-                            Recruitment Year:
-                          </label>
+                  <div className="top-print-info">
+                    <div className="row ">
+                      <div className="col-lg-4 col-md-4 col-md-4">
+                        <div className="row mx-2">
+                          <div className="col-lg-8 col-md-8 col-6 recruitmentYear" >
+                            <label htmlFor="recruitmentYear">
+                              Recruitment Year:
+                            </label>
+                          </div>
+                          <div className="col-lg-3 col-md-3 col-6 mt-lg-0 mt-md-0 text-start">
+                            <label>{recruitmentYear}</label>
+                          </div>
                         </div>
-                        <div className="col-lg-3 col-md-3 col-6 mt-lg-0 mt-md-0 text-start">
-                          <label>{recruitmentYear}</label>
+                      </div>
+                      <div className="col-lg-4 col-md-4 col-4">
+                        <div className="row">
+                          <div className="col-lg-7 col-md-7 col-6">
+                            <label htmlFor="portName">Port Name:</label>
+                          </div>
+                          <div className="col-lg-4 col-md-4 col-6 mt-lg-0 mt-md-0">
+                            <label>{portName}</label>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="col-lg-4 col-md-4 col-4">
+                        <div className="row">
+                          <div className="col-lg-7 col-md-7 col-6 mt-lg-0 mt-md-0">
+                            <label htmlFor="examinationPort">
+                              Examination port:
+                            </label>
+                          </div>
+                          <div className="col-lg-4 col-md-4 col-6  mt-lg-0 mt-md-0">
+                            <label>{examinationPort}</label>
+                          </div>
                         </div>
                       </div>
                     </div>
-                    <div className="col-lg-4 col-md-4 col-4">
-                      <div className="row">
-                        <div className="col-lg-7 col-md-7 col-6">
-                          <label htmlFor="portName">Port Name:</label>
+                    <div className="row mt-3 mx-2">
+                      <div className="col-lg-4 col-md-4 col-4">
+                        <div className="row">
+                          <div className="col-lg-7 col-md-7 col-6 mt-3 mt-lg-0 mt-md-0">
+                            <label htmlFor="applicationNo">Application no:</label>
+                          </div>
+                          <div className="col-lg-4 col-md-4 col-6 mt-3 mt-lg-0 mt-md-0">
+                            <label>{applicationNo}</label>
+                          </div>
                         </div>
-                        <div className="col-lg-4 col-md-4 col-6 mt-lg-0 mt-md-0">
-                          <label>{portName}</label>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="col-lg-4 col-md-4 col-4">
-                      <div className="row">
-                        <div className="col-lg-7 col-md-7 col-6 mt-3 mt-lg-0 mt-md-0">
-                          <label htmlFor="examinationPort">
-                            Examination port:
-                          </label>
-                        </div>
-                        <div className="col-lg-4 col-md-4 col-6 mt-3 mt-lg-0 mt-md-0">
-                          <label>{examinationPort}</label>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="row mt-3 mx-2">
-                    <div className="col-lg-4 col-md-4 col-4">
-                      <div className="row">
-                        <div className="col-lg-7 col-md-7 col-6 mt-3 mt-lg-0 mt-md-0">
-                          <label htmlFor="applicationNo">Application no:</label>
-                        </div>
-                        <div className="col-lg-4 col-md-4 col-6 mt-3 mt-lg-0 mt-md-0">
-                          <label>{applicationNo}</label>
-                        </div>
-                      </div>
 
-                    </div>
-                    {/* <div className="col-lg-4 col-md-4 col-4">
+                      </div>
+                      {/* <div className="col-lg-4 col-md-4 col-4">
                       <div className="row">
                         <div className="col-lg-4 col-md-4 col-6 mt-3 mt-lg-0 mt-md-0">
                           <label htmlFor="applicationNo">Group no:</label>
@@ -692,13 +440,15 @@ const AdmissionCard = () => {
                       </div>
 
                     </div> */}
+                    </div>
                   </div>
+
                   <div
-                    className="card-header bg-white mt-3 border"
+                    className="card-header bg-white mt-3 border personal-information"
                   >
                     <div className="row align-items-center">
                       <div className="col">
-                        <h4 className="card-title fw-bold text-start">
+                        <h4 className="card-title fw-bold text-start ">
                           Personal Information
                         </h4>
                       </div>
@@ -812,7 +562,7 @@ const AdmissionCard = () => {
                             }
                           </div>
                         </div>
-                        <div className="row mt-4">
+                        <div className="row mt-4 height">
                           <div className="col-lg-8 col-md-8 col-sm-8  mt-3 mt-lg-0 mt-md-0 text-end">
                             <label htmlFor="officeName">Height:</label>
                           </div>
@@ -824,7 +574,7 @@ const AdmissionCard = () => {
                           gender === "Male" ?
                             (
                               <>
-                                <div className="row mt-3">
+                                <div className="row mt-3 chest-normal">
                                   <div className="col-lg-8 col-md-8 col-8 mt-3 mt-lg-0 mt-md-0 text-end">
                                     <label htmlFor="officeName">Chest Normal:</label>
                                   </div>
@@ -832,7 +582,7 @@ const AdmissionCard = () => {
                                     <label>{chestNormal} cm</label>
                                   </div>
                                 </div>
-                                <div className="row mt-3">
+                                <div className="row mt-3 chest-inhale">
                                   <div className="col-lg-8 col-md-8 col-8 mt-3 mt-lg-0 mt-md-0 text-end">
                                     <label htmlFor="officeName">Chest Inhale:</label>
                                   </div>

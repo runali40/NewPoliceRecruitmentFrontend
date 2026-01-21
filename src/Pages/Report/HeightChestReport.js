@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { fetchAllHeightChest, getAllCast, getAllGender, GetCategory, getReservationCategory } from '../../Components/Api/DailyReportApi'
 import { Table, Button } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
@@ -16,6 +16,7 @@ import { DateRange } from "react-date-range";
 import 'react-date-range/dist/styles.css';
 import 'react-date-range/dist/theme/default.css';
 import { enUS } from "date-fns/locale";
+import CryptoJS from "crypto-js";
 
 const HeightChestReport = () => {
     const navigate = useNavigate();
@@ -44,6 +45,60 @@ const HeightChestReport = () => {
     const [refreshKey, setRefreshKey] = useState(0);
     const [fromDate, setFromDate] = useState()
     const [toDate, setToDate] = useState()
+    const [secretKey, setSecretKey] = useState("")
+    const [photo, setPhoto] = useState("")
+    const [resultStatus, setResultStatus] = useState("");
+    const [passedCandidate, setPassedCandidate] = useState("")
+    const [failedCandidate, setFailedCandidate] = useState("")
+
+    //    const handleStatus = async (e) => {
+    //   const value = e.target.value;
+
+    //   if (value === "Pass") {
+    //     setPassedCandidate("Pass");
+    //     setFailedCandidate("");   // reset failed
+    //   } else if (value === "Fail") {
+    //     setFailedCandidate("Fail");
+    //     setPassedCandidate("");   // reset passed
+    //   }
+    //    const data = await fetchAllHeightChest("", "", "", "", "", "", passedCandidate, failedCandidate);
+    //         console.log(data)
+    //         setHeightChestReport(data)
+    // };
+
+    const handleStatus = async (e) => {
+        const value = e.target.value;
+
+        let pass = "";
+        let fail = "";
+
+        if (value === "Pass") {
+            pass = "Pass";
+            fail = "";
+            setPassedCandidate("Pass");
+            setFailedCandidate("");
+        } else if (value === "Fail") {
+            fail = "Fail";
+            pass = "";
+            setFailedCandidate("Fail");
+            setPassedCandidate("");
+        }
+
+        const data = await fetchAllHeightChest(
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            pass,
+            fail
+        );
+
+        console.log(data);
+        setHeightChestReport(data);
+    };
+
 
     const headerCellStyle = {
         backgroundColor: "rgb(27, 90, 144)",
@@ -88,12 +143,14 @@ const HeightChestReport = () => {
 
         const formattedStart = formatDate(newRange[0].startDate);
         const formattedEnd = formatDate(newRange[0].endDate);
-
+        setPassedCandidate("")
+        setFailedCandidate("")
         console.log(formattedStart); // "2025-12-02" ✓
         console.log(formattedEnd);   // "2025-12-30" ✓
         setSelectDate(formattedStart)
         setFromDate(formattedStart)
         setToDate(formattedEnd)
+
         // fetchData(doc, heightChest, allStatus, formattedStart, formattedStart, formattedEnd);
         const data = await fetchAllHeightChest(groupId, "", "", "", formattedStart, formattedEnd);
         console.log(data)
@@ -124,6 +181,8 @@ const HeightChestReport = () => {
         setGroup("");
         setCategory("")
         setGender("")
+        setPassedCandidate("");
+        setFailedCandidate("")
         setFromDate("")
         setToDate("")
         setRange([
@@ -181,8 +240,10 @@ const HeightChestReport = () => {
         const selectedValue = selected;
         setGender(selectedValue);
         console.log(selectedValue.value, "selected value");
+        setPassedCandidate("")
+        setFailedCandidate("")
         // setGroupId(selectedValue.value)
-        const data = await fetchAllHeightChest(groupId, null, null, selectedValue.label, fromDate, toDate);
+        const data = await fetchAllHeightChest(groupId, null, null, selectedValue.label, fromDate, toDate, "", "");
         console.log(data)
         setHeightChestReport(data)
     }
@@ -227,6 +288,8 @@ const HeightChestReport = () => {
         // 2️⃣ clear old data immediately
         setHeightChestReport([]);
         setGroupLeaderName("");
+        setPassedCandidate("")
+        setFailedCandidate("")
 
         try {
             const data = await fetchAllHeightChest(
@@ -258,6 +321,8 @@ const HeightChestReport = () => {
         setCategory(selectedValue);
         console.log(selectedValue.value, "selected value");
         // setGroupId(selectedValue.value)
+        setPassedCandidate("")
+        setFailedCandidate("")
         await AllGroup(selectedValue.value)
     }
 
@@ -282,6 +347,8 @@ const HeightChestReport = () => {
         const selectedValue = selected;
         setReservationCategory(selectedValue);
         console.log(selectedValue.value, "selected value");
+        setPassedCandidate("")
+        setFailedCandidate("")
         // setGroupId(selectedValue.value)
         const data = await fetchAllHeightChest(groupId, selectedValue.label, null);
         console.log(data)
@@ -298,6 +365,8 @@ const HeightChestReport = () => {
         const selectedValue = selected;
         setCast(selectedValue);
         console.log(selectedValue.value, "selected value");
+        setPassedCandidate("")
+        setFailedCandidate("")
         // setGroupId(selectedValue.value)
         const data = await fetchAllHeightChest(groupId, null, selectedValue.label);
         console.log(data)
@@ -327,6 +396,57 @@ const HeightChestReport = () => {
         setCurrentPage(1);
     };
 
+    // const decryptImage = useCallback(
+    //     (encryptedImage) => {
+    //         try {
+    //             const [ivHex, encryptedHex] = encryptedImage.split(":"); // Split IV and encrypted data
+    //             const key = CryptoJS.enc.Hex.parse(secretKey); // Parse secret key
+    //             const iv = CryptoJS.enc.Hex.parse(ivHex); // Use the IV from the encrypted image
+
+    //             // Decrypt the image
+    //             const decryptedBytes = CryptoJS.AES.decrypt(
+    //                 { ciphertext: CryptoJS.enc.Hex.parse(encryptedHex) },
+    //                 key,
+    //                 { iv, padding: CryptoJS.pad.Pkcs7 }
+    //             );
+
+    //             // Convert decrypted WordArray to Base64
+    //             const decryptedBase64 = CryptoJS.enc.Base64.stringify(decryptedBytes);
+    //             // console.log("Decrypted image:", decryptedBase64);
+
+    //             return `data:image/png;base64,${decryptedBase64}`; // Return image in base64 format
+    //         } catch (error) {
+    //             console.error("Error during decryption:", error);
+    //             return ""; // Return empty string on error
+    //         }
+    //     },
+    //     [secretKey]
+    // );
+    const decryptImage = useCallback(
+        (encryptedImage, key) => {
+            try {
+                const [ivHex, encryptedHex] = encryptedImage.split(":"); // Split IV and encrypted data
+                const parsedKey = CryptoJS.enc.Hex.parse(key); // Parse the secret key
+                const iv = CryptoJS.enc.Hex.parse(ivHex); // IV from encrypted image
+
+                const decryptedBytes = CryptoJS.AES.decrypt(
+                    { ciphertext: CryptoJS.enc.Hex.parse(encryptedHex) },
+                    parsedKey,
+                    { iv, padding: CryptoJS.pad.Pkcs7 }
+                );
+
+                const decryptedBase64 = CryptoJS.enc.Base64.stringify(decryptedBytes);
+                return `data:image/png;base64,${decryptedBase64}`;
+            } catch (error) {
+                console.error("Error during decryption:", error);
+                return "";
+            }
+        },
+        []
+    );
+
+    const decryptedImageUrl1 = photo ? decryptImage(photo) : null;
+
     const openPrintWindow = () => {
         let tableHTML = `
     <html>
@@ -351,6 +471,7 @@ const HeightChestReport = () => {
         .header-section {
           page-break-inside: avoid;
           page-break-after: avoid;
+            text-align: center !important;
         }
 
         table {
@@ -405,7 +526,7 @@ const HeightChestReport = () => {
     </head>
 
     <body>
-      <div class="header-section">
+      <div class="header-section text-center">
         <h2>Commissioner of Police ${recruitName} City</h2>
         <h3>Height & Chest Report</h3>
 
@@ -413,6 +534,14 @@ const HeightChestReport = () => {
           <h3>Group No: ${groupId}</h3>
           <h3>Group Leader Name: ${groupLeaderName || ""}</h3>
         ` : ""}
+        
+          ${passedCandidate === "Pass" ? `
+  <h3>Passed Candidate</h3>
+` : ""}
+
+${failedCandidate === "Fail" ? `
+  <h3>Failed Candidate</h3>
+` : ""}
       </div>
 
       <table>
@@ -650,7 +779,7 @@ const HeightChestReport = () => {
                             </div>
                             <div className="card-body pt-3">
                                 <div className="row">
-                                    <div className="col-lg-3 col-md-3 col-12 d-flex align-items-center gap-2">
+                                    <div className="col-lg-5 col-md-5 col-12 d-flex align-items-center gap-2">
                                         <h6 className="mb-0">Show</h6>
                                         <select
                                             style={{ height: "35px" }}
@@ -665,7 +794,37 @@ const HeightChestReport = () => {
                                         <h6 className="mb-0">entries</h6>
                                     </div>
 
-                                    <div className="col-lg-3 col-md-3 col-12 mt-3 mt-md-0">
+                                    <div className="col-lg-2 col-md-2 col-12 mt-3 mt-md-0">
+                                        <>
+                                            <div className="d-flex gap-3">
+                                                {/* Passed */}
+                                                <div className="form-check">
+                                                    <input
+                                                        className="form-check-input"
+                                                        type="radio"
+                                                        name="resultStatus"
+                                                        value="Pass"
+                                                        checked={passedCandidate === "Pass"}
+                                                        onChange={handleStatus}
+                                                    />
+                                                    <label className="form-check-label">Passed</label>
+                                                </div>
+
+                                                {/* Failed */}
+                                                <div className="form-check">
+                                                    <input
+                                                        className="form-check-input"
+                                                        type="radio"
+                                                        name="resultStatus"
+                                                        value="Fail"
+                                                        checked={failedCandidate === "Fail"}
+                                                        onChange={handleStatus}
+                                                    />
+                                                    <label className="form-check-label">Failed</label>
+                                                </div>
+                                            </div>
+                                        </>
+
                                     </div>
 
                                     <div className="col-lg-3 col-md-3 col-12 mt-3 mt-md-0">
@@ -699,7 +858,7 @@ const HeightChestReport = () => {
 
                                     </div>
 
-                                    <div className="col-lg-3 col-md-3 col-12 mt-3 mt-md-0">
+                                    <div className="col-lg-2 col-md-2 col-12 mt-3 mt-md-0">
                                         <input
                                             className="form-control"
                                             placeholder="Search here"
@@ -823,6 +982,9 @@ const HeightChestReport = () => {
                                             <th scope="col" style={headerCellStyle}>
                                                 Chest Inhale
                                             </th>
+                                            {/* <th scope="col" style={headerCellStyle}>
+                                                Candidate Photo
+                                            </th> */}
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -839,10 +1001,39 @@ const HeightChestReport = () => {
                                                 <td>{data.Height}</td>
                                                 <td>{data.Chest_normal}</td>
                                                 <td>{data.Chest_inhale}</td>
+
                                             </tr>
                                         ))}
 
                                     </tbody>
+                                    {/* <tbody>
+                                        {currentItems.map((data, index) => {
+                                    
+                                            const decryptedImageUrl = data.imagestring && data.Secretkeys
+                                                ? decryptImage(data.imagestring, data.Secretkeys)
+                                                : null;
+
+                                            return (
+                                                <tr key={data.CandidateId}>
+                                                    <td>{(currentPage - 1) * itemsPerPage + index + 1}</td>
+                                                    <td>{data.CandidateName}</td>
+                                                    <td>{data.Gender}</td>
+                                                    <td>{data.ChestNo}</td>
+                                                    <td>{data.Cast}</td>
+                                                    <td>{data["Parallel Reservation"]}</td>
+                                                    <td>{data.Height}</td>
+                                                    <td>{data.Chest_normal}</td>
+                                                    <td>{data.Chest_inhale}</td>
+                                                    <td >
+                                                        {decryptedImageUrl ? (
+                                                            <img src={decryptedImageUrl} className="img-fluid image-box"  style={{ height: "70px", width: "70px", objectFit: "cover" }} />
+                                                        ) : null}
+                                                    </td>
+                                                </tr>
+                                            );
+                                        })}
+                                    </tbody> */}
+
                                 </Table>
                                 <div className="row mt-4 mt-xl-3">
                                     <div className="col-lg-4 col-md-4 col-12 ">
