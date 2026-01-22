@@ -206,15 +206,18 @@ const All100MeterReport = () => {
     // 2️⃣ clear old data immediately
     setAll100MeterReport([]);
     setGroupLeaderName("");
+    setReservationCategory("")
+    setCast("")
+    setGender("")
 
     try {
       const data = await fetchAll100Meter(
         eventId,
         groupIdValue,        // ✅ direct value
-        reservationCategory,
-        cast,
-        gender,
-        fromDate, toDate
+        null,
+        null,
+        null,
+        null, null
       );
 
       console.log(data, "API DATA");
@@ -238,6 +241,10 @@ const All100MeterReport = () => {
     const selectedValue = selected;
     setCategory(selectedValue);
     console.log(selectedValue.value, "selected value");
+
+    setReservationCategory("")
+    setCast("")
+    setGender("")
     // setGroupId(selectedValue.value)
     await AllGroup(selectedValue.value)
   }
@@ -263,8 +270,13 @@ const All100MeterReport = () => {
     const selectedValue = selected;
     setReservationCategory(selectedValue);
     console.log(selectedValue.value, "selected value");
+
+    setCast("")
+    setGender("")
+    setCategory("")
+    setGroup("")
     // setGroupId(selectedValue.value)
-    const data = await fetchAll100Meter(eventId, groupId, selectedValue.label, null, gender, fromDate, toDate);
+    const data = await fetchAll100Meter(eventId, null, selectedValue.label, null, null, null, null);
     console.log(data)
     setAll100MeterReport(data)
   }
@@ -279,8 +291,14 @@ const All100MeterReport = () => {
     const selectedValue = selected;
     setCast(selectedValue);
     console.log(selectedValue.value, "selected value");
+
+
+    setCategory("")
+    setGroup("")
+    setReservationCategory("")
+    setGender("")
     // setGroupId(selectedValue.value)
-    const data = await fetchAll100Meter(eventId, groupId, null, selectedValue.label, gender, fromDate, toDate);
+    const data = await fetchAll100Meter(eventId, null, null, selectedValue.label, null, null, null);
     console.log(data)
     setAll100MeterReport(data)
   }
@@ -304,8 +322,12 @@ const All100MeterReport = () => {
     const selectedValue = selected;
     setGender(selectedValue);
     console.log(selectedValue.value, "selected value");
+    setCategory("")
+    setGroup("")
+    setReservationCategory("")
+    setCast("")
     // setGroupId(selectedValue.value)
-    const data = await fetchAll100Meter(groupId, null, null, null, selectedValue.label, fromDate, toDate);
+    const data = await fetchAll100Meter(eventId, null, null, null, selectedValue.label, null, null);
     console.log(data)
     setAll100MeterReport(data)
   }
@@ -685,6 +707,7 @@ const All100MeterReport = () => {
         .header-section {
           page-break-inside: avoid;
           page-break-after: avoid;
+           text-align: center !important;
         }
 
         table {
@@ -745,14 +768,28 @@ const All100MeterReport = () => {
 
         ${groupId ? `
           <h3>Group No: ${groupId}</h3>
+         
+        ` : ""}
+           ${groupLeaderName != "" ? `
+         
           <h3>Group Leader Name: ${groupLeaderName || ""}</h3>
         ` : ""}
+        ${gender != "" ? `
+  <h3>${gender.label} Candidate</h3>
+` : ""}
+${reservationCategory != "" ? `
+  <h3>${reservationCategory.label} Candidate</h3>
+` : ""}
+${cast != "" ? `
+  <h3>${cast.label} Candidate</h3>
+` : ""}
       </div>
 
       <table>
         <thead>
           <tr>
             <th>Sr No</th>
+            <th>Application No</th>
             <th>Candidate Name</th>
             <th>Gender</th>
             <th>Chest No</th>
@@ -783,6 +820,7 @@ const All100MeterReport = () => {
       tableHTML += `
       <tr>
         <td>${index + 1}</td>
+        <td>${row.ApplicationNo ?? ""}</td>
         <td>${row.CandidateName ?? ""}</td>
         <td>${row.Gender ?? ""}</td>
         <td>${row.ChestNo ?? ""}</td>
@@ -857,8 +895,8 @@ const All100MeterReport = () => {
         { align: "center" }
       );
 
-      startY += 7;
-
+    }
+    if (groupLeaderName) {
       doc.text(
         `Group Leader Name: ${groupLeaderName || ""}`,
         pageWidth / 2,
@@ -866,11 +904,39 @@ const All100MeterReport = () => {
         { align: "center" }
       );
 
+    }
+    if (reservationCategory) {
+      doc.text(
+        `${reservationCategory.label} Candidates`,
+        pageWidth / 2,
+        startY,
+        { align: "center" }
+      );
+
+    }
+    if (cast) {
+      doc.text(
+        `${cast.label} Candidates`,
+        pageWidth / 2,
+        startY,
+        { align: "center" }
+      );
+
+
+    }
+    if (gender) {
+      doc.text(
+        `${gender.label} Candidates`,
+        pageWidth / 2,
+        startY,
+        { align: "center" }
+      );
+
       startY += 5; // space before table
     }
-
     const tableColumn = [
       "Sr No",
+      "Application No",
       "Candidate Name",
       "Gender",
       "Chest No",
@@ -890,6 +956,7 @@ const All100MeterReport = () => {
 
     const tableRows = sortedData.map((data, index) => ([
       index + 1,
+      data.ApplicationNo,
       data.CandidateName,
       data.Gender,
       data.ChestNo,
@@ -928,10 +995,11 @@ const All100MeterReport = () => {
     const excelData = sortedData.map((data, index) => ({
       "Sr No":
         (currentPage - 1) * itemsPerPage + index + 1,
+      "Application No": data.ApplicationNo || "",
       "Candidate Name": data.CandidateName || "",
       "Gender": data.Gender || "",
       "Chest No": data.ChestNo || "",
-      "Barcode": data.Barcode || "",
+      "Tag No": data.Barcode || "",
       "Cast": data.Cast || "",
       "Parallel Reservation": data["Parallel Reservation"] || "",
       "Start Time":
@@ -1175,6 +1243,9 @@ const All100MeterReport = () => {
                         Sr.No
                       </th>
                       <th scope="col" style={headerCellStyle}>
+                        Application No
+                      </th>
+                      <th scope="col" style={headerCellStyle}>
                         Candidate Name
                       </th>
                       <th scope="col" style={headerCellStyle}>
@@ -1212,6 +1283,7 @@ const All100MeterReport = () => {
                         <td>
                           {(currentPage - 1) * itemsPerPage + index + 1}
                         </td>
+                        <td>{data.ApplicationNo}</td>
                         <td>{data.CandidateName}</td>
                         <td>{data.Gender}</td>
                         <td>{data.ChestNo}</td>

@@ -242,8 +242,12 @@ const HeightChestReport = () => {
         console.log(selectedValue.value, "selected value");
         setPassedCandidate("")
         setFailedCandidate("")
+        setCategory("")
+        setGroup("")
+        setReservationCategory("")
+        setCast("")
         // setGroupId(selectedValue.value)
-        const data = await fetchAllHeightChest(groupId, null, null, selectedValue.label, fromDate, toDate, "", "");
+        const data = await fetchAllHeightChest(groupId, null, null, selectedValue.label, null, null, null, null)
         console.log(data)
         setHeightChestReport(data)
     }
@@ -290,13 +294,16 @@ const HeightChestReport = () => {
         setGroupLeaderName("");
         setPassedCandidate("")
         setFailedCandidate("")
+        setReservationCategory("")
+        setCast("")
+        setGender("")
 
         try {
             const data = await fetchAllHeightChest(
 
                 groupIdValue,        // ✅ direct value
-                reservationCategory,
-                cast
+                null,
+                null
             );
 
             console.log(data, "API DATA");
@@ -323,6 +330,9 @@ const HeightChestReport = () => {
         // setGroupId(selectedValue.value)
         setPassedCandidate("")
         setFailedCandidate("")
+        setReservationCategory("")
+        setCast("")
+        setGender("")
         await AllGroup(selectedValue.value)
     }
 
@@ -349,6 +359,10 @@ const HeightChestReport = () => {
         console.log(selectedValue.value, "selected value");
         setPassedCandidate("")
         setFailedCandidate("")
+        setCast("")
+        setGender("")
+        setCategory("")
+        setGroup("")
         // setGroupId(selectedValue.value)
         const data = await fetchAllHeightChest(groupId, selectedValue.label, null);
         console.log(data)
@@ -367,8 +381,12 @@ const HeightChestReport = () => {
         console.log(selectedValue.value, "selected value");
         setPassedCandidate("")
         setFailedCandidate("")
+        setCategory("")
+        setGroup("")
+        setReservationCategory("")
+        setGender("")
         // setGroupId(selectedValue.value)
-        const data = await fetchAllHeightChest(groupId, null, selectedValue.label);
+        const data = await fetchAllHeightChest(null, null, selectedValue.label);
         console.log(data)
         setHeightChestReport(data)
     }
@@ -532,9 +550,9 @@ const HeightChestReport = () => {
 
         ${groupId ? `
           <h3>Group No: ${groupId}</h3>
-          <h3>Group Leader Name: ${groupLeaderName || ""}</h3>
+         
         ` : ""}
-        
+
           ${passedCandidate === "Pass" ? `
   <h3>Passed Candidate</h3>
 ` : ""}
@@ -542,12 +560,22 @@ const HeightChestReport = () => {
 ${failedCandidate === "Fail" ? `
   <h3>Failed Candidate</h3>
 ` : ""}
+${gender != "" ? `
+  <h3>${gender.label} Candidate</h3>
+` : ""}
+${reservationCategory != "" ? `
+  <h3>${reservationCategory.label} Candidate</h3>
+` : ""}
+${cast != "" ? `
+  <h3>${cast.label} Candidate</h3>
+` : ""}
       </div>
 
       <table>
         <thead>
           <tr>
             <th>Sr No</th>
+            <th>Application No</th>
             <th>Candidate Name</th>
             <th>Gender</th>
             <th>Chest No</th>
@@ -574,6 +602,7 @@ ${failedCandidate === "Fail" ? `
             tableHTML += `
       <tr>
         <td>${index + 1}</td>
+        <td>${row.ApplicationNo ?? ""}</td>
         <td>${row.CandidateName ?? ""}</td>
         <td>${row.Gender ?? ""}</td>
         <td>${row.ChestNo ?? ""}</td>
@@ -642,6 +671,7 @@ ${failedCandidate === "Fail" ? `
 
         const tableColumn = [
             "Sr No",
+            "Application No",
             "Candidate Name",
             "Gender",
             "Chest No",
@@ -659,6 +689,7 @@ ${failedCandidate === "Fail" ? `
 
         const tableRows = sortedData.map((data, index) => ([
             index + 1,
+            data.ApplicationNo,
             data.CandidateName,
             data.Gender,
             data.ChestNo,
@@ -692,6 +723,7 @@ ${failedCandidate === "Fail" ? `
         const excelData = sortedData.map((data, index) => ({
             "Sr No":
                 (currentPage - 1) * itemsPerPage + index + 1,
+            "Application No": data.ApplicationNo || "",
             "Candidate Name": data.CandidateName || "",
             "Gender": data.Gender || "",
             "Chest No": data.ChestNo || "",
@@ -959,6 +991,9 @@ ${failedCandidate === "Fail" ? `
                                                 Sr.No
                                             </th>
                                             <th scope="col" style={headerCellStyle}>
+                                                Application No
+                                            </th>
+                                            <th scope="col" style={headerCellStyle}>
                                                 Candidate Name
                                             </th>
                                             <th scope="col" style={headerCellStyle}>
@@ -993,6 +1028,7 @@ ${failedCandidate === "Fail" ? `
                                                 <td>
                                                     {(currentPage - 1) * itemsPerPage + index + 1}
                                                 </td>
+                                                <td>{data.ApplicationNo}</td>
                                                 <td>{data.CandidateName}</td>
                                                 <td>{data.Gender}</td>
                                                 <td>{data.ChestNo}</td>
