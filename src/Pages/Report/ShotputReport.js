@@ -314,8 +314,10 @@ const ShotputReport = () => {
         } else {
             const filteredData = shotputReport.filter(
                 (report) =>
-                    report.ChestNo.toLowerCase().includes(searchDataValue) ||
-                    report.CandidateName.toLowerCase().includes(searchDataValue)
+                    (report.ApplicationNo || "").toLowerCase().includes(searchDataValue) ||
+                    (report.ChestNo || "").toLowerCase().includes(searchDataValue) ||
+                    (report.CandidateName || "").toLowerCase().includes(searchDataValue) ||
+                    (report.Barcode || "").toLowerCase().includes(searchDataValue)
             );
             setShotputReport(filteredData);
             setCurrentPage(1);
@@ -391,7 +393,7 @@ const ShotputReport = () => {
     //               <th>Chest No</th>
     //               <th>Tag No</th>
     //               <th>Cast</th>
-    //               <th>Parellel Reservation</th>
+    //               <th>ParallelReservation</th>
     //               <th>Distance 1</th>
     //               <th>Distance 2</th>
     //               <th>Distance 3</th>      
@@ -531,17 +533,17 @@ const ShotputReport = () => {
           <h3>Group No: ${groupId}</h3>
          
         ` : ""}
-           ${groupLeaderName != "" ? `
+           ${groupLeaderName !== "" ? `
          
           <h3>Group Leader Name: ${groupLeaderName || ""}</h3>
         ` : ""}
-        ${gender != "" ? `
+        ${gender !== "" ? `
   <h3>${gender.label} Candidate</h3>
 ` : ""}
-${reservationCategory != "" ? `
+${reservationCategory !== "" ? `
   <h3>${reservationCategory.label} Candidate</h3>
 ` : ""}
-${cast != "" ? `
+${cast !== "" ? `
   <h3>${cast.label} Candidate</h3>
 ` : ""}
 </div>
@@ -649,8 +651,8 @@ ${cast != "" ? `
                 { align: "center" }
             );
 
-            startY += 7;
-
+        }
+        if (groupLeaderName) {
             doc.text(
                 `Group Leader Name: ${groupLeaderName || ""}`,
                 pageWidth / 2,
@@ -658,9 +660,35 @@ ${cast != "" ? `
                 { align: "center" }
             );
 
-            startY += 10; // ✅ EXTRA SPACE BEFORE TABLE
-        } else {
-            startY += 5; // spacing even if no group
+        }
+        if (reservationCategory) {
+            doc.text(
+                `${reservationCategory.label} Candidates`,
+                pageWidth / 2,
+                startY,
+                { align: "center" }
+            );
+
+        }
+        if (cast) {
+            doc.text(
+                `${cast.label} Candidates`,
+                pageWidth / 2,
+                startY,
+                { align: "center" }
+            );
+
+
+        }
+        if (gender) {
+            doc.text(
+                `${gender.label} Candidates`,
+                pageWidth / 2,
+                startY,
+                { align: "center" }
+            );
+
+            startY += 5; // space before table
         }
 
         const tableColumn = [
@@ -904,7 +932,7 @@ ${cast != "" ? `
 
 
 
-                                    <div className="col-lg-3 col-md-3 col-12 mt-3 mt-md-0">
+                                    <div className="col-lg-2 col-md-2 col-12 mt-3 mt-md-0">
                                         <Select
                                             value={group}
                                             onChange={handleGroup}
@@ -935,7 +963,7 @@ ${cast != "" ? `
                                             }}
                                         />
                                     </div>
-                                    <div className="col-lg-3 col-md-3 col-12 mt-3 mt-md-0">
+                                    <div className="col-lg-2 col-md-2 col-12 mt-3 mt-md-0">
                                         <Select
                                             value={cast}
                                             onChange={handleCast}
@@ -950,7 +978,7 @@ ${cast != "" ? `
                                             }}
                                         />
                                     </div>
-                                    <div className="col-lg-3 col-md-3 col-12 mt-3 mt-md-0">
+                                    <div className="col-lg-2 col-md-2 col-12 mt-3 mt-md-0">
                                         <Select
                                             value={gender}
                                             onChange={handleGender}
@@ -992,7 +1020,7 @@ ${cast != "" ? `
                                                 Cast
                                             </th>
                                             <th scope="col" style={headerCellStyle}>
-                                                Parellel Reservation
+                                                Parallel Reservation
                                             </th>
                                             <th scope="col" style={headerCellStyle}>
                                                 Distance 1

@@ -203,7 +203,7 @@ const All800MeterReport = () => {
     const selectedValue = selected;
     setCategory(selectedValue);
     console.log(selectedValue.value, "selected value");
-        setReservationCategory("")
+    setReservationCategory("")
     setCast("")
     setGender("")
     // setGroupId(selectedValue.value)
@@ -242,7 +242,7 @@ const All800MeterReport = () => {
     const selectedValue = selected;
     setCast(selectedValue);
     console.log(selectedValue.value, "selected value");
-      setCategory("")
+    setCategory("")
     setGroup("")
     setReservationCategory("")
     setGender("")
@@ -292,7 +292,7 @@ const All800MeterReport = () => {
     const selectedValue = selected;
     setGender(selectedValue);
     console.log(selectedValue.value, "selected value");
-     setCategory("")
+    setCategory("")
     setGroup("")
     setReservationCategory("")
     setCast("")
@@ -312,8 +312,10 @@ const All800MeterReport = () => {
     } else {
       const filteredData = all800MeterReport.filter(
         (report) =>
-          report.ChestNo.toLowerCase().includes(searchDataValue) ||
-          report.CandidateName.toLowerCase().includes(searchDataValue)
+         (report.ApplicationNo || "").toLowerCase().includes(searchDataValue) ||
+          (report.ChestNo || "").toLowerCase().includes(searchDataValue) ||
+          (report.CandidateName || "").toLowerCase().includes(searchDataValue) ||
+          (report.Barcode || "").toLowerCase().includes(searchDataValue)
       );
       setAll800MeterReport(filteredData);
       setCurrentPage(1);
@@ -351,12 +353,15 @@ const All800MeterReport = () => {
     if (groupId) {
       doc.setFont("helvetica", "bold");
 
-      doc.text(`Group No: ${groupId}`, pageWidth / 2, startY, {
-        align: "center",
-      });
+      doc.text(
+        `Group No: ${groupId}`,
+        pageWidth / 2,
+        startY,
+        { align: "center" }
+      );
 
-      startY += 7;
-
+    }
+    if (groupLeaderName) {
       doc.text(
         `Group Leader Name: ${groupLeaderName || ""}`,
         pageWidth / 2,
@@ -364,9 +369,35 @@ const All800MeterReport = () => {
         { align: "center" }
       );
 
-      startY += 10; // ✅ EXTRA SPACE BEFORE TABLE
-    } else {
-      startY += 5; // spacing even if no group
+    }
+    if (reservationCategory) {
+      doc.text(
+        `${reservationCategory.label} Candidates`,
+        pageWidth / 2,
+        startY,
+        { align: "center" }
+      );
+
+    }
+    if (cast) {
+      doc.text(
+        `${cast.label} Candidates`,
+        pageWidth / 2,
+        startY,
+        { align: "center" }
+      );
+
+
+    }
+    if (gender) {
+      doc.text(
+        `${gender.label} Candidates`,
+        pageWidth / 2,
+        startY,
+        { align: "center" }
+      );
+
+      startY += 5; // space before table
     }
 
     const tableColumn = [
@@ -572,17 +603,17 @@ const All800MeterReport = () => {
           <h3>Group No: ${groupId}</h3>
          
         ` : ""}
-           ${groupLeaderName != "" ? `
+           ${groupLeaderName !== "" ? `
          
           <h3>Group Leader Name: ${groupLeaderName || ""}</h3>
         ` : ""}
-        ${gender != "" ? `
+        ${gender !== "" ? `
   <h3>${gender.label} Candidate</h3>
 ` : ""}
-${reservationCategory != "" ? `
+${reservationCategory !== "" ? `
   <h3>${reservationCategory.label} Candidate</h3>
 ` : ""}
-${cast != "" ? `
+${cast !== "" ? `
   <h3>${cast.label} Candidate</h3>
 ` : ""}
 </div>
@@ -596,7 +627,7 @@ ${cast != "" ? `
               <th>Chest No</th>
               <th>Tag No</th>
               <th>Cast</th>
-              <th>Parellel Reservation</th>
+              <th>ParallelReservation</th>
               <th>Start Time</th>
               <th>End Time</th>
               <th>Duration</th>      
@@ -807,7 +838,7 @@ ${cast != "" ? `
 
 
 
-                  <div className="col-lg-3 col-md-3 col-12 mt-3 mt-md-0">
+                  <div className="col-lg-2 col-md-2 col-12 mt-3 mt-md-0">
                     <Select
                       value={group}
                       onChange={handleGroup}
@@ -838,7 +869,7 @@ ${cast != "" ? `
                       }}
                     />
                   </div>
-                  <div className="col-lg-3 col-md-3 col-12 mt-3 mt-md-0">
+                  <div className="col-lg-2 col-md-2 col-12 mt-3 mt-md-0">
                     <Select
                       value={cast}
                       onChange={handleCast}
@@ -853,7 +884,7 @@ ${cast != "" ? `
                       }}
                     />
                   </div>
-                  <div className="col-lg-3 col-md-3 col-12 mt-3 mt-md-0">
+                  <div className="col-lg-2 col-md-2 col-12 mt-3 mt-md-0">
                     <Select
                       value={gender}
                       onChange={handleGender}
@@ -895,7 +926,7 @@ ${cast != "" ? `
                         Cast
                       </th>
                       <th scope="col" style={headerCellStyle}>
-                        Parellel Reservation
+                        ParallelReservation
                       </th>
                       <th scope="col" style={headerCellStyle}>
                         Start Time

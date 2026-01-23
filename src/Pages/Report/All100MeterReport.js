@@ -341,8 +341,11 @@ const All100MeterReport = () => {
     } else {
       const filteredData = all100MeterReport.filter(
         (report) =>
-          report.ChestNo.toLowerCase().includes(searchDataValue) ||
-          report.CandidateName.toLowerCase().includes(searchDataValue)
+          (report.ApplicationNo || "").toLowerCase().includes(searchDataValue) ||
+          (report.ChestNo || "").toLowerCase().includes(searchDataValue) ||
+          (report.CandidateName || "").toLowerCase().includes(searchDataValue) ||
+          (report.Barcode || "").toLowerCase().includes(searchDataValue)
+
       );
       setAll100MeterReport(filteredData);
       setCurrentPage(1);
@@ -770,17 +773,17 @@ const All100MeterReport = () => {
           <h3>Group No: ${groupId}</h3>
          
         ` : ""}
-           ${groupLeaderName != "" ? `
+           ${groupLeaderName !== "" ? `
          
           <h3>Group Leader Name: ${groupLeaderName || ""}</h3>
         ` : ""}
-        ${gender != "" ? `
+        ${gender !== "" ? `
   <h3>${gender.label} Candidate</h3>
 ` : ""}
-${reservationCategory != "" ? `
+${reservationCategory !== "" ? `
   <h3>${reservationCategory.label} Candidate</h3>
 ` : ""}
-${cast != "" ? `
+${cast !== "" ? `
   <h3>${cast.label} Candidate</h3>
 ` : ""}
       </div>
@@ -1261,7 +1264,7 @@ ${cast != "" ? `
                         Cast
                       </th>
                       <th scope="col" style={headerCellStyle}>
-                        Parellel Reservation
+                        ParallelReservation
                       </th>
                       <th scope="col" style={headerCellStyle}>
                         Start Time

@@ -400,8 +400,10 @@ const HeightChestReport = () => {
         } else {
             const filteredData = HeightChestReport.filter(
                 (report) =>
-                    report.ChestNo.toLowerCase().includes(searchDataValue) ||
-                    report.CandidateName.toLowerCase().includes(searchDataValue)
+                    (report.ApplicationNo || "").toLowerCase().includes(searchDataValue) ||
+                    (report.ChestNo || "").toLowerCase().includes(searchDataValue) ||
+                    (report.CandidateName || "").toLowerCase().includes(searchDataValue) ||
+                    (report.Barcode || "").toLowerCase().includes(searchDataValue)
             );
             setHeightChestReport(filteredData);
             setCurrentPage(1);
@@ -560,13 +562,13 @@ const HeightChestReport = () => {
 ${failedCandidate === "Fail" ? `
   <h3>Failed Candidate</h3>
 ` : ""}
-${gender != "" ? `
+${gender !== "" ? `
   <h3>${gender.label} Candidate</h3>
 ` : ""}
-${reservationCategory != "" ? `
+${reservationCategory !== "" ? `
   <h3>${reservationCategory.label} Candidate</h3>
 ` : ""}
-${cast != "" ? `
+${cast !== "" ? `
   <h3>${cast.label} Candidate</h3>
 ` : ""}
       </div>
@@ -665,10 +667,65 @@ ${cast != "" ? `
                 { align: "center" }
             );
 
-            startY += 7;
+        }
+        if (groupLeaderName) {
+            doc.text(
+                `Group Leader Name: ${groupLeaderName || ""}`,
+                pageWidth / 2,
+                startY,
+                { align: "center" }
+            );
 
         }
+        if (reservationCategory) {
+            doc.text(
+                `${reservationCategory.label} Candidates`,
+                pageWidth / 2,
+                startY,
+                { align: "center" }
+            );
 
+        }
+        if (cast) {
+            doc.text(
+                `${cast.label} Candidates`,
+                pageWidth / 2,
+                startY,
+                { align: "center" }
+            );
+
+
+        }
+        if (gender) {
+            doc.text(
+                `${gender.label} Candidates`,
+                pageWidth / 2,
+                startY,
+                { align: "center" }
+            );
+
+
+        }
+        if (passedCandidate) {
+            doc.text(
+                `${passedCandidate} Candidates`,
+                pageWidth / 2,
+                startY,
+                { align: "center" }
+            );
+
+
+        }
+        if (failedCandidate) {
+            doc.text(
+                `${failedCandidate} Candidates`,
+                pageWidth / 2,
+                startY,
+                { align: "center" }
+            );
+
+            startY += 5; // space before table
+        }
         const tableColumn = [
             "Sr No",
             "Application No",
@@ -1006,7 +1063,7 @@ ${cast != "" ? `
                                                 Cast
                                             </th>
                                             <th scope="col" style={headerCellStyle}>
-                                                Parellel Reservation
+                                                ParallelReservation
                                             </th>
                                             <th scope="col" style={headerCellStyle}>
                                                 Height
