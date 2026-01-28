@@ -138,26 +138,43 @@ const AdmissionCard = () => {
 
   return (
     <>
-      <style>
-
-        {
-          `
-          /* ---------------- PRINT ONLY ---------------- */
+   <style>
+{`
+/* ---------------- PRINT ONLY ---------------- */
 @media print {
+
   @page {
     size: A4;
     margin: 0;
   }
-  
+
+  /* RESET ROOT */
+  html, body {
+    width: 100%;
+    height: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+  }
+
+  * {
+    box-sizing: border-box !important;
+    background: transparent !important;
+    color: #000 !important;
+  }
+
+  /* Hide everything */
   body * {
     visibility: hidden;
   }
 
+  /* Show only admit card */
   #admitCardPrint,
   #admitCardPrint * {
     visibility: visible !important;
   }
 
+  /* Hide buttons & UI */
   button,
   .btn,
   .no-print,
@@ -168,11 +185,8 @@ const AdmissionCard = () => {
   }
 
   body {
-    background: #fff !important;
-    color: #000 !important;
     font-family: "Times New Roman", serif;
     font-size: 13px;
-    margin: 0;
   }
 
   .container,
@@ -181,9 +195,22 @@ const AdmissionCard = () => {
     padding: 0 !important;
   }
 
+  /* ⭐ MAIN FIX — SAFE WIDTH */
   #admitCardPrint {
-    width: 210mm;
-    margin: auto;
+    width: 190mm !important;
+    max-width: 190mm !important;
+    margin: 0 auto !important;
+    page-break-before: avoid !important;
+    page-break-after: avoid !important;
+    break-after: avoid-page !important;
+    break-inside: avoid !important;
+  }
+
+  /* Prevent page split */
+  .card,
+  .row {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
   }
 
   .card {
@@ -205,7 +232,7 @@ const AdmissionCard = () => {
     font-size: 15px !important;
     font-weight: 700 !important;
     text-transform: uppercase;
-    margin: 0;
+    margin: 0 !important;
   }
 
   label {
@@ -213,7 +240,7 @@ const AdmissionCard = () => {
     white-space: nowrap;
   }
 
-  /* Top info section */
+  /* ---------------- TOP INFO ---------------- */
   .top-print-info {
     margin-bottom: 8px;
   }
@@ -243,7 +270,7 @@ const AdmissionCard = () => {
     margin-top: 4px !important;
   }
 
-  /* Personal information section */
+  /* ---------------- PERSONAL INFO ---------------- */
   .personal-information.bg-white {
     border: none !important;
     border-bottom: 1.5px solid #000 !important;
@@ -251,20 +278,17 @@ const AdmissionCard = () => {
     padding: 4px 0 6px 0 !important;
   }
 
-  .personal-information.bg-white h4,
-  .personal-information.bg-white .card-title {
+  .personal-information.bg-white h4 {
     font-size: 14px !important;
     font-weight: 700 !important;
-    margin: 0 !important;
     padding-bottom: 4px !important;
-    text-transform: uppercase;
   }
 
   .card-body .row {
     margin-bottom: 6px !important;
   }
 
-  /* HEIGHT, CHEST NORMAL, CHEST INHALE FIX - sirf inko same line pe laayega */
+  /* ---------------- HEIGHT / CHEST FIX ---------------- */
   .height,
   .chest-normal,
   .chest-inhale {
@@ -289,7 +313,7 @@ const AdmissionCard = () => {
 
   .height .col-lg-4,
   .height .col-md-4,
-  .height .col-sm-8,
+  .height .col-sm-4,
   .chest-normal .col-lg-4,
   .chest-normal .col-md-4,
   .chest-normal .col-4,
@@ -298,34 +322,24 @@ const AdmissionCard = () => {
   .chest-inhale .col-4 {
     flex: 0 0 40% !important;
     max-width: 40% !important;
-  }
-
-  .height .text-end,
-  .chest-normal .text-end,
-  .chest-inhale .text-end {
     text-align: right !important;
   }
 
-  /* Image box */
+  /* ---------------- IMAGE ---------------- */
   .image-box {
-    width: 120px;
-    height: 120px;
-    border: 1px solid #000;
-    object-fit: cover;
+    width: 120px !important;
+    height: 120px !important;
+    border: 1px solid #000 !important;
+    object-fit: cover !important;
   }
 
   .fw-bold {
     font-weight: 700 !important;
   }
-
-  * {
-    color: #000 !important;
-    background: transparent !important;
-  }
 }
-          `
-        }
-      </style>
+`}
+</style>
+
       <div className="container-fluid" /* id="section-to-print" */ id="admitCardPrint">
         <div
           className="card m-3"
