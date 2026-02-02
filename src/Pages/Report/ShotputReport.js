@@ -271,7 +271,7 @@ const ShotputReport = () => {
                 key: "selection",
             },
         ]);
-        const data = await fetchAllShotput(eventId, "", "", "", fromDate, toDate);
+        const data = await fetchAllShotput(eventId, null, null, null, null, null);
         console.log(data)
         setShotputReport(data)
     };
@@ -690,7 +690,15 @@ ${cast !== "" ? `
 
             startY += 5; // space before table
         }
-
+        if (fromDate && toDate) {
+            doc.text(
+                `Date: ${fromDate} To ${toDate}`,
+                pageWidth / 2,
+                startY,
+                { align: "center" }
+            );
+            startY += 5;
+        }
         const tableColumn = [
             "Sr No",
             "Application No",

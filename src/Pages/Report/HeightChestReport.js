@@ -195,7 +195,7 @@ const HeightChestReport = () => {
 
         // 🔹 Close calendar if open
         setShowPicker(false);
-        const data = await fetchAllHeightChest("", "", "", "", "", "");
+        const data = await fetchAllHeightChest(null, null, null, null, null, null);
         console.log(data)
         setHeightChestReport(data)
     };
@@ -725,6 +725,15 @@ ${cast !== "" ? `
             );
 
             startY += 5; // space before table
+        }
+        if (fromDate && toDate) {
+            doc.text(
+                `Date: ${fromDate} To ${toDate}`,
+                pageWidth / 2,
+                startY,
+                { align: "center" }
+            );
+            startY += 5;
         }
         const tableColumn = [
             "Sr No",

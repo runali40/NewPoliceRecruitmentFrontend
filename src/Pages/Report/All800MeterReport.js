@@ -80,8 +80,9 @@ const All800MeterReport = () => {
     const data = await fetchAll800Meter(
       eventId,
       groupId,
-      reservationCategory,
-      cast,
+      null,
+      null,
+      null,
       formattedStart,
       formattedEnd
     );
@@ -268,7 +269,7 @@ const All800MeterReport = () => {
         key: "selection",
       },
     ]);
-    const data = await fetchAll800Meter(eventId, "", "", "", fromDate, toDate);
+    const data = await fetchAll800Meter(eventId, null, null, null, null, null, null);
     console.log(data)
     setAll800MeterReport(data)
   };
@@ -312,7 +313,7 @@ const All800MeterReport = () => {
     } else {
       const filteredData = all800MeterReport.filter(
         (report) =>
-         (report.ApplicationNo || "").toLowerCase().includes(searchDataValue) ||
+          (report.ApplicationNo || "").toLowerCase().includes(searchDataValue) ||
           (report.ChestNo || "").toLowerCase().includes(searchDataValue) ||
           (report.CandidateName || "").toLowerCase().includes(searchDataValue) ||
           (report.Barcode || "").toLowerCase().includes(searchDataValue)
@@ -333,43 +334,40 @@ const All800MeterReport = () => {
 
     const pageWidth = doc.internal.pageSize.getWidth();
 
-    // Main Title
+    /* ===================== TITLE ===================== */
     doc.setFont("helvetica", "bold");
     doc.setFontSize(16);
-
     doc.text(
       `Commissioner of Police ${recruitName} City`,
       pageWidth / 2,
       15,
       { align: "center" }
     );
-    // Sub Title
-    doc.setFont("helvetica", "bold");
+
     doc.setFontSize(12);
     doc.text("800 Meter Report", pageWidth / 2, 23, { align: "center" });
+
     let startY = 30;
 
-    // 🔹 Group Details
+    /* ===================== GROUP DETAILS ===================== */
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(10);
+
     if (groupId) {
-      doc.setFont("helvetica", "bold");
-
-      doc.text(
-        `Group No: ${groupId}`,
-        pageWidth / 2,
-        startY,
-        { align: "center" }
-      );
-
+      doc.text(`Group No: ${groupId}`, pageWidth / 2, startY, { align: "center" });
+      startY += 5;
     }
+
     if (groupLeaderName) {
       doc.text(
-        `Group Leader Name: ${groupLeaderName || ""}`,
+        `Group Leader Name: ${groupLeaderName}`,
         pageWidth / 2,
         startY,
         { align: "center" }
       );
-
+      startY += 5;
     }
+
     if (reservationCategory) {
       doc.text(
         `${reservationCategory.label} Candidates`,
@@ -377,8 +375,9 @@ const All800MeterReport = () => {
         startY,
         { align: "center" }
       );
-
+      startY += 5;
     }
+
     if (cast) {
       doc.text(
         `${cast.label} Candidates`,
@@ -386,8 +385,17 @@ const All800MeterReport = () => {
         startY,
         { align: "center" }
       );
+      startY += 5;
+    }
 
-
+    if (gender) {
+      doc.text(
+        `${gender.label} Candidates`,
+        pageWidth / 2,
+        startY,
+        { align: "center" }
+      );
+      startY += 8; // ⬅️ extra gap before table
     }
     if (gender) {
       doc.text(
@@ -396,10 +404,18 @@ const All800MeterReport = () => {
         startY,
         { align: "center" }
       );
-
-      startY += 5; // space before table
+      startY += 8; // ⬅️ extra gap before table
     }
-
+    if (fromDate && toDate) {
+      doc.text(
+        `Date: ${fromDate} To ${toDate}`,
+        pageWidth / 2,
+        startY,
+        { align: "center" }
+      );
+      startY += 5;
+    }
+    /* ===================== TABLE DATA ===================== */
     const tableColumn = [
       "Sr No",
       "Application No",
@@ -413,47 +429,44 @@ const All800MeterReport = () => {
       "End Time",
       "Duration",
       "Lap",
-      "Score"
+      "Score",
     ];
 
-    // 🔹 SORT DATA BY CHEST NO (ASC)
+    // 🔹 Sort by Chest No
     const sortedData = [...all800MeterReport].sort(
       (a, b) => Number(a.ChestNo) - Number(b.ChestNo)
     );
 
-    const tableRows = [];
+    const tableRows = sortedData.map((data, index) => [
+      index + 1,
+      data.ApplicationNo || "",
+      data.CandidateName || "",
+      data.Gender || "",
+      data.ChestNo || "",
+      data.TagNo || "",
+      data.Cast || "",
+      data["Parallel Reservation"] || "",
+      data.StartTime === "00:00:00.00" || data.StartTime === "00:00:00.000"
+        ? ""
+        : data.StartTime || "",
+      data.EndTime === "00:00:00.00" || data.EndTime === "00:00:00.000"
+        ? ""
+        : data.EndTime || "",
+      data.duration || "",
+      data.Lapcount || "",
+      data.score || "",
+    ]);
 
-    sortedData.forEach((data, index) => {
-      tableRows.push([
-        index + 1,
-        data.ApplicationNo,
-        data.CandidateName,
-        data.Gender,
-        data.ChestNo,
-        data.TagNo,
-        data.Cast,
-        data["Parallel Reservation"],
-        // data.StartTime,
-        data.StartTime === "00:00:00.00" || data.StartTime === "00:00:00.000"
-          ? ""
-          : data.StartTime || "",
-        // data.EndTime,
-
-        data.EndTime === "00:00:00.00" || data.EndTime === "00:00:00.000"
-          ? ""
-          : data.EndTime || "",
-
-        data.duration,
-        data.Lapcount,
-        data.score
-      ]);
-    });
-
+    /* ===================== TABLE ===================== */
     doc.autoTable({
       head: [tableColumn],
       body: tableRows,
-      startY: startY, // ⬅️ increase this value
-      styles: { fontSize: 8 },
+      startY: startY,
+      styles: {
+        fontSize: 8,
+        halign: "center",
+        valign: "middle",
+      },
       headStyles: {
         fillColor: [27, 90, 144],
         textColor: 255,
@@ -461,8 +474,10 @@ const All800MeterReport = () => {
       },
     });
 
+    /* ===================== SAVE ===================== */
     doc.save("800_Meter_Report.pdf");
   };
+
 
   const download800MeterExcel = () => {
     // ✅ sort by Chest No ascending

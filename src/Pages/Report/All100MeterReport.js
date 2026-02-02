@@ -140,7 +140,7 @@ const All100MeterReport = () => {
         key: "selection",
       },
     ]);
-    const data = await fetchAll100Meter(eventId, "", "", "", gender, fromDate, toDate);
+    const data = await fetchAll100Meter(eventId, null, null, null, null, null, null);
     console.log(data)
     setAll100MeterReport(data)
   };
@@ -936,6 +936,15 @@ ${cast !== "" ? `
       );
 
       startY += 5; // space before table
+    }
+    if (fromDate && toDate) {
+      doc.text(
+        `Date: ${fromDate} To ${toDate}`,
+        pageWidth / 2,
+        startY,
+        { align: "center" }
+      );
+      startY += 5;
     }
     const tableColumn = [
       "Sr No",

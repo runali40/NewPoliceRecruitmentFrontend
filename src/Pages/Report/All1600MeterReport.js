@@ -265,7 +265,7 @@ const All1600MeterReport = () => {
         key: "selection",
       },
     ]);
-    const data = await fetchAll1600Meter(eventId, "", "", "");
+    const data = await fetchAll1600Meter(eventId, null, null, null);
     console.log(data)
     setAll1600MeterReport(data)
   };
@@ -572,7 +572,15 @@ ${cast !== "" ? `
 
       startY += 5; // space before table
     }
-
+    if (fromDate && toDate) {
+      doc.text(
+        `Date: ${fromDate} To ${toDate}`,
+        pageWidth / 2,
+        startY,
+        { align: "center" }
+      );
+      startY += 5;
+    }
     // 🔹 Table Columns
     const tableColumn = [
       "Sr No",
