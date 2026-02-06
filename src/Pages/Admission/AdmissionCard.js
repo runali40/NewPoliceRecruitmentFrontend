@@ -327,8 +327,8 @@ const AdmissionCard = () => {
 
   /* ---------------- IMAGE ---------------- */
   .image-box {
-    width: 120px !important;
-    height: 120px !important;
+    width: 300px !important;
+    height: 100px !important;
     border: 1px solid #000 !important;
     object-fit: cover !important;
   }
@@ -566,9 +566,9 @@ const AdmissionCard = () => {
                         </div>
                         <div className="row mt-3">
                           <div className="col-lg-6 col-md-6 col-6 mt-3 mt-lg-0 mt-md-0">
-                            {/* {
+                             {/* {
                               decryptedImageUrl1 ? <img src={decryptedImageUrl1} className="img-fluid image-box" /> : null
-                            } */}
+                            }  */}
                           </div>
                           <div className="col-lg-6 col-md-6 col-6 mt-3 mt-lg-0 mt-md-0">
                             {

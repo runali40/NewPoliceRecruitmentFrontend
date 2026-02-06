@@ -268,3 +268,38 @@ export const getAllCast = () => {
             return [];
         });
 };
+
+
+export const EditChestNoData = (chestNo, candidateId) => {
+    const recruitId = localStorage.getItem("recruitId");
+    const UserId = localStorage.getItem("userId");
+    return apiClient({
+        method: "post",
+        url: `Candidate/UpdateChestNo`,
+        data: {
+            UserId: UserId,
+            recruitId: recruitId,
+            candidateID: candidateId,
+            chestNo: chestNo,
+            Groundtestdata1: []
+        },
+    })
+        .then((response) => {
+            console.log("response edit chest no", response.data.data);
+            const temp = response.data.data;
+
+
+            const token1 = response.data.outcome.tokens;
+            Cookies.set("UserCredential", token1, { expires: 7 });
+            return temp;
+        })
+        .catch((error) => {
+            if (error.response && error.response.data && error.response.data.outcome) {
+                const token1 = error.response.data.outcome.tokens;
+                Cookies.set("UserCredential", token1, { expires: 7 });
+            }
+            console.log(error);
+            const errors = ErrorHandler(error);
+            toast.error(errors);
+        });
+};

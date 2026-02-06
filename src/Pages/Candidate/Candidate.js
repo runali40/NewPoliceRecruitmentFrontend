@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { NavLink, useNavigate, useLocation, useParams } from "react-router-dom";
 import { Table, Modal, Button, Form, Row, Col, FormControl } from "react-bootstrap";
-import { Refresh, Edit } from "@material-ui/icons";
+import { Refresh, Edit, Check } from "@material-ui/icons";
 import Select from "react-select";
 import {
   fetchAllRecruitments,
@@ -11,6 +11,7 @@ import {
   getAllCast,
   fetchAllSchedule,
   fetchAllCandidatesFilter,
+  EditChestNoData,
 } from "../../Components/Api/CandidateApi";
 import { apiClient } from "../../apiClient";
 import Cookies from "js-cookie";
@@ -127,6 +128,7 @@ const Candidate = () => {
   const [canId1, setCanId1] = useState("")
 
   const [scheduleId1, setScheduleId1] = useState("")
+
   const handleClose2 = () => {
     setShowModal2(false);
     setAssignNewDate("");
@@ -1024,6 +1026,11 @@ const Candidate = () => {
   const decryptedImageUrl = photo ? decryptImage(photo) : null;
 
   // console.log(decryptedImageUrl, "decryptedImageUrl")
+
+  const editChestNo = async (chestNo, candidateId) => {
+    const data = await EditChestNoData(chestNo, candidateId)
+    console.log(data, "edit chest no")
+  }
 
   const handleDocValidationClick = () => {
     navigate("/documentVerification", {
@@ -2759,7 +2766,43 @@ const Candidate = () => {
                           display: measurementStatus === true ? "inline" : "none",
                         }}
                       >
-                        {chestNo ? <b style={{ fontSize: "14px" }}>Chest Number: {chestNo}</b> : <b></b>}
+                        {!isEditing && (
+                          <>
+                            {chestNo ? <b style={{ fontSize: "14px" }}>Chest Number:  {chestNo}</b> : <b></b>}
+
+                            <Edit
+                              style={{ cursor: "pointer", color: "blue" }}
+                              onClick={() => {
+                                setChestNo(chestNo);
+                                setIsEditing(true);
+                              }}
+                            />
+                          </>
+                        )}
+                        {isEditing && (
+                          <>
+                            <b style={{ fontSize: "14px" }}>Chest Number:  <input
+                              className="form-control form-control-sm"
+                              style={{ width: "120px" }}
+                              type="text"
+                              value={chestNo}
+                              onChange={(e) => setChestNo(e.target.value)}
+                            /></b>
+
+
+                            {/* ✔ SAVE */}
+                            <Check
+                              style={{ cursor: "pointer", color: "green" }}
+                              onClick={() => {
+                                editChestNo(chestNo, candidateId); // API call
+                                setIsEditing(false);
+                              }}
+                            />
+
+
+
+                          </>
+                        )}
                       </label>
 
                       {/* {groupId === null ? (
@@ -2791,7 +2834,7 @@ const Candidate = () => {
                     {/* </div> */}
 
                     {/* <div className="mt-4"> */}
-                   {/*  {(DutyName === "Document Verification" ||
+                    {/* {(DutyName === "Document Verification" ||
                       DutyName === "All" ||
                       DutyName === "null") && (
                         <button
@@ -2814,7 +2857,7 @@ const Candidate = () => {
                         >
                           Verify Documents
                         </button>
-                      )}*/}
+                      )} */}
 
                     {DutyName === "Biometric" ||
                       DutyName === "All" ||
@@ -2854,7 +2897,7 @@ const Candidate = () => {
                             : ""
                           }`}
                       >
-                         Height and Chest
+                        Height and Chest
                       </button>
                     ) : null}
 
