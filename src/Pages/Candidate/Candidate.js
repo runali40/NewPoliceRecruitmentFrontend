@@ -992,6 +992,7 @@ const Candidate = () => {
     setAppealStatus("");
     setScheduleName("");
     setScheduleDate("");
+    setIsEditing(false);
   };
 
   // const handleRadioChange = (event) => {
@@ -2768,7 +2769,7 @@ const Candidate = () => {
                       >
                         {!isEditing && (
                           <>
-                            {chestNo ? <b style={{ fontSize: "14px" }}>Chest Number:  {chestNo}</b> : <b></b>}
+                            {chestNo ? <b style={{ fontSize: "14px" }}>Chest No:  {chestNo}</b> : <b></b>}
 
                             <Edit
                               style={{ cursor: "pointer", color: "blue" }}
@@ -2781,15 +2782,13 @@ const Candidate = () => {
                         )}
                         {isEditing && (
                           <>
-                            <b style={{ fontSize: "14px" }}>Chest Number:  <input
+                            <b style={{ fontSize: "14px" }}>Chest No:  <input
                               className="form-control form-control-sm"
                               style={{ width: "120px" }}
                               type="text"
                               value={chestNo}
                               onChange={(e) => setChestNo(e.target.value)}
                             /></b>
-
-
                             {/* ✔ SAVE */}
                             <Check
                               style={{ cursor: "pointer", color: "green" }}
@@ -2798,9 +2797,6 @@ const Candidate = () => {
                                 setIsEditing(false);
                               }}
                             />
-
-
-
                           </>
                         )}
                       </label>

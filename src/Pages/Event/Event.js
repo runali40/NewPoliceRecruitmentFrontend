@@ -157,7 +157,7 @@ const Event = () => {
                                         {title === "800 Meter Running" ? <p>List of candidates for {title} (for Female)</p> : <p>List of candidates for {title}</p>}
                                     </div>
                                     <div className="col-lg-4 col-md-4 mt-2 mt-lg-0 mt-md-0 d-flex justify-content-end">
-                                        <button className="btn me-3" style={headerCellStyle} onClick={InsertRfidData}>Sync with RFID Portal</button>
+                                        {title !== "Shot Put" ? <button className="btn me-3" style={headerCellStyle} onClick={InsertRfidData}>Sync with RFID Portal</button> : null}
                                         <button className="btn" style={headerCellStyle} onClick={() => navigate("/event_form")}>Add</button>
                                     </div>
                                 </div>
